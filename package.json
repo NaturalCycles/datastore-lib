@@ -1,0 +1,52 @@
+{
+  "name": "@naturalcycles/datastore-lib",
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {},
+  "dependencies": {},
+  "peerDependencies": {
+    "@google-cloud/datastore": "^3.1.2",
+    "@naturalcycles/js-lib": ">=3.0.0",
+    "@naturalcycles/nodejs-lib": ">=3.0.0",
+    "nanoid": "^2.0.1",
+    "rxjs": "^6.4.0"
+  },
+  "devDependencies": {
+    "@google-cloud/datastore": "^3.1.2",
+    "@naturalcycles/js-lib": "^3.1.0",
+    "@naturalcycles/nodejs-lib": "^3.0.1",
+    "@naturalcycles/promise-lib": "^2.0.0",
+    "@naturalcycles/semantic-release": "^1.0.0",
+    "@naturalcycles/shared-module": "^3.2.0",
+    "@types/jest": "^24.0.6",
+    "@types/node": "^10.11.7",
+    "jest": "^24.1.0",
+    "jest-junit": "^6.2.1",
+    "joi": "^14.3.1",
+    "lru-cache": "^5.1.1",
+    "luxon": "^1.11.4",
+    "nanoid": "^2.0.1",
+    "prettier": "^1.14.3",
+    "rxjs": "^6.4.0",
+    "timemachine": "^0.3.0",
+    "ts-jest": "^24.0.0",
+    "ts-node": "^8.0.2",
+    "tslint": "^5.11.0",
+    "typescript": "^3.1.3"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=10.13"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NaturalCycles/datastore-lib"
+  },
+  "author": "Natural Cycles Team",
+  "license": "MIT"
+}
