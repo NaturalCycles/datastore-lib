@@ -15,7 +15,6 @@
     "@google-cloud/datastore": "^3.1.2",
     "@naturalcycles/js-lib": "^3.1.0",
     "@naturalcycles/nodejs-lib": "^3.0.1",
-    "@naturalcycles/promise-lib": "^2.0.0",
     "@naturalcycles/semantic-release": "^1.0.0",
     "@naturalcycles/shared-module": "^3.2.0",
     "@types/jest": "^24.0.6",
@@ -35,8 +34,14 @@
     "typescript": "^3.1.3"
   },
   "files": [
-    "dist"
+    "dist",
+    "src",
+    "!src/test",
+    "!src/**/*.test.ts",
+    "!src/**/__snapshots__"
   ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "engines": {
     "node": ">=10.13"
   },

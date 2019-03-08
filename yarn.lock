@@ -493,11 +493,6 @@
     "@types/joi" "^14.0.0"
     debug "^4.1.0"
 
-"@naturalcycles/promise-lib@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@naturalcycles/promise-lib/-/promise-lib-2.0.0.tgz#e01c996f4c92b207f2854670935cbe8e69fee7ad"
-  integrity sha512-WO+HGehRfmDGrtUX4BM/ydpEpIcJ1+mXkg+uIG/1fjwhReWTVvgJ/yJtOuRSXX1eJ4y3ybPpWREXWqu5Tp42IQ==
-
 "@naturalcycles/semantic-release@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@naturalcycles/semantic-release/-/semantic-release-1.0.0.tgz#8b6ef5a56320619bcf78ebe920c978b70d066e1b"
