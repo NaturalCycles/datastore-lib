@@ -6,15 +6,15 @@
   "dependencies": {},
   "peerDependencies": {
     "@google-cloud/datastore": "^3.1.2",
-    "@naturalcycles/js-lib": ">=3.0.0",
-    "@naturalcycles/nodejs-lib": ">=3.0.0",
+    "@naturalcycles/js-lib": ">=4.0.0",
+    "@naturalcycles/nodejs-lib": ">=4.0.0",
     "nanoid": "^2.0.1",
     "rxjs": "^6.4.0"
   },
   "devDependencies": {
     "@google-cloud/datastore": "^3.1.2",
-    "@naturalcycles/js-lib": "^3.1.0",
-    "@naturalcycles/nodejs-lib": "^3.0.1",
+    "@naturalcycles/js-lib": "^4.0.0",
+    "@naturalcycles/nodejs-lib": "^4.0.0",
     "@naturalcycles/semantic-release": "^1.0.0",
     "@naturalcycles/shared-module": "^3.2.0",
     "@types/jest": "^24.0.6",

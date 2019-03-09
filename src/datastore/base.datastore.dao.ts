@@ -1,6 +1,6 @@
 import { Query } from '@google-cloud/datastore'
-import { objectUtil } from '@naturalcycles/js-lib'
-import { joiValidationService } from '@naturalcycles/nodejs-lib'
+import { filterEmptyStringValues, objectNullValuesToUndefined } from '@naturalcycles/js-lib'
+import { getValidationResult } from '@naturalcycles/nodejs-lib'
 import { ObjectSchema } from 'joi'
 import { Observable } from 'rxjs'
 import { flatMap, map } from 'rxjs/operators'
@@ -57,8 +57,8 @@ export abstract class BaseDatastoreDao<BM = any, DBM = BM, FM = BM> {
     let bm: BM = { ...(_bm as any) } // clone
 
     // Convert `null` values to `undefined` values after Java
-    bm = objectUtil.objectNullValuesToUndefined(bm)
-    bm = objectUtil.filterEmptyStringValues(bm)
+    bm = objectNullValuesToUndefined(bm)
+    bm = filterEmptyStringValues(bm)
 
     bm = this.datastoreService.assignIdCreatedUpdated(bm, opt.preserveUpdatedCreated)
 
@@ -100,8 +100,8 @@ export abstract class BaseDatastoreDao<BM = any, DBM = BM, FM = BM> {
     // Convert `null` values to `undefined` values after Java
     let dbm: DBM = entity
     // Convert `null` values to `undefined` values after Java
-    dbm = objectUtil.objectNullValuesToUndefined(dbm)
-    dbm = objectUtil.filterEmptyStringValues(dbm)
+    dbm = objectNullValuesToUndefined(dbm)
+    dbm = filterEmptyStringValues(dbm)
 
     // Validate/convert DBM
     // dbm gets assigned to the new reference
@@ -162,11 +162,7 @@ export abstract class BaseDatastoreDao<BM = any, DBM = BM, FM = BM> {
     if (!schema) return o
 
     // This will Convert and Validate
-    const { value, error } = joiValidationService.getValidationResult<T>(
-      o,
-      schema,
-      this.KIND + (modelType || ''),
-    )
+    const { value, error } = getValidationResult<T>(o, schema, this.KIND + (modelType || ''))
 
     // If we care about validation and there's an error
     if (error && !opt.skipValidation) {

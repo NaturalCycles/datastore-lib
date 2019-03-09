@@ -475,18 +475,18 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
-"@naturalcycles/js-lib@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@naturalcycles/js-lib/-/js-lib-3.1.0.tgz#bad43515688d875952a530a192e395954e7a6261"
-  integrity sha512-z5DZXJDzUZnSUtoQEdqRUuAWgEIQZUT/dGGkDw4JAUOgVMPEo1Wj2M/XcqkkzjKVheB/U/qHS96+ibRbTNdP5A==
+"@naturalcycles/js-lib@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@naturalcycles/js-lib/-/js-lib-4.0.0.tgz#9b6c03dae8315f97cb7240432d6f231c51c75cbf"
+  integrity sha512-W7y2h6pGuOs0FCa/xGlxFWussNroNHX3zVNZf4sxvYoI1ZEW8fWCjHLzIg1WdoS/AIQliwCQTQRDv0IYIe4yrQ==
   dependencies:
     "@types/lru-cache" "^5.1.0"
     "@types/luxon" "^1.4.0"
 
-"@naturalcycles/nodejs-lib@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@naturalcycles/nodejs-lib/-/nodejs-lib-3.0.1.tgz#7568d4fb09ccc754e1b64d047b6bdd2f5cbf3c31"
-  integrity sha512-kgagK1HpGgtSGerAb+FlkWBuW1hKYv+CfYYhgQ1zRFTygezxYKf6cqPjUVnYTCvRsmduQodYZc2cRtGg5a9onQ==
+"@naturalcycles/nodejs-lib@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@naturalcycles/nodejs-lib/-/nodejs-lib-4.0.0.tgz#196dbdb6a848efe0535bcae39c0087bc84698942"
+  integrity sha512-W+oBhflFYGoA3lc2InWkyhhCUZYoZ1RLucb4VDsY6lmNoOJOehy7rEmJl00J4xRn9ZUpvqTmOmEtTi7sSxGhRQ==
   dependencies:
     "@types/debug" "^4.1.0"
     "@types/got" "^9.2.0"
