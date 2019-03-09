@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/NaturalCycles/datastore-lib/compare/v1.0.2...v1.0.3) (2019-03-09)
+
+
+### Bug Fixes
+
+* upgrade js-lib, nodejs-lib ([cc92227](https://github.com/NaturalCycles/datastore-lib/commit/cc92227))
+
 ## [1.0.2](https://github.com/NaturalCycles/datastore-lib/compare/v1.0.1...v1.0.2) (2019-03-08)
 
 
