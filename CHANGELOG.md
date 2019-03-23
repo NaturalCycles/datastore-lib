@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/NaturalCycles/datastore-lib/compare/v1.1.0...v1.1.1) (2019-03-23)
+
+
+### Bug Fixes
+
+* export DBRelation ([bde321b](https://github.com/NaturalCycles/datastore-lib/commit/bde321b))
+
 # [1.1.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.0.3...v1.1.0) (2019-03-23)
 
 
