@@ -4,7 +4,7 @@ import { getValidationResult } from '@naturalcycles/nodejs-lib'
 import { ObjectSchema } from 'joi'
 import { Observable } from 'rxjs'
 import { flatMap, map } from 'rxjs/operators'
-import { ModelType } from './base.model'
+import { DBRelation, ModelType } from './base.model'
 import { BaseDatastoreDaoCfg, DaoOptions, DatastoreKey } from './datastore.model'
 import { DatastoreService } from './datastore.service'
 import { createdUpdatedFields } from './model.util'
@@ -18,6 +18,7 @@ export abstract class BaseDatastoreDao<BM = any, DBM = BM, FM = BM> {
   abstract readonly KIND: string
   abstract excludeFromIndexes: string[] = []
   readonly BACKEND_RESPONSE_PROPERTY?: string
+  readonly ACCOUNT_RELATION?: DBRelation
   readonly DBM_SCHEMA?: ObjectSchema
   readonly BM_SCHEMA?: ObjectSchema
   readonly FM_SCHEMA?: ObjectSchema

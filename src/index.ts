@@ -1,5 +1,5 @@
 import { BaseDatastoreDao } from './datastore/base.datastore.dao'
-import { baseDBEntitySchema, ModelType } from './datastore/base.model'
+import { baseDBEntitySchema, DBRelation, ModelType } from './datastore/base.model'
 import { DatastoreMemoryService } from './datastore/datastore.memory.service'
 import {
   BaseDatastoreDaoCfg,
@@ -34,6 +34,7 @@ export {
   DatastoreStats,
   DatastoreMemoryService,
   ModelType,
+  DBRelation,
   baseDBEntitySchema,
   BaseDatastoreDao,
 }
