@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.0.3...v1.1.0) (2019-03-23)
+
+
+### Features
+
+* DBRelation ([23bd5ce](https://github.com/NaturalCycles/datastore-lib/commit/23bd5ce))
+
 ## [1.0.3](https://github.com/NaturalCycles/datastore-lib/compare/v1.0.2...v1.0.3) (2019-03-09)
 
 
