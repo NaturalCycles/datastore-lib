@@ -6,6 +6,11 @@ export enum ModelType {
   FM = 'FM',
 }
 
+export enum DBRelation {
+  ONE_TO_ONE = 'ONE_TO_ONE',
+  ONE_TO_MANY = 'ONE_TO_MANY',
+}
+
 export const baseDBEntitySchema = objectSchema({
   id: idSchema,
   created: unixTimestampSchema,
