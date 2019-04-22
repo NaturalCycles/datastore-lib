@@ -1,4 +1,4 @@
-import { Query } from '@google-cloud/datastore'
+import { Datastore, Query } from '@google-cloud/datastore'
 import { StringMap } from '@naturalcycles/js-lib'
 import { BaseDBEntity, DaoOptions, DatastoreServiceCfg } from './datastore.model'
 import { DatastoreService } from './datastore.service'
@@ -23,6 +23,45 @@ const FILTER_FNS: StringMap<FilterFn> = {
   '>=': (v, val) => v >= val,
 }
 
+class QueryLike {
+  constructor (kind: string) {
+    this.kinds = [kind]
+  }
+
+  kinds!: string[]
+
+  filters: QueryFilter[] = []
+
+  filter (name: string, op: QueryFilterOperator | any, val: any): this {
+    if (arguments.length === 2) {
+      this.filters.push({
+        name,
+        op: '=',
+        val: op,
+      })
+    } else {
+      this.filters.push({
+        name,
+        op,
+        val,
+      })
+    }
+
+    return this
+  }
+
+  limitVal = 0
+
+  limit (limit: number): this {
+    this.limitVal = limit
+    return this
+  }
+
+  order (): this {
+    return this
+  }
+}
+
 /**
  * In-memory limited emulation of DatastoreService API.
  */
@@ -40,6 +79,16 @@ export class DatastoreMemoryService extends DatastoreService {
       },
       ...cfg,
     })
+  }
+
+  protected KEY = Symbol('datastore_memory_key')
+
+  ds (): Datastore {
+    throw new Error('DatastoreMemoryService.ds() should never be called')
+  }
+
+  createQuery (kind: string): Query {
+    return new QueryLike(kind) as any
   }
 
   data: DatastoreData = {}

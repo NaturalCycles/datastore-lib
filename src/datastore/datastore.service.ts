@@ -1,5 +1,4 @@
 import { Datastore, Query } from '@google-cloud/datastore'
-import { memo } from '@naturalcycles/js-lib'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Transform } from 'stream'
@@ -13,7 +12,6 @@ import {
   DatastorePayload,
   DatastoreServiceCfg,
   DatastoreStats,
-  IDatastoreOptions,
 } from './datastore.model'
 
 /**
@@ -29,15 +27,34 @@ export class DatastoreService {
 
   protected dontLogTablesData!: Set<string>
 
+  private cachedDatastore?: Datastore
+
+  /**
+   * Datastore.KEY
+   */
+  protected KEY!: symbol
+
+  // @memo() // not used to be able to connect to many DBs in the same server instance
   ds (): Datastore {
-    return this.createDatastore(this.datastoreServiceCfg.datastoreOptions)
-  }
+    if (!this.cachedDatastore) {
+      if (process.env.APP_ENV === 'test') {
+        throw new Error(
+          'Datastore cannot be used in Test env, please use DatastoreMemoryService.mockDatastore()',
+        )
+      }
 
-  @memo()
-  protected createDatastore (opts: IDatastoreOptions): Datastore {
-    console.log(`DatastoreService init (${opts.projectId})...`)
+      // Lazy-loading
+      const DatastoreLib = require('@google-cloud/datastore')
+      const DS = DatastoreLib.Datastore as typeof Datastore
+      const { datastoreOptions } = this.datastoreServiceCfg
 
-    return new Datastore(opts)
+      console.log(`DatastoreService init (${datastoreOptions.projectId})...`)
+
+      this.cachedDatastore = new DS(datastoreOptions)
+      this.KEY = this.cachedDatastore.KEY
+    }
+
+    return this.cachedDatastore
   }
 
   /**
@@ -124,17 +141,14 @@ export class DatastoreService {
   }
 
   async findBy<T = any> (kind: string, by: string, value: any, limit?: number): Promise<T[]> {
-    let q = this.ds()
-      .createQuery(kind)
-      .filter(by, value)
+    let q = this.createQuery(kind).filter(by, value)
     if (limit) q = q.limit(limit)
 
     return this.runQuery<T>(q, `findBy(${by}=${value})`)
   }
 
   async findOneBy<T = any> (kind: string, by: string, value: any): Promise<T | undefined> {
-    const q = this.ds()
-      .createQuery(kind)
+    const q = this.createQuery(kind)
       .filter(by, value)
       .limit(1)
 
@@ -227,7 +241,7 @@ export class DatastoreService {
       ...o,
       id: this.getKey(this.getDsKey(o)!),
     }
-    if (!preserveKey) delete r[Datastore.KEY]
+    if (!preserveKey) delete r[this.KEY]
     return r
   }
 
@@ -240,7 +254,7 @@ export class DatastoreService {
     const key = this.getDsKey(o) || this.key(kind, o.id!.toString())
     const data = Object.assign({}, o) as any
     delete data.id
-    delete data[Datastore.KEY]
+    delete data[this.KEY]
 
     return {
       key,
@@ -254,7 +268,7 @@ export class DatastoreService {
   }
 
   getDsKey (o: any): DatastoreKey | undefined {
-    return o && o[Datastore.KEY]
+    return o && o[this.KEY]
   }
 
   getKey (key: DatastoreKey): string | undefined {
