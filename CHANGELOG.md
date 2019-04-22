@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.1.1...v1.2.0) (2019-04-22)
+
+
+### Features
+
+* upgrade ([7e6ea9f](https://github.com/NaturalCycles/datastore-lib/commit/7e6ea9f))
+
 ## [1.1.1](https://github.com/NaturalCycles/datastore-lib/compare/v1.1.0...v1.1.1) (2019-03-23)
 
 
