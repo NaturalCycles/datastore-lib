@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/NaturalCycles/datastore-lib/compare/v1.2.0...v1.2.1) (2019-04-25)
+
+
+### Bug Fixes
+
+* remove redundant try/catch that had a bug with window.name ([1e3cf48](https://github.com/NaturalCycles/datastore-lib/commit/1e3cf48))
+
 # [1.2.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.1.1...v1.2.0) (2019-04-22)
 
 
