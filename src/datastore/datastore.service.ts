@@ -114,26 +114,20 @@ export class DatastoreService {
   }
 
   runQueryStream (q: Query): NodeJS.ReadableStream {
-    try {
-      return (
-        this.ds()
-          .runQueryStream(q)
-          // Important that new instance of Transform should be created every time!
-          // Otherwise they share shate and affect each other
-          .pipe(
-            new Transform({
-              objectMode: true,
-              transform: (chunk, enc, callback) => {
-                callback(undefined, this.mapId(chunk))
-              },
-            }),
-          )
-      )
-    } catch (e) {
-      const kind = this.getQueryKind(q)
-      console.error(e, { kind, q, name })
-      throw e
-    }
+    return (
+      this.ds()
+        .runQueryStream(q)
+        // Important that new instance of Transform should be created every time!
+        // Otherwise they share shate and affect each other
+        .pipe(
+          new Transform({
+            objectMode: true,
+            transform: (chunk, enc, callback) => {
+              callback(undefined, this.mapId(chunk))
+            },
+          }),
+        )
+    )
   }
 
   streamQuery<T = any> (q: Query): Observable<T> {
