@@ -1,7 +1,7 @@
 import { Query } from '@google-cloud/datastore'
+import { ObjectSchema } from '@hapi/joi'
 import { filterEmptyStringValues, objectNullValuesToUndefined } from '@naturalcycles/js-lib'
 import { getValidationResult } from '@naturalcycles/nodejs-lib'
-import { ObjectSchema } from 'joi'
 import { Observable } from 'rxjs'
 import { flatMap, map } from 'rxjs/operators'
 import { DBRelation, ModelType } from './base.model'
