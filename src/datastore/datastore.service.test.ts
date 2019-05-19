@@ -1,5 +1,4 @@
-import { mockTime } from '../test/mock/time.mock'
-import * as securityUtil from '../util/security.util'
+import { mockTime } from '@naturalcycles/test-lib'
 import { DatastoreMemoryService } from './datastore.memory.service'
 
 const ID = 'randomDatastoreService1'
@@ -9,7 +8,7 @@ const datastoreService = DatastoreMemoryService.create()
 beforeEach(() => {
   jest.restoreAllMocks()
   mockTime()
-  jest.spyOn(securityUtil, 'generateStringId').mockImplementation(() => ID)
+  jest.spyOn(require('@naturalcycles/nodejs-lib'), 'stringId').mockImplementation(() => ID)
 })
 
 test('assignIdCreatedUpdated', () => {

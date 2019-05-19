@@ -1,10 +1,9 @@
 import { Datastore, Query } from '@google-cloud/datastore'
+import { stringId } from '@naturalcycles/nodejs-lib'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Transform } from 'stream'
-import { generateStringId } from '../util/security.util'
 import { streamToObservable } from '../util/stream.util'
-import { timeUtil } from '../util/time.util'
 import {
   BaseDBEntity,
   DaoOptions,
@@ -271,11 +270,11 @@ export class DatastoreService {
   }
 
   assignIdCreatedUpdated<T> (obj: T, preserveUpdatedCreated = false): T & BaseDBEntity {
-    const now = timeUtil.nowUnixtime()
+    const now = Math.floor(Date.now() / 1000)
 
     return {
       ...(obj as any),
-      id: (obj as any).id || generateStringId(),
+      id: (obj as any).id || stringId(),
       created: (obj as any).created || (obj as any).updated || now,
       updated: preserveUpdatedCreated && (obj as any).updated ? (obj as any).updated : now,
     }

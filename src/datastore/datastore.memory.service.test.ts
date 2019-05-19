@@ -1,6 +1,4 @@
-import { deepFreeze } from '@naturalcycles/js-lib'
-import { mockTime } from '../test/mock/time.mock'
-import * as securityUtil from '../util/security.util'
+import { deepFreeze, mockTime } from '@naturalcycles/test-lib'
 import { DatastoreMemoryService } from './datastore.memory.service'
 import { DatastoreService } from './datastore.service'
 
@@ -12,7 +10,7 @@ beforeEach(() => {
   // mocks
   jest.restoreAllMocks()
   mockTime()
-  jest.spyOn(securityUtil, 'generateStringId').mockImplementation(() => ID)
+  jest.spyOn(require('@naturalcycles/nodejs-lib'), 'stringId').mockImplementation(() => ID)
   datastoreService = DatastoreMemoryService.create({
     log: true,
     logData: true,
