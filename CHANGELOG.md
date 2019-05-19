@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.3.0...v1.4.0) (2019-05-19)
+
+
+### Features
+
+* bump deps, adopt ([68ab3fd](https://github.com/NaturalCycles/datastore-lib/commit/68ab3fd))
+
 # [1.3.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.2.1...v1.3.0) (2019-05-02)
 
 
