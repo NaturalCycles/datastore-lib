@@ -168,7 +168,6 @@ export class DatastoreMemoryService extends DatastoreService {
       }
 
       const fieldNames = (q.selectVal as string[]).map(field => FIELD_MAP[field] || field)
-      console.log({ fieldNames })
       rows = rows.map(r => pick(r, fieldNames))
     }
 
