@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/NaturalCycles/datastore-lib/compare/v1.5.0...v1.5.1) (2019-05-27)
+
+
+### Bug Fixes
+
+* console.log ([4a29620](https://github.com/NaturalCycles/datastore-lib/commit/4a29620))
+
 # [1.5.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.4.0...v1.5.0) (2019-05-27)
 
 
