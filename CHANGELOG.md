@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.4.0...v1.5.0) (2019-05-27)
+
+
+### Features
+
+* MemoryService to support streamQuery, select, limit ([9ac0610](https://github.com/NaturalCycles/datastore-lib/commit/9ac0610))
+
 # [1.4.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.3.0...v1.4.0) (2019-05-19)
 
 
