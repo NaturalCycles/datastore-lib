@@ -1,5 +1,6 @@
 import { Datastore, Query } from '@google-cloud/datastore'
-import { StringMap } from '@naturalcycles/js-lib'
+import { pick, StringMap } from '@naturalcycles/js-lib'
+import { Observable, Subject } from 'rxjs'
 import { BaseDBEntity, DaoOptions, DatastoreServiceCfg } from './datastore.model'
 import { DatastoreService } from './datastore.service'
 
@@ -58,6 +59,17 @@ class QueryLike {
   }
 
   order (): this {
+    return this
+  }
+
+  /**
+   * If defined - will return only those names.
+   * __key__ is a special fieldName
+   */
+  selectVal?: string[]
+
+  select (fieldNames: string | string[]): this {
+    this.selectVal = typeof fieldNames === 'string' ? [fieldNames] : fieldNames
     return this
   }
 }
@@ -136,10 +148,11 @@ export class DatastoreMemoryService extends DatastoreService {
     // console.log(filter)
     const kind = this.getQueryKind(q)
 
-    let r: any[] = Object.values(this.data[kind] || [])
+    let rows: any[] = Object.values(this.data[kind] || [])
 
+    // .filter
     if (filter) {
-      r = r.filter(v => {
+      rows = rows.filter(v => {
         const fn = FILTER_FNS[filter.op]
         if (fn) return fn(v[filter.name], filter.val)
 
@@ -148,13 +161,44 @@ export class DatastoreMemoryService extends DatastoreService {
       })
     }
 
-    // todo: order, limit
+    // .select(fieldNames)
+    if (q.selectVal && q.selectVal.length) {
+      const FIELD_MAP: StringMap = {
+        __key__: 'id',
+      }
 
-    return r
+      const fieldNames = (q.selectVal as string[]).map(field => FIELD_MAP[field] || field)
+      console.log({ fieldNames })
+      rows = rows.map(r => pick(r, fieldNames))
+    }
+
+    // todo: order
+
+    // .limit()
+    if (q.limitVal) {
+      rows = rows.slice(0, Math.min(q.limitVal, rows.length))
+    }
+
+    return rows
   }
 
   async countQueryRows (q: Query): Promise<number> {
     const rows = await this.runQuery(q)
     return rows.length
+  }
+
+  streamQuery<T = any> (q: Query): Observable<T> {
+    const subj = new Subject<T>()
+
+    this.runQuery<T>(q)
+      .then(rows => {
+        rows.forEach(row => subj.next(row))
+        subj.complete()
+      })
+      .catch(err => {
+        subj.error(err)
+      })
+
+    return subj
   }
 }

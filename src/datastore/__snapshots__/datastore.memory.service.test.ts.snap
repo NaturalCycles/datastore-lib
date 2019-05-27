@@ -32,3 +32,22 @@ Object {
   "updated": 1529539200,
 }
 `;
+
+exports[`streamQuery 1`] = `
+Array [
+  Object {
+    "a": "aa",
+    "b": "b1",
+    "created": 1529539200,
+    "id": "id1",
+    "updated": 1529539200,
+  },
+  Object {
+    "a": "aa",
+    "b": "b2",
+    "created": 1529539200,
+    "id": "id2",
+    "updated": 1529539200,
+  },
+]
+`;
