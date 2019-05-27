@@ -1,5 +1,5 @@
 import { deepFreeze, mockTime } from '@naturalcycles/test-lib'
-import { reduce } from 'rxjs/operators'
+import { toArray } from 'rxjs/operators'
 import { DatastoreMemoryService } from './datastore.memory.service'
 import { DatastoreService } from './datastore.service'
 
@@ -147,7 +147,8 @@ test('streamQuery', async () => {
       //   await new Promise(r => setTimeout(r, 500))
       //   return row
       // }, 1),
-      reduce((rows, row) => rows.concat(row), [] as TestKind[]),
+      // reduce((rows, row) => rows.concat(row), [] as TestKind[]),
+      toArray(),
     )
     .toPromise()
   // console.log('done', rows)
@@ -157,7 +158,7 @@ test('streamQuery', async () => {
 
   const ids = await datastoreService
     .streamQueryIds(q)
-    .pipe(reduce((ids, id) => ids.concat(id), [] as string[]))
+    .pipe(toArray())
     .toPromise()
   // console.log(ids)
   expect(ids).toEqual(['id1', 'id2'])
