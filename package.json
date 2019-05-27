@@ -1,7 +1,7 @@
 {
   "name": "@naturalcycles/datastore-lib",
   "version": "1.4.0",
-  "description": "",
+  "description": "Opinionated library to work with Google Datastore",
   "scripts": {},
   "dependencies": {
     "@naturalcycles/js-lib": "^7.0.0",
@@ -41,6 +41,13 @@
     "type": "git",
     "url": "https://github.com/NaturalCycles/datastore-lib"
   },
+  "keywords": [
+    "datastore",
+    "lib",
+    "typescript",
+    "dao",
+    "gcp"
+  ],
   "author": "Natural Cycles Team",
   "license": "MIT"
 }
