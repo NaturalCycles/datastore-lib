@@ -1,7 +1,13 @@
 import { DatastoreOptions } from '@google-cloud/datastore'
 import { entity } from '@google-cloud/datastore/build/src/entity'
-import { JoiValidationError } from '@naturalcycles/nodejs-lib'
+import {
+  CommonDaoCfg,
+  CommonDaoOptions,
+  CommonDBOptions,
+  CommonDBSaveOptions,
+} from '@naturalcycles/db-lib'
 import { CredentialBody } from 'google-auth-library'
+import { DatastoreService } from './datastore.service'
 
 export type DatastoreKey = entity.Key
 
@@ -43,47 +49,16 @@ export interface DatastoreServiceCfg {
   dontLogTablesData?: string[]
 }
 
-export interface BaseDatastoreDaoCfg {
-  throwOnEntityValidationError?: boolean
-  throwOnDaoCreateObject?: boolean
-
-  /**
-   * Called when validation error occurs.
-   * Called ONLY when error is NOT thrown (when throwOnEntityValidationError is off)
-   */
-  onError?: (err: JoiValidationError) => any
-}
+export interface BaseDatastoreDaoCfg<BM = any, DBM = BM>
+  extends CommonDaoCfg<BM, DBM, DatastoreService> {}
 
 /**
  * @default All fields default to undefined
  */
-export interface DaoOptions {
-  skipValidation?: boolean
-  throwOnError?: boolean
-  preserveUpdatedCreated?: boolean
-}
+export interface DatastoreDaoOptions extends CommonDaoOptions {}
 
-export interface CreatedUpdated {
-  created: number
-  updated: number
-}
-
-export interface CreatedUpdatedId extends CreatedUpdated {
-  id: string
-}
-
-export interface CreatedUpdatedVer {
-  created: number
-  updated: number
-  _ver?: number
-}
-
-export interface BaseDBEntity {
-  id: string
-  created: number
-  updated: number
-  _ver?: number
-}
+export interface DatastoreDBOptions extends CommonDBOptions {}
+export interface DatastoreDBSaveOptions extends CommonDBSaveOptions {}
 
 export interface DatastoreStats {
   count: number

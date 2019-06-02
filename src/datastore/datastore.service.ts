@@ -1,24 +1,24 @@
 import { Datastore, Query } from '@google-cloud/datastore'
-import { stringId } from '@naturalcycles/nodejs-lib'
+import { BaseDBEntity, CommonDB, DBQuery } from '@naturalcycles/db-lib'
 import { Observable } from 'rxjs'
-import { map } from 'rxjs/operators'
 import { Transform } from 'stream'
 import { streamToObservable } from '../util/stream.util'
 import {
-  BaseDBEntity,
-  DaoOptions,
+  DatastoreDBOptions,
+  DatastoreDBSaveOptions,
   DatastoreKey,
   DatastorePayload,
   DatastoreServiceCfg,
   DatastoreStats,
 } from './datastore.model'
+import { dbQueryToDatastoreQuery } from './query.util'
 
 /**
  * Datastore API:
  * https://googlecloudplatform.github.io/google-cloud-node/#/docs/datastore/1.0.3/datastore
  * https://cloud.google.com/datastore/docs/datastore-api-tutorial
  */
-export class DatastoreService {
+export class DatastoreService implements CommonDB {
   constructor (protected datastoreServiceCfg: DatastoreServiceCfg) {
     // for faster search later
     this.dontLogTablesData = new Set(datastoreServiceCfg.dontLogTablesData || [])
@@ -71,25 +71,19 @@ export class DatastoreService {
     }
   }
 
-  async getById<T = any> (kind: string, id?: string): Promise<T | undefined> {
-    if (!id) return
-
-    const key = this.key(kind, id.toString())
+  async getByIds<T = any> (kind: string, ids: string[], opts?: DatastoreDBOptions): Promise<T[]> {
     const started = Date.now()
+    const keys = ids.map(id => this.key(kind, id))
 
-    let r: T | undefined
-    const _r = await this.ds().get(key)
-    if (_r.length && _r[0]) {
-      r = this.mapId(_r[0])
+    const entities: any[] = await this.ds().get(keys)
+    const rows = entities.map(e => this.mapId<T>(e))
+
+    if (ids.length === 1) {
+      const millis = Date.now() - started
+      this.log(kind, `${kind}.getById(${ids[0]}) ${millis} ms`, rows[0] || 'undefined')
     }
 
-    const millis = Date.now() - started
-    this.log(kind, `${kind}.getById(${id}) ${millis} ms`, r || 'undefined')
-    return r
-  }
-
-  createQuery (kind: string): Query {
-    return this.ds().createQuery(kind)
+    return rows
   }
 
   getQueryKind (q: Query): string {
@@ -97,22 +91,36 @@ export class DatastoreService {
     return q.kinds[0]
   }
 
-  async runQuery<T = any> (q: Query, name?: string): Promise<T[]> {
+  async runQuery<DBM = any> (dbQuery: DBQuery<DBM>, opts?: DatastoreDBOptions): Promise<DBM[]> {
+    const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
+    return this.runDatastoreQuery(q)
+  }
+
+  async runQueryCount<DBM = any> (
+    dbQuery: DBQuery<DBM>,
+    opts?: DatastoreDBOptions,
+  ): Promise<number> {
+    const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table)).select([
+      '__key__',
+    ])
+    const [entities] = await this.ds().runQuery(q)
+    return entities.length
+  }
+
+  async runDatastoreQuery<T = any> (q: Query, name?: string): Promise<T[]> {
+    const started = Date.now()
     const kind = this.getQueryKind(q)
 
-    const started = Date.now()
-    let [rows] = await this.ds().runQuery(q)
-
-    // const info = queryResp[1]
-    // console.console.log('queryResp: ', queryResp)
-    rows = this.mapIds(rows)
+    const [entities] = await this.ds().runQuery(q)
+    const rows = entities.map(e => this.mapId<T>(e))
 
     const millis = Date.now() - started
     this.log(kind, `${kind}.${name || 'query'} ${millis} ms: ${rows.length} results`)
-    return rows as any
+
+    return rows
   }
 
-  runQueryStream (q: Query): NodeJS.ReadableStream {
+  private runQueryStream (q: Query): NodeJS.ReadableStream {
     return (
       this.ds()
         .runQueryStream(q)
@@ -129,60 +137,29 @@ export class DatastoreService {
     )
   }
 
-  streamQuery<T = any> (q: Query): Observable<T> {
+  streamQuery<DBM = any> (dbQuery: DBQuery<DBM>, opts?: DatastoreDBOptions): Observable<DBM> {
+    const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
+    return this.streamDatastoreQuery<DBM>(q)
+  }
+
+  streamDatastoreQuery<DBM = any> (q: Query): Observable<DBM> {
     return streamToObservable(this.runQueryStream(q))
-  }
-
-  async findBy<T = any> (kind: string, by: string, value: any, limit?: number): Promise<T[]> {
-    let q = this.createQuery(kind).filter(by, value)
-    if (limit) q = q.limit(limit)
-
-    return this.runQuery<T>(q, `findBy(${by}=${value})`)
-  }
-
-  async findOneBy<T = any> (kind: string, by: string, value: any): Promise<T | undefined> {
-    const q = this.createQuery(kind)
-      .filter(by, value)
-      .limit(1)
-
-    return this.runQuery<T>(q, `findOneBy(${by}=${value})`).then(items => {
-      const one = items && items.length ? items[0] : undefined
-      this.log(kind, `${kind}.findOneBy(${by}=${value})`, one || 'undefined')
-      return one
-    })
   }
 
   // https://github.com/GoogleCloudPlatform/nodejs-getting-started/blob/master/2-structured-data/books/model-datastore.js
 
   /**
-   * Returns saved entity with generated id/updated/created (non-mutating!)
-   */
-  async save<T> (
-    kind: string,
-    obj: T,
-    excludeFromIndexes?: string[],
-    opt: DaoOptions = {},
-  ): Promise<T & BaseDBEntity> {
-    const [savedObj] = await this.saveBatch(kind, [obj], excludeFromIndexes, opt)
-    return savedObj
-  }
-
-  /**
    * Returns saved entities with generated id/updated/created (non-mutating!)
    */
-  async saveBatch<T> (
+  async saveBatch<DBM> (
     kind: string,
-    _objects: T[],
-    excludeFromIndexes?: string[],
-    opt: DaoOptions = {},
-  ): Promise<(T & BaseDBEntity)[]> {
+    dbms: DBM[],
+    opt: DatastoreDBSaveOptions = {},
+  ): Promise<DBM[]> {
     const started = Date.now()
 
-    // Assign id/created/updated
-    const objects = _objects.map(o => this.assignIdCreatedUpdated(o, opt.preserveUpdatedCreated))
-
-    const entities = objects.map(obj => {
-      const entity = this.toDatastoreEntity(kind, obj, excludeFromIndexes)
+    const entities = dbms.map(obj => {
+      const entity = this.toDatastoreEntity(kind, obj, opt.excludeFromIndexes)
       this.log(kind, `${kind} save`, obj)
       return entity
     })
@@ -190,9 +167,9 @@ export class DatastoreService {
     try {
       await this.ds().save(entities)
       const millis = Date.now() - started
-      const ids = objects.map(obj => obj.id)
+      const ids = dbms.map(dbm => (dbm as any).id)
       this.log(kind, `${kind}.save() ${millis} ms: ${ids.join(',')}`)
-      return objects
+      return dbms
     } catch (err) {
       // console.log(`datastore.save ${kind}`, { obj, entity })
       console.error('error in datastore.save! throwing', err)
@@ -201,31 +178,39 @@ export class DatastoreService {
     }
   }
 
-  async deleteById (kind: string, id?: string): Promise<void> {
-    if (!id) return
-
+  /**
+   * Limitation: Datastore's delete returns void, so we always return all ids here as "deleted"
+   * regardless if they were actually deleted or not.
+   */
+  async deleteByIds (kind: string, ids: string[]): Promise<string[]> {
     const started = Date.now()
 
-    const key = this.key(kind, id)
-    await this.deleteByKeys(key)
+    const keys = ids.map(id => this.key(kind, id))
+    await this.ds().delete(keys)
 
     const millis = Date.now() - started
-
-    this.log(kind, `${kind}.deleteById(${id}) ${millis} ms`)
+    this.log(kind, `${kind}.deleteByIds(${ids.join(',')}) ${millis} ms`)
+    return ids
   }
 
-  async deleteByKeys (keys: DatastoreKey | DatastoreKey[]): Promise<void> {
+  async deleteBy (
+    kind: string,
+    by: string,
+    value: any,
+    limit = 0,
+    opt: DatastoreDBOptions = {},
+  ): Promise<string[]> {
+    const q = this.ds()
+      .createQuery(kind)
+      .filter(by, '=', value)
+      .limit(limit)
+      .select(['__key__'])
+
+    const [entities] = await this.ds().runQuery(q)
+    const ids = entities.map(e => this.mapId(e)).map(row => (row as BaseDBEntity).id)
+    const keys = ids.map(id => this.key(kind, id))
     await this.ds().delete(keys)
-  }
-
-  async deleteBy (kind: string, by: string, value: any, limit?: number): Promise<void> {
-    const entities = await this.findBy(kind, by, value, limit)
-    const keys = entities.map(e => this.key(kind, e.id))
-    await this.deleteByKeys(keys)
-  }
-
-  private mapIds<T> (objects: any[]): T[] {
-    return objects.map(o => this.mapId(o))
+    return ids
   }
 
   mapId<T = any> (o: any, preserveKey = false): T {
@@ -257,7 +242,7 @@ export class DatastoreService {
   }
 
   key (kind: string, id: string): DatastoreKey {
-    return this.ds().key([kind, id])
+    return this.ds().key([kind, String(id)])
   }
 
   getDsKey (o: any): DatastoreKey | undefined {
@@ -269,19 +254,13 @@ export class DatastoreService {
     return id && id.toString()
   }
 
-  assignIdCreatedUpdated<T> (obj: T, preserveUpdatedCreated = false): T & BaseDBEntity {
-    const now = Math.floor(Date.now() / 1000)
-
-    return {
-      ...(obj as any),
-      id: (obj as any).id || stringId(),
-      created: (obj as any).created || (obj as any).updated || now,
-      updated: preserveUpdatedCreated && (obj as any).updated ? (obj as any).updated : now,
-    }
-  }
-
   async getStats (kind: string): Promise<DatastoreStats | undefined> {
-    return this.findOneBy<DatastoreStats>('__Stat_Kind__', 'kind_name', kind)
+    const q = this.ds()
+      .createQuery('__Stat_Kind__')
+      .filter('kind_name', kind)
+      .limit(1)
+    const [stats] = await this.runDatastoreQuery<DatastoreStats>(q)
+    return stats
   }
 
   /**
@@ -290,30 +269,5 @@ export class DatastoreService {
   async getStatsCount (kind: string): Promise<number | undefined> {
     const stats = await this.getStats(kind)
     return stats && stats.count
-  }
-
-  /**
-   * Runs query as "key-only" query which is faster that returning whole objects.
-   */
-  async queryIds (_q: Query): Promise<string[]> {
-    const q = _q.select(['__key__'])
-    const [rows] = await this.ds().runQuery(q)
-    return this.mapIds(rows)
-  }
-
-  streamQueryIds (_q: Query): Observable<string> {
-    const q = _q.select(['__key__'])
-    return this.streamQuery(q).pipe(map(row => row.id))
-  }
-
-  /**
-   * Modifies query to return only keys, which is faster than returning whole rows.
-   * Then counts number of returned rows, returning this number.
-   * This approach is non-streaming, let's see if it works good.
-   */
-  async countQueryRows (_q: Query): Promise<number> {
-    const q = _q.select(['__key__'])
-    const [rows] = await this.ds().runQuery(q)
-    return rows.length
   }
 }
