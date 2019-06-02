@@ -9,7 +9,6 @@ import {
   DatastoreKey,
   DatastorePayload,
   DatastoreServiceCfg,
-  DatastoreStats,
 } from './datastore.model'
 import { dbQueryToDatastoreQuery } from './query.util'
 
@@ -252,22 +251,5 @@ export class DatastoreService implements CommonDB {
   getKey (key: DatastoreKey): string | undefined {
     const id = key.id || key.name
     return id && id.toString()
-  }
-
-  async getStats (kind: string): Promise<DatastoreStats | undefined> {
-    const q = this.ds()
-      .createQuery('__Stat_Kind__')
-      .filter('kind_name', kind)
-      .limit(1)
-    const [stats] = await this.runDatastoreQuery<DatastoreStats>(q)
-    return stats
-  }
-
-  /**
-   * Loads count from `__Stat_Kind__`, which is updated by Datastore once per 24h.
-   */
-  async getStatsCount (kind: string): Promise<number | undefined> {
-    const stats = await this.getStats(kind)
-    return stats && stats.count
   }
 }
