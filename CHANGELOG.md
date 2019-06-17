@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.5.1...v1.6.0) (2019-06-17)
+
+
+### Features
+
+* adds support for multiple filters ([dbfaa83](https://github.com/NaturalCycles/datastore-lib/commit/dbfaa83))
+
 ## [1.5.1](https://github.com/NaturalCycles/datastore-lib/compare/v1.5.0...v1.5.1) (2019-05-27)
 
 
