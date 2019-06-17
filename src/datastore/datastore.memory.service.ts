@@ -1,4 +1,5 @@
 import { Datastore, Query } from '@google-cloud/datastore'
+import { Filter } from '@google-cloud/datastore/build/src/query'
 import { pick, StringMap } from '@naturalcycles/js-lib'
 import { Observable, Subject } from 'rxjs'
 import { BaseDBEntity, DaoOptions, DatastoreServiceCfg } from './datastore.model'
@@ -144,14 +145,12 @@ export class DatastoreMemoryService extends DatastoreService {
 
   async runQuery<T = any> (q: Query | any, name?: string): Promise<T[]> {
     // console.log(q)
-    const filter: QueryFilter = q.filters.length && q.filters[0]
-    // console.log(filter)
     const kind = this.getQueryKind(q)
 
     let rows: any[] = Object.values(this.data[kind] || [])
 
-    // .filter
-    if (filter) {
+    // .filters
+    q.filters.forEach((filter: Filter) => {
       rows = rows.filter(v => {
         const fn = FILTER_FNS[filter.op]
         if (fn) return fn(v[filter.name], filter.val)
@@ -159,7 +158,7 @@ export class DatastoreMemoryService extends DatastoreService {
         console.warn('query filter not supported yet: ', filter)
         return true
       })
-    }
+    })
 
     // .select(fieldNames)
     if (q.selectVal && q.selectVal.length) {

@@ -38,6 +38,7 @@ Array [
   Object {
     "a": "aa",
     "b": "b1",
+    "c": "2012-12-01",
     "created": 1529539200,
     "id": "id1",
     "updated": 1529539200,
@@ -45,6 +46,7 @@ Array [
   Object {
     "a": "aa",
     "b": "b2",
+    "c": "2012-12-02",
     "created": 1529539200,
     "id": "id2",
     "updated": 1529539200,
