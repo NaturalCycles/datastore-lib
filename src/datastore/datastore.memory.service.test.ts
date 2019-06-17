@@ -7,6 +7,7 @@ interface TestKind {
   id: string
   a: string
   b: string
+  c?: string
 }
 
 const ID = 'randomDatastoreService1'
@@ -119,16 +120,19 @@ function mockTestKindItems (): TestKind[] {
       id: 'id1',
       a: 'aa',
       b: 'b1',
+      c: '2012-12-01',
     },
     {
       id: 'id2',
       a: 'aa',
       b: 'b2',
+      c: '2012-12-02',
     },
     {
       id: 'id3',
       a: 'aa2',
       b: 'b3',
+      c: '2012-12-07',
     },
   ]
 }
@@ -155,6 +159,22 @@ test('streamQuery', async () => {
 
   expect(rows.length).toBe(2)
   expect(rows).toMatchSnapshot()
+
+  const ids = await datastoreService
+    .streamQueryIds(q)
+    .pipe(toArray())
+    .toPromise()
+  // console.log(ids)
+  expect(ids).toEqual(['id1', 'id2'])
+})
+
+test('multiple filters', async () => {
+  const items = mockTestKindItems()
+  await datastoreService.saveBatch(KIND, items)
+  const q = datastoreService
+    .createQuery(KIND)
+    .filter('c', '>=', '2012-12-01')
+    .filter('c', '<', '2012-12-03')
 
   const ids = await datastoreService
     .streamQueryIds(q)
