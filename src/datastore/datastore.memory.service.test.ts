@@ -8,6 +8,7 @@ interface TestKind {
   a: string
   b: string
   c?: string
+  d?: string | null
 }
 
 const ID = 'randomDatastoreService1'
@@ -121,18 +122,21 @@ function mockTestKindItems (): TestKind[] {
       a: 'aa',
       b: 'b1',
       c: '2012-12-01',
+      d: 'not-null',
     },
     {
       id: 'id2',
       a: 'aa',
       b: 'b2',
       c: '2012-12-02',
+      d: 'not-null',
     },
     {
       id: 'id3',
       a: 'aa2',
       b: 'b3',
       c: '2012-12-07',
+      d: null,
     },
   ]
 }
@@ -182,4 +186,26 @@ test('multiple filters', async () => {
     .toPromise()
   // console.log(ids)
   expect(ids).toEqual(['id1', 'id2'])
+})
+
+test('null as negation in filters', async () => {
+  const items = mockTestKindItems()
+  await datastoreService.saveBatch(KIND, items)
+  const q = datastoreService.createQuery(KIND).filter('d', '>', null as any)
+
+  const ids1 = await datastoreService
+    .streamQueryIds(q)
+    .pipe(toArray())
+    .toPromise()
+
+  expect(ids1).toEqual(['id1', 'id2'])
+
+  const q2 = datastoreService.createQuery(KIND).filter('d', '<', null as any)
+
+  const ids2 = await datastoreService
+    .streamQueryIds(q2)
+    .pipe(toArray())
+    .toPromise()
+
+  expect(ids2).toEqual(['id1', 'id2'])
 })
