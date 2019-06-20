@@ -23,6 +23,7 @@ const FILTER_FNS: StringMap<FilterFn> = {
   '<=': (v, val) => v <= val,
   '>': (v, val) => v > val,
   '>=': (v, val) => v >= val,
+  '!=': (v, val) => v !== val,
 }
 
 class QueryLike {
@@ -152,7 +153,10 @@ export class DatastoreMemoryService extends DatastoreService {
     // .filters
     q.filters.forEach((filter: Filter) => {
       rows = rows.filter(v => {
-        const fn = FILTER_FNS[filter.op]
+        let fn = FILTER_FNS[filter.op]
+        if ((filter.op === '>' || filter.op === '<') && filter.val === null) {
+          fn = FILTER_FNS['!=']
+        }
         if (fn) return fn(v[filter.name], filter.val)
 
         console.warn('query filter not supported yet: ', filter)
