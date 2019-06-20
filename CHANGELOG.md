@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/NaturalCycles/datastore-lib/compare/v1.6.0...v1.6.1) (2019-06-20)
+
+
+### Bug Fixes
+
+* allow null to be used in filters as negation ([93b971b](https://github.com/NaturalCycles/datastore-lib/commit/93b971b))
+
 # [1.6.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.5.1...v1.6.0) (2019-06-17)
 
 
