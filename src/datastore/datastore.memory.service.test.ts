@@ -1,5 +1,6 @@
 import { deepFreeze, mockTime } from '@naturalcycles/test-lib'
 import { toArray } from 'rxjs/operators'
+import { streamToObservable } from '../util/stream.util'
 import { DatastoreMemoryService } from './datastore.memory.service'
 import { DatastoreService } from './datastore.service'
 
@@ -208,4 +209,16 @@ test('null as negation in filters', async () => {
     .toPromise()
 
   expect(ids2).toEqual(['id1', 'id2'])
+})
+
+test('runQueryStream', async () => {
+  const items = mockTestKindItems()
+  await datastoreService.saveBatch(KIND, items)
+  const q = datastoreService.createQuery(KIND).filter('a', '=', 'aa')
+
+  const results = await streamToObservable(datastoreService.runQueryStream(q))
+    .pipe(toArray())
+    .toPromise()
+
+  expect(results).toMatchSnapshot()
 })
