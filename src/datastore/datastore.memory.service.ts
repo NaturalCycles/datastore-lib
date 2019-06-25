@@ -2,6 +2,7 @@ import { Datastore, Query } from '@google-cloud/datastore'
 import { Filter } from '@google-cloud/datastore/build/src/query'
 import { pick, StringMap } from '@naturalcycles/js-lib'
 import { Observable, Subject } from 'rxjs'
+import { Readable } from 'stream'
 import { BaseDBEntity, DaoOptions, DatastoreServiceCfg } from './datastore.model'
 import { DatastoreService } from './datastore.service'
 
@@ -187,6 +188,24 @@ export class DatastoreMemoryService extends DatastoreService {
   async countQueryRows (q: Query): Promise<number> {
     const rows = await this.runQuery(q)
     return rows.length
+  }
+
+  runQueryStream (q: Query): NodeJS.ReadableStream {
+    const readableStream = new Readable({
+      objectMode: true,
+      read (size: number) {},
+    })
+
+    this.runQuery(q)
+      .then(rows => {
+        rows.forEach(row => readableStream.push(row))
+        readableStream.push(null)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+
+    return readableStream
   }
 
   streamQuery<T = any> (q: Query): Observable<T> {
