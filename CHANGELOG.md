@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.6.1...v1.7.0) (2019-06-25)
+
+
+### Features
+
+* implements runQueryStream in MemoryService ([0ececa4](https://github.com/NaturalCycles/datastore-lib/commit/0ececa4))
+
 ## [1.6.1](https://github.com/NaturalCycles/datastore-lib/compare/v1.6.0...v1.6.1) (2019-06-20)
 
 
