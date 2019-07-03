@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/NaturalCycles/datastore-lib/compare/v1.9.0...v1.9.1) (2019-07-03)
+
+
+### Bug Fixes
+
+* anonymize signature ([4ed12bd](https://github.com/NaturalCycles/datastore-lib/commit/4ed12bd))
+
 # [1.9.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.8.0...v1.9.0) (2019-07-03)
 
 
