@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.7.0...v1.8.0) (2019-07-03)
+
+
+### Features
+
+* dao anonymization hook ([3160ca0](https://github.com/NaturalCycles/datastore-lib/commit/3160ca0))
+
 # [1.7.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.6.1...v1.7.0) (2019-06-25)
 
 
