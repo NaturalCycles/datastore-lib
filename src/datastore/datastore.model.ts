@@ -61,6 +61,14 @@ export interface DaoOptions {
   skipValidation?: boolean
   throwOnError?: boolean
   preserveUpdatedCreated?: boolean
+
+  /**
+   * If true - data will be anonymized (by calling a BaseDao.anonymize() hook that you can extend in your Dao implementation).
+   * Only applicable to loading/querying/streaming_loading operations (n/a for saving).
+   * Only applicable to BM (n/a for DBM or FM).
+   * There is additional validation applied AFTER Anonymization, so your anonymization implementation should keep BM valid.
+   */
+  anonymize?: boolean
 }
 
 export interface CreatedUpdated {
