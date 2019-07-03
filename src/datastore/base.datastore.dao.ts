@@ -49,8 +49,8 @@ export abstract class BaseDatastoreDao<BM = any, DBM = BM, FM = BM> {
   }
 
   // to be extended
-  anonymize (bm: BM): BM {
-    return bm
+  anonymize<T extends BM | DBM | FM> (obj: T): T {
+    return obj
   }
 
   /**
@@ -153,7 +153,7 @@ export abstract class BaseDatastoreDao<BM = any, DBM = BM, FM = BM> {
    * Validates (unless `validate=false` passed).
    * Throws only if `throwOnError=true` passed OR if `env().throwOnEntityValidationError`
    */
-  validateAndConvert<IN = any, OUT = IN> (
+  validateAndConvert<IN extends BM | DBM | FM, OUT = IN> (
     o: IN,
     schema?: ObjectSchema,
     modelType?: ModelType,
@@ -161,29 +161,20 @@ export abstract class BaseDatastoreDao<BM = any, DBM = BM, FM = BM> {
   ): OUT {
     // Pre-validation hooks
     if (modelType === ModelType.DBM) {
-      o = this.beforeDBMValidate(o as any) as any
+      o = this.beforeDBMValidate(o as DBM) as IN
+    }
+
+    if (opt.anonymize) {
+      o = this.anonymize(o as any)
     }
 
     // Return as is if no schema is passed
     if (!schema) {
-      if (opt.anonymize && modelType === ModelType.BM) {
-        return this.anonymize(o as any) as any
-      }
-
       return o as any
     }
 
     // This will Convert and Validate
-    let { value, error } = getValidationResult<IN, OUT>(o, schema, this.KIND + (modelType || ''))
-
-    if (opt.anonymize && modelType === ModelType.BM) {
-      const anonymizedBM: OUT = this.anonymize(value as any) as any
-      ;({ value, error } = getValidationResult<OUT>(
-        anonymizedBM,
-        schema,
-        this.KIND + (modelType || '') + 'Anonymized',
-      ))
-    }
+    const { value, error } = getValidationResult<IN, OUT>(o, schema, this.KIND + (modelType || ''))
 
     // If we care about validation and there's an error
     if (error && !opt.skipValidation) {
