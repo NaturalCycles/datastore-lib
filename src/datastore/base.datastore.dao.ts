@@ -49,7 +49,7 @@ export abstract class BaseDatastoreDao<BM = any, DBM = BM, FM = BM> {
   }
 
   // to be extended
-  anonymize<T extends BM | DBM | FM> (obj: T): T {
+  anonymize (obj: BM | DBM | FM): BM | DBM | FM {
     return obj
   }
 
@@ -165,7 +165,7 @@ export abstract class BaseDatastoreDao<BM = any, DBM = BM, FM = BM> {
     }
 
     if (opt.anonymize) {
-      o = this.anonymize(o as any)
+      o = this.anonymize(o as any) as IN
     }
 
     // Return as is if no schema is passed
