@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.8.0...v1.9.0) (2019-07-03)
+
+
+### Features
+
+* allow to anonymize all ModelTypes ([a87480e](https://github.com/NaturalCycles/datastore-lib/commit/a87480e))
+
 # [1.8.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.7.0...v1.8.0) (2019-07-03)
 
 
