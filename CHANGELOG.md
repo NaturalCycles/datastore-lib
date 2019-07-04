@@ -1,3 +1,10 @@
+## [1.9.2](https://github.com/NaturalCycles/datastore-lib/compare/v1.9.1...v1.9.2) (2019-07-04)
+
+
+### Bug Fixes
+
+* anonymize only DBM ([9897ea6](https://github.com/NaturalCycles/datastore-lib/commit/9897ea6))
+
 ## [1.9.1](https://github.com/NaturalCycles/datastore-lib/compare/v1.9.0...v1.9.1) (2019-07-03)
 
 

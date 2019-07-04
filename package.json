@@ -1,6 +1,6 @@
 {
   "name": "@naturalcycles/datastore-lib",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "Opinionated library to work with Google Datastore",
   "scripts": {},
   "dependencies": {
