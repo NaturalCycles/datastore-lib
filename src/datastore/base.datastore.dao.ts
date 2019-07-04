@@ -49,8 +49,8 @@ export abstract class BaseDatastoreDao<BM = any, DBM = BM, FM = BM> {
   }
 
   // to be extended
-  anonymize (obj: BM | DBM | FM): BM | DBM | FM {
-    return obj
+  anonymize (dbm: DBM): DBM {
+    return dbm
   }
 
   /**
@@ -109,6 +109,10 @@ export abstract class BaseDatastoreDao<BM = any, DBM = BM, FM = BM> {
     dbm = objectNullValuesToUndefined(dbm)
     dbm = filterEmptyStringValues(dbm)
 
+    if (opt.anonymize) {
+      dbm = this.anonymize(dbm)
+    }
+
     // Validate/convert DBM
     // dbm gets assigned to the new reference
     dbm = this.validateAndConvert<DBM>(dbm, this.DBM_SCHEMA, ModelType.DBM, opt)
@@ -162,10 +166,6 @@ export abstract class BaseDatastoreDao<BM = any, DBM = BM, FM = BM> {
     // Pre-validation hooks
     if (modelType === ModelType.DBM) {
       o = this.beforeDBMValidate(o as DBM) as IN
-    }
-
-    if (opt.anonymize) {
-      o = this.anonymize(o as any) as IN
     }
 
     // Return as is if no schema is passed

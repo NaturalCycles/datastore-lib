@@ -65,7 +65,7 @@ export interface DaoOptions {
   /**
    * If true - data will be anonymized (by calling a BaseDao.anonymize() hook that you can extend in your Dao implementation).
    * Only applicable to loading/querying/streaming_loading operations (n/a for saving).
-   * There is additional validation applied AFTER Anonymization, so your anonymization implementation should keep the object valid (DBM/BM/FM).
+   * There is additional validation applied AFTER Anonymization, so your anonymization implementation should keep the object valid.
    */
   anonymize?: boolean
 }
