@@ -1,6 +1,6 @@
 import { Datastore, Query } from '@google-cloud/datastore'
 import { Filter } from '@google-cloud/datastore/build/src/query'
-import { pick, StringMap } from '@naturalcycles/js-lib'
+import { _pick, StringMap } from '@naturalcycles/js-lib'
 import { Observable, Subject } from 'rxjs'
 import { Readable } from 'stream'
 import { BaseDBEntity, DaoOptions, DatastoreServiceCfg } from './datastore.model'
@@ -172,7 +172,7 @@ export class DatastoreMemoryService extends DatastoreService {
       }
 
       const fieldNames = (q.selectVal as string[]).map(field => FIELD_MAP[field] || field)
-      rows = rows.map(r => pick(r, fieldNames))
+      rows = rows.map(r => _pick(r, fieldNames))
     }
 
     // todo: order
