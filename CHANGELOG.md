@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.9.2...v1.10.0) (2019-07-16)
+
+
+### Features
+
+* deps ([fb42b87](https://github.com/NaturalCycles/datastore-lib/commit/fb42b87))
+
 ## [1.9.2](https://github.com/NaturalCycles/datastore-lib/compare/v1.9.1...v1.9.2) (2019-07-04)
 
 
