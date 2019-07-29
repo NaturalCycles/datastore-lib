@@ -11,6 +11,7 @@ import {
   DatastorePayload,
   DatastoreServiceCfg,
   DatastoreStats,
+  IDatastoreOptions,
 } from './datastore.model'
 
 /**
@@ -45,9 +46,13 @@ export class DatastoreService {
       // Lazy-loading
       const DatastoreLib = require('@google-cloud/datastore')
       const DS = DatastoreLib.Datastore as typeof Datastore
-      const { datastoreOptions } = this.datastoreServiceCfg
+      const { datastoreOptions = {} as IDatastoreOptions } = this.datastoreServiceCfg
+      let { projectId } = datastoreOptions
+      if (!projectId) {
+        projectId = process.env.GOOGLE_CLOUD_PROJECT!
+      }
 
-      console.log(`DatastoreService init (${datastoreOptions.projectId})...`)
+      console.log(`DatastoreService init (${projectId})...`)
 
       this.cachedDatastore = new DS(datastoreOptions)
       this.KEY = this.cachedDatastore.KEY

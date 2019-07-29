@@ -24,7 +24,10 @@ export interface IDatastoreOptions extends DatastoreOptions {
 }
 
 export interface DatastoreServiceCfg {
-  datastoreOptions: IDatastoreOptions
+  /**
+   * Optional. AppEngine will infer projectId and credential automatically.
+   */
+  datastoreOptions?: IDatastoreOptions
 
   /**
    * False will disable all logging (defaul).
