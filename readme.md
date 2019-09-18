@@ -14,6 +14,7 @@
 - Simplified ID handling (always String ids)
 - Simple and powerful In-Memory Datastore emulator for faster and safer unit testing (!)
 - Streaming with RxJS Observable interface
+- Anonymization hook to be able to plug your implementation (privacy by design)
 - ...
 
 # Packaging

@@ -1,14 +1,15 @@
 import { Datastore, Query } from '@google-cloud/datastore'
 import { BaseDBEntity, CommonDB, DBQuery } from '@naturalcycles/db-lib'
+import { streamToObservable } from '@naturalcycles/nodejs-lib'
 import { Observable } from 'rxjs'
 import { Transform } from 'stream'
-import { streamToObservable } from '../util/stream.util'
 import {
   DatastoreDBOptions,
   DatastoreDBSaveOptions,
   DatastoreKey,
   DatastorePayload,
   DatastoreServiceCfg,
+  IDatastoreOptions,
 } from './datastore.model'
 import { dbQueryToDatastoreQuery } from './query.util'
 
@@ -17,13 +18,8 @@ import { dbQueryToDatastoreQuery } from './query.util'
  * https://googlecloudplatform.github.io/google-cloud-node/#/docs/datastore/1.0.3/datastore
  * https://cloud.google.com/datastore/docs/datastore-api-tutorial
  */
-export class DatastoreService implements CommonDB {
-  constructor (protected datastoreServiceCfg: DatastoreServiceCfg) {
-    // for faster search later
-    this.dontLogTablesData = new Set(datastoreServiceCfg.dontLogTablesData || [])
-  }
-
-  protected dontLogTablesData!: Set<string>
+export class DatastoreDB implements CommonDB {
+  constructor (public datastoreServiceCfg: DatastoreServiceCfg) {}
 
   private cachedDatastore?: Datastore
 
@@ -36,17 +32,19 @@ export class DatastoreService implements CommonDB {
   ds (): Datastore {
     if (!this.cachedDatastore) {
       if (process.env.APP_ENV === 'test') {
-        throw new Error(
-          'Datastore cannot be used in Test env, please use DatastoreMemoryService.mockDatastore()',
-        )
+        throw new Error('DatastoreDB cannot be used in Test env, please use InMemoryDB')
       }
 
       // Lazy-loading
       const DatastoreLib = require('@google-cloud/datastore')
       const DS = DatastoreLib.Datastore as typeof Datastore
-      const { datastoreOptions } = this.datastoreServiceCfg
+      const { datastoreOptions = {} as IDatastoreOptions } = this.datastoreServiceCfg
+      let { projectId } = datastoreOptions
+      if (!projectId) {
+        projectId = process.env.GOOGLE_CLOUD_PROJECT!
+      }
 
-      console.log(`DatastoreService init (${datastoreOptions.projectId})...`)
+      console.log(`DatastoreService init (${projectId})...`)
 
       this.cachedDatastore = new DS(datastoreOptions)
       this.KEY = this.cachedDatastore.KEY
@@ -58,31 +56,19 @@ export class DatastoreService implements CommonDB {
   /**
    * Method to be used by InMemoryDB
    */
-  reset (): void {}
+  async resetCache (): Promise<void> {}
 
-  protected log (kind: string, msg: string, data?: any): void {
-    if (this.datastoreServiceCfg.log) {
-      if (data && this.datastoreServiceCfg.logData && !this.dontLogTablesData.has(kind)) {
-        console.log(msg, data) // with data
-      } else {
-        console.log(msg) // without data
-      }
-    }
-  }
-
-  async getByIds<T = any> (kind: string, ids: string[], opts?: DatastoreDBOptions): Promise<T[]> {
-    const started = Date.now()
-    const keys = ids.map(id => this.key(kind, id))
-
-    const entities: any[] = await this.ds().get(keys)
-    const rows = entities.map(e => this.mapId<T>(e))
-
-    if (ids.length === 1) {
-      const millis = Date.now() - started
-      this.log(kind, `${kind}.getById(${ids[0]}) ${millis} ms`, rows[0] || 'undefined')
-    }
-
-    return rows
+  async getByIds<DBM extends BaseDBEntity> (
+    table: string,
+    ids: string[],
+    opts?: DatastoreDBOptions,
+  ): Promise<DBM[]> {
+    if (!ids.length) return []
+    const keys = ids.map(id => this.key(table, id))
+    const [entities] = await this.ds().get(keys)
+    // Seems like datastore .get() method doesn't return items properly sorted by input ids, so we gonna sort them here
+    // const rowsById = by((entities as any[]).map(e => this.mapId<DBM>(e)), r => r.id)
+    return (entities as any[]).map(e => this.mapId<DBM>(e))
   }
 
   getQueryKind (q: Query): string {
@@ -90,32 +76,26 @@ export class DatastoreService implements CommonDB {
     return q.kinds[0]
   }
 
-  async runQuery<DBM = any> (dbQuery: DBQuery<DBM>, opts?: DatastoreDBOptions): Promise<DBM[]> {
+  async runQuery<DBM extends BaseDBEntity> (
+    dbQuery: DBQuery<DBM>,
+    opts?: DatastoreDBOptions,
+  ): Promise<DBM[]> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
     return this.runDatastoreQuery(q)
   }
 
-  async runQueryCount<DBM = any> (
+  async runQueryCount<DBM extends BaseDBEntity> (
     dbQuery: DBQuery<DBM>,
     opts?: DatastoreDBOptions,
   ): Promise<number> {
-    const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table)).select([
-      '__key__',
-    ])
+    const q = dbQueryToDatastoreQuery(dbQuery.select([]), this.ds().createQuery(dbQuery.table))
     const [entities] = await this.ds().runQuery(q)
     return entities.length
   }
 
-  async runDatastoreQuery<T = any> (q: Query, name?: string): Promise<T[]> {
-    const started = Date.now()
-    const kind = this.getQueryKind(q)
-
+  async runDatastoreQuery<DBM extends BaseDBEntity> (q: Query, name?: string): Promise<DBM[]> {
     const [entities] = await this.ds().runQuery(q)
-    const rows = entities.map(e => this.mapId<T>(e))
-
-    const millis = Date.now() - started
-    this.log(kind, `${kind}.${name || 'query'} ${millis} ms: ${rows.length} results`)
-
+    const rows = entities.map(e => this.mapId<DBM>(e))
     return rows
   }
 
@@ -136,12 +116,15 @@ export class DatastoreService implements CommonDB {
     )
   }
 
-  streamQuery<DBM = any> (dbQuery: DBQuery<DBM>, opts?: DatastoreDBOptions): Observable<DBM> {
+  streamQuery<DBM extends BaseDBEntity> (
+    dbQuery: DBQuery<DBM>,
+    opts?: DatastoreDBOptions,
+  ): Observable<DBM> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
     return this.streamDatastoreQuery<DBM>(q)
   }
 
-  streamDatastoreQuery<DBM = any> (q: Query): Observable<DBM> {
+  streamDatastoreQuery<DBM extends BaseDBEntity> (q: Query): Observable<DBM> {
     return streamToObservable(this.runQueryStream(q))
   }
 
@@ -150,25 +133,15 @@ export class DatastoreService implements CommonDB {
   /**
    * Returns saved entities with generated id/updated/created (non-mutating!)
    */
-  async saveBatch<DBM> (
-    kind: string,
+  async saveBatch<DBM extends BaseDBEntity> (
+    table: string,
     dbms: DBM[],
     opt: DatastoreDBSaveOptions = {},
-  ): Promise<DBM[]> {
-    const started = Date.now()
-
-    const entities = dbms.map(obj => {
-      const entity = this.toDatastoreEntity(kind, obj, opt.excludeFromIndexes)
-      this.log(kind, `${kind} save`, obj)
-      return entity
-    })
+  ): Promise<void> {
+    const entities = dbms.map(obj => this.toDatastoreEntity(table, obj, opt.excludeFromIndexes))
 
     try {
       await this.ds().save(entities)
-      const millis = Date.now() - started
-      const ids = dbms.map(dbm => (dbm as any).id)
-      this.log(kind, `${kind}.save() ${millis} ms: ${ids.join(',')}`)
-      return dbms
     } catch (err) {
       // console.log(`datastore.save ${kind}`, { obj, entity })
       console.error('error in datastore.save! throwing', err)
@@ -177,39 +150,23 @@ export class DatastoreService implements CommonDB {
     }
   }
 
+  async deleteByQuery<DBM extends BaseDBEntity> (
+    q: DBQuery<DBM>,
+    opts?: DatastoreDBOptions,
+  ): Promise<number> {
+    const datastoreQuery = dbQueryToDatastoreQuery(q.select([]), this.ds().createQuery(q.table))
+    const ids = (await this.runDatastoreQuery<DBM>(datastoreQuery)).map(obj => obj.id)
+    return this.deleteByIds(q.table, ids, opts)
+  }
+
   /**
    * Limitation: Datastore's delete returns void, so we always return all ids here as "deleted"
    * regardless if they were actually deleted or not.
    */
-  async deleteByIds (kind: string, ids: string[]): Promise<string[]> {
-    const started = Date.now()
-
-    const keys = ids.map(id => this.key(kind, id))
+  async deleteByIds (table: string, ids: string[], opts?: DatastoreDBOptions): Promise<number> {
+    const keys = ids.map(id => this.key(table, id))
     await this.ds().delete(keys)
-
-    const millis = Date.now() - started
-    this.log(kind, `${kind}.deleteByIds(${ids.join(',')}) ${millis} ms`)
-    return ids
-  }
-
-  async deleteBy (
-    kind: string,
-    by: string,
-    value: any,
-    limit = 0,
-    opt: DatastoreDBOptions = {},
-  ): Promise<string[]> {
-    const q = this.ds()
-      .createQuery(kind)
-      .filter(by, '=', value)
-      .limit(limit)
-      .select(['__key__'])
-
-    const [entities] = await this.ds().runQuery(q)
-    const ids = entities.map(e => this.mapId(e)).map(row => (row as BaseDBEntity).id)
-    const keys = ids.map(id => this.key(kind, id))
-    await this.ds().delete(keys)
-    return ids
+    return ids.length
   }
 
   mapId<T = any> (o: any, preserveKey = false): T {

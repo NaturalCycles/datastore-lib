@@ -1,13 +1,7 @@
 import { DatastoreOptions } from '@google-cloud/datastore'
 import { entity } from '@google-cloud/datastore/build/src/entity'
-import {
-  CommonDaoCfg,
-  CommonDaoOptions,
-  CommonDBOptions,
-  CommonDBSaveOptions,
-} from '@naturalcycles/db-lib'
+import { CommonDBOptions, CommonDBSaveOptions } from '@naturalcycles/db-lib'
 import { CredentialBody } from 'google-auth-library'
-import { DatastoreService } from './datastore.service'
 
 export type DatastoreKey = entity.Key
 
@@ -30,32 +24,11 @@ export interface IDatastoreOptions extends DatastoreOptions {
 }
 
 export interface DatastoreServiceCfg {
-  datastoreOptions: IDatastoreOptions
-
   /**
-   * False will disable all logging (defaul).
-   * True will log Datastore operations (but not data).
+   * Optional. AppEngine will infer projectId and credential automatically.
    */
-  log?: boolean
-
-  /**
-   * True will log wrote and read entries.
-   */
-  logData?: boolean
-
-  /**
-   * List of Tables to not log data from.
-   */
-  dontLogTablesData?: string[]
+  datastoreOptions?: IDatastoreOptions
 }
-
-export interface BaseDatastoreDaoCfg<BM = any, DBM = BM>
-  extends CommonDaoCfg<BM, DBM, DatastoreService> {}
-
-/**
- * @default All fields default to undefined
- */
-export interface DatastoreDaoOptions extends CommonDaoOptions {}
 
 export interface DatastoreDBOptions extends CommonDBOptions {}
 export interface DatastoreDBSaveOptions extends CommonDBSaveOptions {}

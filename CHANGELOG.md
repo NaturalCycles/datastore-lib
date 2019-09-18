@@ -1,3 +1,66 @@
+## [1.10.1](https://github.com/NaturalCycles/datastore-lib/compare/v1.10.0...v1.10.1) (2019-07-29)
+
+
+### Bug Fixes
+
+* allow empty datastoreOptions (for GAE env) ([2ca8464](https://github.com/NaturalCycles/datastore-lib/commit/2ca8464))
+
+# [1.10.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.9.2...v1.10.0) (2019-07-16)
+
+
+### Features
+
+* deps ([fb42b87](https://github.com/NaturalCycles/datastore-lib/commit/fb42b87))
+
+## [1.9.2](https://github.com/NaturalCycles/datastore-lib/compare/v1.9.1...v1.9.2) (2019-07-04)
+
+
+### Bug Fixes
+
+* anonymize only DBM ([9897ea6](https://github.com/NaturalCycles/datastore-lib/commit/9897ea6))
+
+## [1.9.1](https://github.com/NaturalCycles/datastore-lib/compare/v1.9.0...v1.9.1) (2019-07-03)
+
+
+### Bug Fixes
+
+* anonymize signature ([4ed12bd](https://github.com/NaturalCycles/datastore-lib/commit/4ed12bd))
+
+# [1.9.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.8.0...v1.9.0) (2019-07-03)
+
+
+### Features
+
+* allow to anonymize all ModelTypes ([a87480e](https://github.com/NaturalCycles/datastore-lib/commit/a87480e))
+
+# [1.8.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.7.0...v1.8.0) (2019-07-03)
+
+
+### Features
+
+* dao anonymization hook ([3160ca0](https://github.com/NaturalCycles/datastore-lib/commit/3160ca0))
+
+# [1.7.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.6.1...v1.7.0) (2019-06-25)
+
+
+### Features
+
+* implements runQueryStream in MemoryService ([0ececa4](https://github.com/NaturalCycles/datastore-lib/commit/0ececa4))
+
+## [1.6.1](https://github.com/NaturalCycles/datastore-lib/compare/v1.6.0...v1.6.1) (2019-06-20)
+
+
+### Bug Fixes
+
+* allow null to be used in filters as negation ([93b971b](https://github.com/NaturalCycles/datastore-lib/commit/93b971b))
+
+# [1.6.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.5.1...v1.6.0) (2019-06-17)
+
+
+### Features
+
+* adds support for multiple filters ([dbfaa83](https://github.com/NaturalCycles/datastore-lib/commit/dbfaa83))
+
 ## [1.5.1](https://github.com/NaturalCycles/datastore-lib/compare/v1.5.0...v1.5.1) (2019-05-27)
 
 

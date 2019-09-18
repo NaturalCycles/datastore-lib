@@ -1,23 +1,17 @@
-import { BaseDatastoreDao } from './datastore/base.datastore.dao'
-import { DatastoreMemoryService } from './datastore/datastore.memory.service'
+import { DatastoreDB } from './datastore.db'
 import {
-  BaseDatastoreDaoCfg,
   DatastoreKey,
   DatastorePayload,
   DatastoreServiceCfg,
   DatastoreStats,
   IDatastoreOptions,
-} from './datastore/datastore.model'
-import { DatastoreService } from './datastore/datastore.service'
+} from './datastore.model'
 
 export {
-  DatastoreService,
+  DatastoreDB,
   DatastoreKey,
   DatastorePayload,
   IDatastoreOptions,
   DatastoreServiceCfg,
-  BaseDatastoreDaoCfg,
   DatastoreStats,
-  DatastoreMemoryService,
-  BaseDatastoreDao,
 }
