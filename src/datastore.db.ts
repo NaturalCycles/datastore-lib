@@ -1,5 +1,5 @@
 import { Datastore, Query } from '@google-cloud/datastore'
-import { BaseDBEntity, CommonDB, DBQuery } from '@naturalcycles/db-lib'
+import { BaseDBEntity, CommonDB, DBQuery, RunQueryResult } from '@naturalcycles/db-lib'
 import { streamToObservable } from '@naturalcycles/nodejs-lib'
 import { Observable } from 'rxjs'
 import { Transform } from 'stream'
@@ -79,7 +79,7 @@ export class DatastoreDB implements CommonDB {
   async runQuery<DBM extends BaseDBEntity> (
     dbQuery: DBQuery<DBM>,
     opts?: DatastoreDBOptions,
-  ): Promise<DBM[]> {
+  ): Promise<RunQueryResult<DBM>> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
     return this.runDatastoreQuery(q)
   }
@@ -93,10 +93,16 @@ export class DatastoreDB implements CommonDB {
     return entities.length
   }
 
-  async runDatastoreQuery<DBM extends BaseDBEntity> (q: Query, name?: string): Promise<DBM[]> {
-    const [entities] = await this.ds().runQuery(q)
-    const rows = entities.map(e => this.mapId<DBM>(e))
-    return rows
+  async runDatastoreQuery<DBM extends BaseDBEntity> (
+    q: Query,
+    name?: string,
+  ): Promise<RunQueryResult<DBM>> {
+    const [entities, queryResult] = await this.ds().runQuery(q)
+    const records = entities.map(e => this.mapId<DBM>(e))
+    return {
+      ...queryResult,
+      records,
+    }
   }
 
   private runQueryStream (q: Query): NodeJS.ReadableStream {
@@ -155,8 +161,8 @@ export class DatastoreDB implements CommonDB {
     opts?: DatastoreDBOptions,
   ): Promise<number> {
     const datastoreQuery = dbQueryToDatastoreQuery(q.select([]), this.ds().createQuery(q.table))
-    const ids = (await this.runDatastoreQuery<DBM>(datastoreQuery)).map(obj => obj.id)
-    return this.deleteByIds(q.table, ids, opts)
+    const { records } = await this.runDatastoreQuery<DBM>(datastoreQuery)
+    return this.deleteByIds(q.table, records.map(obj => obj.id), opts)
   }
 
   /**

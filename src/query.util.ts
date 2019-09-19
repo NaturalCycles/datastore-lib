@@ -29,5 +29,14 @@ export function dbQueryToDatastoreQuery (dbQuery: DBQuery, emptyQuery: Query): Q
     q = q.select(fields)
   }
 
+  // cursor
+  if (dbQuery._startCursor) {
+    q = q.start(dbQuery._startCursor)
+  }
+
+  if (dbQuery._endCursor) {
+    q = q.end(dbQuery._endCursor)
+  }
+
   return q
 }
