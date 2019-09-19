@@ -81,7 +81,7 @@ export class DatastoreDB implements CommonDB {
     opts?: DatastoreDBOptions,
   ): Promise<RunQueryResult<DBM>> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
-    return this.runDatastoreQuery(q)
+    return await this.runDatastoreQuery(q)
   }
 
   async runQueryCount<DBM extends BaseDBEntity>(
@@ -162,7 +162,7 @@ export class DatastoreDB implements CommonDB {
   ): Promise<number> {
     const datastoreQuery = dbQueryToDatastoreQuery(q.select([]), this.ds().createQuery(q.table))
     const { records } = await this.runDatastoreQuery<DBM>(datastoreQuery)
-    return this.deleteByIds(q.table, records.map(obj => obj.id), opts)
+    return await this.deleteByIds(q.table, records.map(obj => obj.id), opts)
   }
 
   /**
