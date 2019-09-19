@@ -105,7 +105,7 @@ export class DatastoreDB implements CommonDB {
     }
   }
 
-  private runQueryStream(q: Query): NodeJS.ReadableStream {
+  runQueryStream(q: Query): NodeJS.ReadableStream {
     return (
       this.ds()
         .runQueryStream(q)
