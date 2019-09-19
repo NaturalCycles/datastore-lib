@@ -1,3 +1,10 @@
+## [1.11.1](https://github.com/NaturalCycles/datastore-lib/compare/v1.11.0...v1.11.1) (2019-09-19)
+
+
+### Bug Fixes
+
+* make runQueryStream public ([f8f18ed](https://github.com/NaturalCycles/datastore-lib/commit/f8f18ed))
+
 # [1.11.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.10.1...v1.11.0) (2019-09-19)
 
 
