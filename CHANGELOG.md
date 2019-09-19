@@ -1,3 +1,17 @@
+# [1.11.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.10.1...v1.11.0) (2019-09-19)
+
+
+### Bug Fixes
+
+* return await ([ce1b4d4](https://github.com/NaturalCycles/datastore-lib/commit/ce1b4d4))
+
+
+### Features
+
+* adopt to CommonDB RunQueryResult ([188c935](https://github.com/NaturalCycles/datastore-lib/commit/188c935))
+* move getStats to Dao ([2851c4f](https://github.com/NaturalCycles/datastore-lib/commit/2851c4f))
+* use db-lib ([f6826cd](https://github.com/NaturalCycles/datastore-lib/commit/f6826cd))
+
 ## [1.10.1](https://github.com/NaturalCycles/datastore-lib/compare/v1.10.0...v1.10.1) (2019-07-29)
 
 
