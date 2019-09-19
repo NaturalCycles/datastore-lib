@@ -1,5 +1,5 @@
 import { Datastore, Query } from '@google-cloud/datastore'
-import { BaseDBEntity, CommonDB, DBQuery, RunQueryResult } from '@naturalcycles/db-lib'
+import { CommonDB, DBQuery, RunQueryResult, SavedDBEntity } from '@naturalcycles/db-lib'
 import { streamToObservable } from '@naturalcycles/nodejs-lib'
 import { Observable } from 'rxjs'
 import { Transform } from 'stream'
@@ -9,6 +9,7 @@ import {
   DatastoreKey,
   DatastorePayload,
   DatastoreServiceCfg,
+  DatastoreStats,
   IDatastoreOptions,
 } from './datastore.model'
 import { dbQueryToDatastoreQuery } from './query.util'
@@ -58,7 +59,7 @@ export class DatastoreDB implements CommonDB {
    */
   async resetCache(): Promise<void> {}
 
-  async getByIds<DBM extends BaseDBEntity>(
+  async getByIds<DBM extends SavedDBEntity>(
     table: string,
     ids: string[],
     opts?: DatastoreDBOptions,
@@ -76,7 +77,7 @@ export class DatastoreDB implements CommonDB {
     return q.kinds[0]
   }
 
-  async runQuery<DBM extends BaseDBEntity>(
+  async runQuery<DBM extends SavedDBEntity>(
     dbQuery: DBQuery<DBM>,
     opts?: DatastoreDBOptions,
   ): Promise<RunQueryResult<DBM>> {
@@ -84,7 +85,7 @@ export class DatastoreDB implements CommonDB {
     return await this.runDatastoreQuery(q)
   }
 
-  async runQueryCount<DBM extends BaseDBEntity>(
+  async runQueryCount<DBM extends SavedDBEntity>(
     dbQuery: DBQuery<DBM>,
     opts?: DatastoreDBOptions,
   ): Promise<number> {
@@ -93,7 +94,7 @@ export class DatastoreDB implements CommonDB {
     return entities.length
   }
 
-  async runDatastoreQuery<DBM extends BaseDBEntity>(
+  async runDatastoreQuery<DBM extends SavedDBEntity>(
     q: Query,
     name?: string,
   ): Promise<RunQueryResult<DBM>> {
@@ -122,7 +123,7 @@ export class DatastoreDB implements CommonDB {
     )
   }
 
-  streamQuery<DBM extends BaseDBEntity>(
+  streamQuery<DBM extends SavedDBEntity>(
     dbQuery: DBQuery<DBM>,
     opts?: DatastoreDBOptions,
   ): Observable<DBM> {
@@ -130,7 +131,7 @@ export class DatastoreDB implements CommonDB {
     return this.streamDatastoreQuery<DBM>(q)
   }
 
-  streamDatastoreQuery<DBM extends BaseDBEntity>(q: Query): Observable<DBM> {
+  streamDatastoreQuery<DBM extends SavedDBEntity>(q: Query): Observable<DBM> {
     return streamToObservable(this.runQueryStream(q))
   }
 
@@ -139,7 +140,7 @@ export class DatastoreDB implements CommonDB {
   /**
    * Returns saved entities with generated id/updated/created (non-mutating!)
    */
-  async saveBatch<DBM extends BaseDBEntity>(
+  async saveBatch<DBM extends SavedDBEntity>(
     table: string,
     dbms: DBM[],
     opt: DatastoreDBSaveOptions = {},
@@ -156,7 +157,7 @@ export class DatastoreDB implements CommonDB {
     }
   }
 
-  async deleteByQuery<DBM extends BaseDBEntity>(
+  async deleteByQuery<DBM extends SavedDBEntity>(
     q: DBQuery<DBM>,
     opts?: DatastoreDBOptions,
   ): Promise<number> {
@@ -173,6 +174,16 @@ export class DatastoreDB implements CommonDB {
     const keys = ids.map(id => this.key(table, id))
     await this.ds().delete(keys)
     return ids.length
+  }
+
+  async getStatsCount(table: string): Promise<number | undefined> {
+    const q = this.ds()
+      .createQuery('__Stat_Kind__')
+      .filter('kind_name', table)
+      .limit(1)
+    const [stats] = await this.ds().runQuery(q)
+    const [stat] = stats
+    return stat && (stat as DatastoreStats).count
   }
 
   mapId<T = any>(o: any, preserveKey = false): T {

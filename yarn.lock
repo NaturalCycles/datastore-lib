@@ -510,9 +510,9 @@
     rimraf "^2.5.2"
 
 "@naturalcycles/db-lib@^1.0.0":
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/@naturalcycles/db-lib/-/db-lib-1.15.0.tgz#a3905bf8a59c620b5f578ed7e0d9c1934495920d"
-  integrity sha512-3Hwiw/qdnjegdEfkWDcDbwgXzTA0S2XdAvD+O96EuUVaIKtDXMrRvVdOzqH4RFs9dqKgPEYg+wYdNb8NhygwNw==
+  version "1.19.0"
+  resolved "https://registry.yarnpkg.com/@naturalcycles/db-lib/-/db-lib-1.19.0.tgz#007e718e8079cf16003c243a8fc68166e2a5c022"
+  integrity sha512-Y7ZmwxDogKbiA/vZLQh/tZQT8qnmKMz6SfZ1/BAXCdnSpEwSeXDqK1tHST6Lg61yk6JFsV4mvED2/FI4ZcEWbw==
   dependencies:
     "@naturalcycles/js-lib" "^8.2.1"
     "@naturalcycles/nodejs-lib" "^6.5.0"
@@ -2317,9 +2317,9 @@ google-auth-library@^5.0.0:
     lru-cache "^5.0.0"
 
 google-gax@^1.0.0:
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/google-gax/-/google-gax-1.5.2.tgz#996cf70778667cc22befbeae4b8a9d76fce0fabb"
-  integrity sha512-NceyDzlw4mQz6qH3bDIuRtfDAZKehM96QpnPPJ3Hur7FA/gPzpzboUYwhfP6q5obSP4LuSSDhI/76Fu51/ljtg==
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/google-gax/-/google-gax-1.6.0.tgz#176a25c608eadddcfd37aab057984309053a9e39"
+  integrity sha512-58QrU+a8VtsqYdWGxouKVozsgOrn6vVQYFf5zZDEAMqq1dWjTobSa43FJsXwnTujYLLLHjdx9v78Jto7Hlqggw==
   dependencies:
     "@grpc/grpc-js" "^0.5.2"
     "@grpc/proto-loader" "^0.5.1"

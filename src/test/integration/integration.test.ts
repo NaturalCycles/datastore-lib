@@ -1,12 +1,4 @@
-import {
-  CommonDao,
-  CommonDBTestOptions,
-  runCommonDaoTest,
-  runCommonDBTest,
-  TEST_TABLE,
-  TestItem,
-  testItemSchema,
-} from '@naturalcycles/db-lib'
+import { CommonDBTestOptions, runCommonDaoTest, runCommonDBTest } from '@naturalcycles/db-lib'
 import { requireEnvKeys } from '@naturalcycles/nodejs-lib'
 import { DatastoreDB } from '../../datastore.db'
 
@@ -26,13 +18,6 @@ export const datastoreDB = new DatastoreDB({
   },
 })
 
-export const testItemDao = new CommonDao<TestItem>({
-  table: TEST_TABLE,
-  db: datastoreDB,
-  bmSchema: testItemSchema,
-  dbmSchema: testItemSchema,
-})
-
 const opts: CommonDBTestOptions = {
   allowGetByIdsUnsorted: true,
 }
@@ -42,5 +27,9 @@ test('runCommonDBTest', async () => {
 })
 
 test('runCommonDaoTest', async () => {
-  await runCommonDaoTest(testItemDao, opts)
+  await runCommonDaoTest(datastoreDB, opts)
+})
+
+test('getStatsCount', async () => {
+  console.log(await datastoreDB.getStatsCount('Session'))
 })
