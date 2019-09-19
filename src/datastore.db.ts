@@ -19,7 +19,7 @@ import { dbQueryToDatastoreQuery } from './query.util'
  * https://cloud.google.com/datastore/docs/datastore-api-tutorial
  */
 export class DatastoreDB implements CommonDB {
-  constructor (public datastoreServiceCfg: DatastoreServiceCfg) {}
+  constructor(public datastoreServiceCfg: DatastoreServiceCfg) {}
 
   private cachedDatastore?: Datastore
 
@@ -29,7 +29,7 @@ export class DatastoreDB implements CommonDB {
   protected KEY!: symbol
 
   // @memo() // not used to be able to connect to many DBs in the same server instance
-  ds (): Datastore {
+  ds(): Datastore {
     if (!this.cachedDatastore) {
       if (process.env.APP_ENV === 'test') {
         throw new Error('DatastoreDB cannot be used in Test env, please use InMemoryDB')
@@ -56,9 +56,9 @@ export class DatastoreDB implements CommonDB {
   /**
    * Method to be used by InMemoryDB
    */
-  async resetCache (): Promise<void> {}
+  async resetCache(): Promise<void> {}
 
-  async getByIds<DBM extends BaseDBEntity> (
+  async getByIds<DBM extends BaseDBEntity>(
     table: string,
     ids: string[],
     opts?: DatastoreDBOptions,
@@ -71,12 +71,12 @@ export class DatastoreDB implements CommonDB {
     return (entities as any[]).map(e => this.mapId<DBM>(e))
   }
 
-  getQueryKind (q: Query): string {
+  getQueryKind(q: Query): string {
     if (!q || !q.kinds || !q.kinds.length) return '' // should never be the case, but
     return q.kinds[0]
   }
 
-  async runQuery<DBM extends BaseDBEntity> (
+  async runQuery<DBM extends BaseDBEntity>(
     dbQuery: DBQuery<DBM>,
     opts?: DatastoreDBOptions,
   ): Promise<RunQueryResult<DBM>> {
@@ -84,7 +84,7 @@ export class DatastoreDB implements CommonDB {
     return this.runDatastoreQuery(q)
   }
 
-  async runQueryCount<DBM extends BaseDBEntity> (
+  async runQueryCount<DBM extends BaseDBEntity>(
     dbQuery: DBQuery<DBM>,
     opts?: DatastoreDBOptions,
   ): Promise<number> {
@@ -93,7 +93,7 @@ export class DatastoreDB implements CommonDB {
     return entities.length
   }
 
-  async runDatastoreQuery<DBM extends BaseDBEntity> (
+  async runDatastoreQuery<DBM extends BaseDBEntity>(
     q: Query,
     name?: string,
   ): Promise<RunQueryResult<DBM>> {
@@ -105,7 +105,7 @@ export class DatastoreDB implements CommonDB {
     }
   }
 
-  private runQueryStream (q: Query): NodeJS.ReadableStream {
+  private runQueryStream(q: Query): NodeJS.ReadableStream {
     return (
       this.ds()
         .runQueryStream(q)
@@ -122,7 +122,7 @@ export class DatastoreDB implements CommonDB {
     )
   }
 
-  streamQuery<DBM extends BaseDBEntity> (
+  streamQuery<DBM extends BaseDBEntity>(
     dbQuery: DBQuery<DBM>,
     opts?: DatastoreDBOptions,
   ): Observable<DBM> {
@@ -130,7 +130,7 @@ export class DatastoreDB implements CommonDB {
     return this.streamDatastoreQuery<DBM>(q)
   }
 
-  streamDatastoreQuery<DBM extends BaseDBEntity> (q: Query): Observable<DBM> {
+  streamDatastoreQuery<DBM extends BaseDBEntity>(q: Query): Observable<DBM> {
     return streamToObservable(this.runQueryStream(q))
   }
 
@@ -139,7 +139,7 @@ export class DatastoreDB implements CommonDB {
   /**
    * Returns saved entities with generated id/updated/created (non-mutating!)
    */
-  async saveBatch<DBM extends BaseDBEntity> (
+  async saveBatch<DBM extends BaseDBEntity>(
     table: string,
     dbms: DBM[],
     opt: DatastoreDBSaveOptions = {},
@@ -156,7 +156,7 @@ export class DatastoreDB implements CommonDB {
     }
   }
 
-  async deleteByQuery<DBM extends BaseDBEntity> (
+  async deleteByQuery<DBM extends BaseDBEntity>(
     q: DBQuery<DBM>,
     opts?: DatastoreDBOptions,
   ): Promise<number> {
@@ -169,13 +169,13 @@ export class DatastoreDB implements CommonDB {
    * Limitation: Datastore's delete returns void, so we always return all ids here as "deleted"
    * regardless if they were actually deleted or not.
    */
-  async deleteByIds (table: string, ids: string[], opts?: DatastoreDBOptions): Promise<number> {
+  async deleteByIds(table: string, ids: string[], opts?: DatastoreDBOptions): Promise<number> {
     const keys = ids.map(id => this.key(table, id))
     await this.ds().delete(keys)
     return ids.length
   }
 
-  mapId<T = any> (o: any, preserveKey = false): T {
+  mapId<T = any>(o: any, preserveKey = false): T {
     if (!o) return o
     const r = {
       ...o,
@@ -186,7 +186,7 @@ export class DatastoreDB implements CommonDB {
   }
 
   // if key field is exist on entity, it will be used as key (prevent to duplication of numeric keyed entities)
-  toDatastoreEntity<T = any> (
+  toDatastoreEntity<T = any>(
     kind: string,
     o: T & { id?: string },
     excludeFromIndexes: string[] = [],
@@ -203,15 +203,15 @@ export class DatastoreDB implements CommonDB {
     }
   }
 
-  key (kind: string, id: string): DatastoreKey {
+  key(kind: string, id: string): DatastoreKey {
     return this.ds().key([kind, String(id)])
   }
 
-  getDsKey (o: any): DatastoreKey | undefined {
+  getDsKey(o: any): DatastoreKey | undefined {
     return o && o[this.KEY]
   }
 
-  getKey (key: DatastoreKey): string | undefined {
+  getKey(key: DatastoreKey): string | undefined {
     const id = key.id || key.name
     return id && id.toString()
   }

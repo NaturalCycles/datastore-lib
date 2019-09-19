@@ -521,10 +521,10 @@
     rxjs "^6.5.2"
     type-fest "^0.8.0"
 
-"@naturalcycles/dev-lib@^7.9.0":
-  version "7.18.0"
-  resolved "https://registry.yarnpkg.com/@naturalcycles/dev-lib/-/dev-lib-7.18.0.tgz#b945e590a0551509bd2232cddfd02cb6fe76eb08"
-  integrity sha512-upm746zBzKLBrBi+PTy4EYhModk4MzQGVMxR76wINB4nc7vtLjGRS2hS3qaoD4V93jyaP47bAxOWru9XtwBYgg==
+"@naturalcycles/dev-lib@^8.1.0":
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/@naturalcycles/dev-lib/-/dev-lib-8.1.0.tgz#a09445c95a450aaaa3dfd70943aeed81af58f6b9"
+  integrity sha512-IpIcxBh6AXCSOTrZPKfI6m6wcgY26soV2pOLD4m1HsthnHOsOW/xQStUW2cWjj7ngill0Wyb6lKl5PNVXyidcA==
   dependencies:
     "@commitlint/cli" "^8.0.0"
     "@commitlint/config-conventional" "^8.0.0"
