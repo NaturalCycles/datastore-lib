@@ -20,15 +20,12 @@ export const datastoreDB = new DatastoreDB({
 
 const opts: CommonDBTestOptions = {
   allowGetByIdsUnsorted: true,
+  eventualConsistencyDelay: 100,
 }
 
-test('runCommonDBTest', async () => {
-  await runCommonDBTest(datastoreDB, opts)
-})
+describe('runCommonDBTest', () => runCommonDBTest(datastoreDB, opts))
 
-test('runCommonDaoTest', async () => {
-  await runCommonDaoTest(datastoreDB, opts)
-})
+describe('runCommonDaoTest', () => runCommonDaoTest(datastoreDB, opts))
 
 test('getStatsCount', async () => {
   console.log(await datastoreDB.getStatsCount('Session'))

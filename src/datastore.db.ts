@@ -77,29 +77,26 @@ export class DatastoreDB implements CommonDB {
     return q.kinds[0]
   }
 
-  async runQuery<DBM extends SavedDBEntity>(
+  async runQuery<DBM extends SavedDBEntity, OUT = DBM>(
     dbQuery: DBQuery<DBM>,
     opts?: DatastoreDBOptions,
-  ): Promise<RunQueryResult<DBM>> {
+  ): Promise<RunQueryResult<OUT>> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
-    return await this.runDatastoreQuery(q)
+    return await this.runDatastoreQuery<DBM, OUT>(q)
   }
 
-  async runQueryCount<DBM extends SavedDBEntity>(
-    dbQuery: DBQuery<DBM>,
-    opts?: DatastoreDBOptions,
-  ): Promise<number> {
+  async runQueryCount(dbQuery: DBQuery, opts?: DatastoreDBOptions): Promise<number> {
     const q = dbQueryToDatastoreQuery(dbQuery.select([]), this.ds().createQuery(dbQuery.table))
     const [entities] = await this.ds().runQuery(q)
     return entities.length
   }
 
-  async runDatastoreQuery<DBM extends SavedDBEntity>(
+  async runDatastoreQuery<DBM extends SavedDBEntity, OUT = DBM>(
     q: Query,
     name?: string,
-  ): Promise<RunQueryResult<DBM>> {
+  ): Promise<RunQueryResult<OUT>> {
     const [entities, queryResult] = await this.ds().runQuery(q)
-    const records = entities.map(e => this.mapId<DBM>(e))
+    const records = entities.map(e => this.mapId<OUT>(e))
     return {
       ...queryResult,
       records,
@@ -123,16 +120,16 @@ export class DatastoreDB implements CommonDB {
     )
   }
 
-  streamQuery<DBM extends SavedDBEntity>(
+  streamQuery<DBM extends SavedDBEntity, OUT = DBM>(
     dbQuery: DBQuery<DBM>,
     opts?: DatastoreDBOptions,
-  ): Observable<DBM> {
+  ): Observable<OUT> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
-    return this.streamDatastoreQuery<DBM>(q)
+    return this.streamDatastoreQuery<DBM, OUT>(q)
   }
 
-  streamDatastoreQuery<DBM extends SavedDBEntity>(q: Query): Observable<DBM> {
-    return streamToObservable(this.runQueryStream(q))
+  streamDatastoreQuery<DBM extends SavedDBEntity, OUT = DBM>(q: Query): Observable<OUT> {
+    return streamToObservable<OUT>(this.runQueryStream(q))
   }
 
   // https://github.com/GoogleCloudPlatform/nodejs-getting-started/blob/master/2-structured-data/books/model-datastore.js

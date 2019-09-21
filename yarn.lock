@@ -306,9 +306,9 @@
   integrity sha512-7WfV4R/3YV5T30WRZW0lqmvZy9hE2/p9MvpI34WuKa2Wz62mLu5XplGTFEMK6uTbJCLWUxTcZ4J4IyClKucE5g==
 
 "@grpc/grpc-js@^0.5.0", "@grpc/grpc-js@^0.5.2":
-  version "0.5.3"
-  resolved "https://registry.yarnpkg.com/@grpc/grpc-js/-/grpc-js-0.5.3.tgz#4896d6c598dcb37c6bd090e7d0e9fa3eaae18fe5"
-  integrity sha512-doDzxjdN0IJihQJvjDkZun9bZp/TW2EKO5E4fNvw8634kU1eNqPnFtAmiEiIYptqJ9StC+zRo1mwrazhqI0k5A==
+  version "0.5.4"
+  resolved "https://registry.yarnpkg.com/@grpc/grpc-js/-/grpc-js-0.5.4.tgz#20ee7880e69805cbc63a1c54a3af02cc6475c850"
+  integrity sha512-aY4fTCz7jq7oKFmfAeZVqGzMCR5I9NLdY9E2fJ70QtGXwlJnTaN6cnbRmCk23/aKPx9UHqOtk2lyjpN6LbAaxw==
   dependencies:
     semver "^6.2.0"
 
@@ -321,9 +321,9 @@
     protobufjs "^6.8.6"
 
 "@hapi/address@2.x.x":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@hapi/address/-/address-2.1.1.tgz#61395b5ed94c4cb19c2dc4c85969cff3d40d583f"
-  integrity sha512-DYuHzu978pP1XW1GD3HGvLnAFjbQTIgc2+V153FGkbS2pgo9haigCdwBnUDrbhaOkgiJlbZvoEqDrcxSLHpiWA==
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@hapi/address/-/address-2.1.2.tgz#1c794cd6dbf2354d1eb1ef10e0303f573e1c7222"
+  integrity sha512-O4QDrx+JoGKZc6aN64L04vqa7e41tIiLU+OvKdcYaEMP97UttL0f9GIi9/0A4WAMx0uBd6SidDIhktZhgOcN8Q==
 
 "@hapi/bourne@1.x.x":
   version "1.3.2"
@@ -346,9 +346,9 @@
     "@hapi/topo" "3.x.x"
 
 "@hapi/topo@3.x.x":
-  version "3.1.3"
-  resolved "https://registry.yarnpkg.com/@hapi/topo/-/topo-3.1.3.tgz#c7a02e0d936596d29f184e6d7fdc07e8b5efce11"
-  integrity sha512-JmS9/vQK6dcUYn7wc2YZTqzIKubAQcJKu2KCKAru6es482U5RT5fP1EXCPtlXpiK7PR0On/kpQKI4fRKkzpZBQ==
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/@hapi/topo/-/topo-3.1.4.tgz#42e2fe36f593d90ad258a08b582be128c141c45d"
+  integrity sha512-aVWQTOI9wBD6zawmOr6f+tdEIxQC8JXfQVLTjgGe8YEStAWGn/GNNVTobKJhbWKveQj2RyYF3oYbO9SC8/eOCA==
   dependencies:
     "@hapi/hoek" "8.x.x"
 
@@ -510,9 +510,9 @@
     rimraf "^2.5.2"
 
 "@naturalcycles/db-lib@^1.0.0":
-  version "1.19.0"
-  resolved "https://registry.yarnpkg.com/@naturalcycles/db-lib/-/db-lib-1.19.0.tgz#007e718e8079cf16003c243a8fc68166e2a5c022"
-  integrity sha512-Y7ZmwxDogKbiA/vZLQh/tZQT8qnmKMz6SfZ1/BAXCdnSpEwSeXDqK1tHST6Lg61yk6JFsV4mvED2/FI4ZcEWbw==
+  version "1.23.0"
+  resolved "https://registry.yarnpkg.com/@naturalcycles/db-lib/-/db-lib-1.23.0.tgz#456bdcc4f65df6834982f6c0a174f720ee3af0ec"
+  integrity sha512-dzOiQPqnPkgFOoCJyVtnUWSir+kXAMthed4Dn8QL/mj/17m9/gdxuTU1J/25H8oYK0Ac+SOETtC5twXUugCreg==
   dependencies:
     "@naturalcycles/js-lib" "^8.2.1"
     "@naturalcycles/nodejs-lib" "^6.5.0"
@@ -522,9 +522,9 @@
     type-fest "^0.8.0"
 
 "@naturalcycles/dev-lib@^8.1.0":
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/@naturalcycles/dev-lib/-/dev-lib-8.1.0.tgz#a09445c95a450aaaa3dfd70943aeed81af58f6b9"
-  integrity sha512-IpIcxBh6AXCSOTrZPKfI6m6wcgY26soV2pOLD4m1HsthnHOsOW/xQStUW2cWjj7ngill0Wyb6lKl5PNVXyidcA==
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/@naturalcycles/dev-lib/-/dev-lib-8.2.0.tgz#f5f79bd09ca9802cc164213229ccc81560c73ffb"
+  integrity sha512-gdka/w4Pbzo3c2RMbsr8rPRA6pmnK8g6Cw9WRAcIwY23JrCT+VHuIZh0n1C2fny7Y9nE7Vee+NhiPqjA3geCRg==
   dependencies:
     "@commitlint/cli" "^8.0.0"
     "@commitlint/config-conventional" "^8.0.0"
@@ -568,16 +568,16 @@
     yargs "^14.0.0"
 
 "@naturalcycles/js-lib@^8.0.0", "@naturalcycles/js-lib@^8.2.1", "@naturalcycles/js-lib@^8.4.0":
-  version "8.7.0"
-  resolved "https://registry.yarnpkg.com/@naturalcycles/js-lib/-/js-lib-8.7.0.tgz#7ad23043162492fe9339bc7fa9a152942bf2a26e"
-  integrity sha512-Az0F760zadDvGWSGwzUv+OqPuBMn/fdhKzVX6qPCA7Hsm98a4YOM/3aq7fpxczF0jiu6gvc+SJ62Q5TmhL7WuA==
+  version "8.7.1"
+  resolved "https://registry.yarnpkg.com/@naturalcycles/js-lib/-/js-lib-8.7.1.tgz#9283cb2506a03f414f3b1bca3f9e6e1b4d1e8a9b"
+  integrity sha512-caOFzZJnlYxnNsMI1IDXx+pMpogYo8IWRkFWZXrc3hNDyLt7UFZyhWhBajNrg8KuRXh4BYFnY4M9V6KxKBkzKg==
   dependencies:
-    type-fest "^0.7.1"
+    type-fest "^0.8.0"
 
 "@naturalcycles/nodejs-lib@^6.3.1", "@naturalcycles/nodejs-lib@^6.5.0":
-  version "6.17.2"
-  resolved "https://registry.yarnpkg.com/@naturalcycles/nodejs-lib/-/nodejs-lib-6.17.2.tgz#d59e7e392d3b95f35cb00a0c28984b12774699e0"
-  integrity sha512-HrICnnGhL12P3MDsGzANsiy6A8EdTldjNuPv8y5Gq0vt8giheHYuaM/PJr+EPPkSeWLT8hYO3pojp4mFFDAaHA==
+  version "6.18.1"
+  resolved "https://registry.yarnpkg.com/@naturalcycles/nodejs-lib/-/nodejs-lib-6.18.1.tgz#3c5d2950bd01a0ffc1476dfa67aa8fc2bb34acb1"
+  integrity sha512-HYOSNVwCTnqrW2BS+aUqobbOjwIggC/Gw6vIgw+bk/fQdnIHNaTfAvQikbc2XSym5YK8vAvMAd+IOnkHPSqMzQ==
   dependencies:
     "@hapi/joi" "^15.0.2"
     "@naturalcycles/js-lib" "^8.0.0"
@@ -2317,9 +2317,9 @@ google-auth-library@^5.0.0:
     lru-cache "^5.0.0"
 
 google-gax@^1.0.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/google-gax/-/google-gax-1.6.0.tgz#176a25c608eadddcfd37aab057984309053a9e39"
-  integrity sha512-58QrU+a8VtsqYdWGxouKVozsgOrn6vVQYFf5zZDEAMqq1dWjTobSa43FJsXwnTujYLLLHjdx9v78Jto7Hlqggw==
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/google-gax/-/google-gax-1.6.1.tgz#9f9cc278bfa4b60005a8658ef4dbb6aa386fa4a3"
+  integrity sha512-5/6uaUA9qAqRKVe2sjvMgsnU/HbfQisQTM5EZ5DfNGOYVBoTsPBdOhR2ZqEWPyqHe7YkdzVHev3FH9W3YWcORw==
   dependencies:
     "@grpc/grpc-js" "^0.5.2"
     "@grpc/proto-loader" "^0.5.1"
@@ -2363,9 +2363,9 @@ gtoken@^4.0.0:
     mime "^2.2.0"
 
 handlebars@^4.1.2:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.2.0.tgz#57ce8d2175b9bbb3d8b3cf3e4217b1aec8ddcb2e"
-  integrity sha512-Kb4xn5Qh1cxAKvQnzNWZ512DhABzyFNmsaJf3OAkWNa4NkaqWcNI8Tao8Tasi0/F4JD9oyG0YxuFyvyR57d+Gw==
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.2.1.tgz#dc69c0e61604224f0c23b38b5b6741db210b57da"
+  integrity sha512-bqPIlDk06UWbVEIFoYj+LVo42WhK96J+b25l7hbFDpxrOXMphFM3fNIm+cluwg4Pk2jiLjWU5nHQY7igGE75NQ==
   dependencies:
     neo-async "^2.6.0"
     optimist "^0.6.1"
@@ -5489,11 +5489,6 @@ type-fest@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.6.0.tgz#8d2a2370d3df886eb5c90ada1c5bf6188acf838b"
   integrity sha512-q+MB8nYR1KDLrgr4G5yemftpMC7/QLqVndBmEEdqzmNj5dcFOO4Oo8qlwZE3ULT3+Zim1F8Kq4cBnikNhlCMlg==
-
-type-fest@^0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.7.1.tgz#8dda65feaf03ed78f0a3f9678f1869147f7c5c48"
-  integrity sha512-Ne2YiiGN8bmrmJJEuTWTLJR32nh/JdL1+PSicowtNb0WFpn59GK8/lfD61bVtzguz7b3PBt74nxpv/Pw5po5Rg==
 
 type-fest@^0.8.0:
   version "0.8.0"
