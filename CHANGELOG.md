@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/NaturalCycles/datastore-lib/compare/v1.12.0...v1.12.1) (2019-09-21)
+
+
+### Bug Fixes
+
+* adapt db-lib ([7b316e1](https://github.com/NaturalCycles/datastore-lib/commit/7b316e1))
+
 # [1.12.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.11.1...v1.12.0) (2019-09-19)
 
 
