@@ -78,7 +78,7 @@ export class DatastoreDB implements CommonDB {
   }
 
   async runQuery<DBM extends SavedDBEntity, OUT = DBM>(
-    dbQuery: DBQuery<DBM>,
+    dbQuery: DBQuery<any, DBM>,
     opts?: DatastoreDBOptions,
   ): Promise<RunQueryResult<OUT>> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
@@ -121,7 +121,7 @@ export class DatastoreDB implements CommonDB {
   }
 
   streamQuery<DBM extends SavedDBEntity, OUT = DBM>(
-    dbQuery: DBQuery<DBM>,
+    dbQuery: DBQuery<any, DBM>,
     opts?: DatastoreDBOptions,
   ): Observable<OUT> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
@@ -155,7 +155,7 @@ export class DatastoreDB implements CommonDB {
   }
 
   async deleteByQuery<DBM extends SavedDBEntity>(
-    q: DBQuery<DBM>,
+    q: DBQuery<any, DBM>,
     opts?: DatastoreDBOptions,
   ): Promise<number> {
     const datastoreQuery = dbQueryToDatastoreQuery(q.select([]), this.ds().createQuery(q.table))

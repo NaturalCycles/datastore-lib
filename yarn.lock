@@ -510,9 +510,9 @@
     rimraf "^2.5.2"
 
 "@naturalcycles/db-lib@^1.0.0":
-  version "1.23.0"
-  resolved "https://registry.yarnpkg.com/@naturalcycles/db-lib/-/db-lib-1.23.0.tgz#456bdcc4f65df6834982f6c0a174f720ee3af0ec"
-  integrity sha512-dzOiQPqnPkgFOoCJyVtnUWSir+kXAMthed4Dn8QL/mj/17m9/gdxuTU1J/25H8oYK0Ac+SOETtC5twXUugCreg==
+  version "1.23.1"
+  resolved "https://registry.yarnpkg.com/@naturalcycles/db-lib/-/db-lib-1.23.1.tgz#8b0325515c017b6cd575008d65da0de2aceb1604"
+  integrity sha512-PuWL+5pPzIzZufESGrJrLoNHlR9aGUd4v1RyNW+5PpfwRLdqyjxguIQivWuyY1OmHeuSWQVGBtrsmelUcyvFxQ==
   dependencies:
     "@naturalcycles/js-lib" "^8.2.1"
     "@naturalcycles/nodejs-lib" "^6.5.0"
