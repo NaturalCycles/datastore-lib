@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.12.2...v2.0.0) (2019-10-19)
+
+
+### Features
+
+* implement CommonDB 2.0 ([dfe0992](https://github.com/NaturalCycles/datastore-lib/commit/dfe0992))
+
+
+### BREAKING CHANGES
+
+* ^^^
+
 ## [1.12.2](https://github.com/NaturalCycles/datastore-lib/compare/v1.12.1...v1.12.2) (2019-09-21)
 
 
