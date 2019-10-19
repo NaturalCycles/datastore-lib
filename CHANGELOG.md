@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/NaturalCycles/datastore-lib/compare/v2.0.0...v2.0.1) (2019-10-19)
+
+
+### Bug Fixes
+
+* use Readable ([0935cb0](https://github.com/NaturalCycles/datastore-lib/commit/0935cb0))
+
 # [2.0.0](https://github.com/NaturalCycles/datastore-lib/compare/v1.12.2...v2.0.0) (2019-10-19)
 
 
