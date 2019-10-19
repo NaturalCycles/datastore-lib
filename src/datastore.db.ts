@@ -1,7 +1,5 @@
 import { Datastore, Query } from '@google-cloud/datastore'
 import { CommonDB, DBQuery, RunQueryResult, SavedDBEntity } from '@naturalcycles/db-lib'
-import { streamToObservable } from '@naturalcycles/nodejs-lib'
-import { Observable } from 'rxjs'
 import { Transform } from 'stream'
 import {
   DatastoreDBOptions,
@@ -112,24 +110,20 @@ export class DatastoreDB implements CommonDB {
         .pipe(
           new Transform({
             objectMode: true,
-            transform: (chunk, enc, callback) => {
-              callback(undefined, this.mapId(chunk))
+            transform: (chunk, _enc, cb) => {
+              cb(null, this.mapId(chunk))
             },
           }),
         )
     )
   }
 
-  streamQuery<DBM extends SavedDBEntity, OUT = DBM>(
+  streamQuery<DBM extends SavedDBEntity>(
     dbQuery: DBQuery<any, DBM>,
     opts?: DatastoreDBOptions,
-  ): Observable<OUT> {
+  ): NodeJS.ReadableStream {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
-    return this.streamDatastoreQuery<DBM, OUT>(q)
-  }
-
-  streamDatastoreQuery<DBM extends SavedDBEntity, OUT = DBM>(q: Query): Observable<OUT> {
-    return streamToObservable<OUT>(this.runQueryStream(q))
+    return this.runQueryStream(q)
   }
 
   // https://github.com/GoogleCloudPlatform/nodejs-getting-started/blob/master/2-structured-data/books/model-datastore.js
