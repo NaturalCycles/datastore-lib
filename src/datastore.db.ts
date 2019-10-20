@@ -1,6 +1,7 @@
 import { Datastore, Query } from '@google-cloud/datastore'
 import { CommonDB, DBQuery, RunQueryResult, SavedDBEntity } from '@naturalcycles/db-lib'
-import { Readable, Transform } from 'stream'
+import { ReadableTyped } from '@naturalcycles/nodejs-lib'
+import { Transform } from 'stream'
 import {
   DatastoreDBOptions,
   DatastoreDBSaveOptions,
@@ -101,7 +102,7 @@ export class DatastoreDB implements CommonDB {
     }
   }
 
-  runQueryStream(q: Query): Readable {
+  runQueryStream<DBM = any>(q: Query): ReadableTyped<DBM> {
     return (
       this.ds()
         .runQueryStream(q)
@@ -118,10 +119,10 @@ export class DatastoreDB implements CommonDB {
     )
   }
 
-  streamQuery<DBM extends SavedDBEntity>(
+  streamQuery<DBM extends SavedDBEntity, OUT = DBM>(
     dbQuery: DBQuery<any, DBM>,
     opts?: DatastoreDBOptions,
-  ): Readable {
+  ): ReadableTyped<OUT> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
     return this.runQueryStream(q)
   }
