@@ -1,3 +1,15 @@
+# [3.0.0](https://github.com/NaturalCycles/datastore-lib/compare/v2.0.2...v3.0.0) (2019-11-02)
+
+
+### Features
+
+* adapt to db-lib@3 ([aa78fd1](https://github.com/NaturalCycles/datastore-lib/commit/aa78fd1240e9de1fef8ce52e4ec0c7f16ecfc114))
+
+
+### BREAKING CHANGES
+
+* ^^^
+
 ## [2.0.2](https://github.com/NaturalCycles/datastore-lib/compare/v2.0.1...v2.0.2) (2019-10-20)
 
 
