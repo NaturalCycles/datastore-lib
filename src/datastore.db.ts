@@ -218,4 +218,9 @@ export class DatastoreDB implements CommonDB {
     const id = key.id || key.name
     return id && id.toString()
   }
+
+  async getTables(): Promise<string[]> {
+    // todo: implement later
+    return []
+  }
 }
