@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/NaturalCycles/datastore-lib/compare/v3.0.0...v3.0.1) (2019-11-04)
+
+
+### Bug Fixes
+
+* provide empty getTable() implementation ([1b3658b](https://github.com/NaturalCycles/datastore-lib/commit/1b3658bcf45f8cf10e07b274dab7023cf499d579))
+
 # [3.0.0](https://github.com/NaturalCycles/datastore-lib/compare/v2.0.2...v3.0.0) (2019-11-02)
 
 
