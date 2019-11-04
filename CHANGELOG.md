@@ -1,3 +1,10 @@
+# [3.1.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.0.1...v3.1.0) (2019-11-04)
+
+
+### Features
+
+* allow passing custom grpc object to constructor ([a9e08e3](https://github.com/NaturalCycles/datastore-lib/commit/a9e08e3f382bd0ce15ae11a6d1878072bf497acf)), closes [/github.com/googleapis/nodejs-pubsub/issues/770#issuecomment-541226361](https://github.com//github.com/googleapis/nodejs-pubsub/issues/770/issues/issuecomment-541226361)
+
 ## [3.0.1](https://github.com/NaturalCycles/datastore-lib/compare/v3.0.0...v3.0.1) (2019-11-04)
 
 
