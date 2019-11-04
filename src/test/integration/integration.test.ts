@@ -15,6 +15,7 @@ export const datastoreDB = new DatastoreDB({
   datastoreOptions: {
     projectId,
     credentials,
+    grpc: require('grpc'),
   },
 })
 

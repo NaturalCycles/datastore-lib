@@ -46,6 +46,10 @@ export class DatastoreDB implements CommonDB {
 
       console.log(`DatastoreService init (${projectId})...`)
 
+      if (datastoreOptions.grpc) {
+        console.log('!!! DatastoreService custom grpc object passed !!!')
+      }
+
       this.cachedDatastore = new DS(datastoreOptions)
       this.KEY = this.cachedDatastore.KEY
     }
