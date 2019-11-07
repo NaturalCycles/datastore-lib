@@ -1,5 +1,11 @@
 import { Datastore, Query } from '@google-cloud/datastore'
-import { CommonDB, DBQuery, RunQueryResult, SavedDBEntity } from '@naturalcycles/db-lib'
+import {
+  CommonDB,
+  CommonSchema,
+  DBQuery,
+  RunQueryResult,
+  SavedDBEntity,
+} from '@naturalcycles/db-lib'
 import { ReadableTyped } from '@naturalcycles/nodejs-lib'
 import { Transform } from 'stream'
 import {
@@ -7,8 +13,10 @@ import {
   DatastoreDBSaveOptions,
   DatastoreKey,
   DatastorePayload,
+  DatastorePropertyStats,
   DatastoreServiceCfg,
   DatastoreStats,
+  datastoreTypeToDataType,
   IDatastoreOptions,
 } from './datastore.model'
 import { dbQueryToDatastoreQuery } from './query.util'
@@ -172,14 +180,36 @@ export class DatastoreDB implements CommonDB {
     return ids.length
   }
 
-  async getStatsCount(table: string): Promise<number | undefined> {
+  async getAllStats(): Promise<DatastoreStats[]> {
+    const q = this.ds().createQuery('__Stat_Kind__')
+    const [statsArray] = await this.ds().runQuery(q)
+    return statsArray || []
+  }
+
+  /**
+   * Returns undefined e.g when Table is non-existing
+   */
+  async getStats(table: string): Promise<DatastoreStats | undefined> {
     const q = this.ds()
       .createQuery('__Stat_Kind__')
       .filter('kind_name', table)
       .limit(1)
+    const [statsArray] = await this.ds().runQuery(q)
+    const [stats] = statsArray
+    return stats
+  }
+
+  async getStatsCount(table: string): Promise<number | undefined> {
+    const stats = await this.getStats(table)
+    return stats && stats.count
+  }
+
+  async getTableProperties(table: string): Promise<DatastorePropertyStats[]> {
+    const q = this.ds()
+      .createQuery('__Stat_PropertyType_PropertyName_Kind__')
+      .filter('kind_name', table)
     const [stats] = await this.ds().runQuery(q)
-    const [stat] = stats
-    return stat && (stat as DatastoreStats).count
+    return stats
   }
 
   mapId<T = any>(o: any, preserveKey = false): T {
@@ -224,7 +254,28 @@ export class DatastoreDB implements CommonDB {
   }
 
   async getTables(): Promise<string[]> {
-    // todo: implement later
-    return []
+    const statsArray = await this.getAllStats()
+    // Filter out tables starting with `_` by default (internal Datastore tables)
+    return statsArray.map(stats => stats.kind_name).filter(table => table && !table.startsWith('_'))
+  }
+
+  async getTableSchema<DBM extends SavedDBEntity>(table: string): Promise<CommonSchema<DBM>> {
+    const stats = await this.getTableProperties(table)
+
+    const fields = stats.map(stats => {
+      const type = datastoreTypeToDataType[stats.property_type]
+      if (!type) {
+        throw new Error(
+          `Unknown Datastore Type '${stats.property_type}' for ${table}.${stats.property_name}`,
+        )
+      }
+
+      return {
+        name: stats.property_name,
+        type,
+      }
+    })
+
+    return { table, fields }
   }
 }

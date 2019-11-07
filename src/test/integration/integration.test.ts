@@ -28,6 +28,27 @@ describe('runCommonDBTest', () => runCommonDBTest(datastoreDB, opts))
 
 describe('runCommonDaoTest', () => runCommonDaoTest(datastoreDB, opts))
 
+test('getStats, getStatsCount non-existing table', async () => {
+  expect(await datastoreDB.getStats('NonEx')).toBeUndefined()
+  expect(await datastoreDB.getStatsCount('NonEx')).toBeUndefined()
+})
+
 test('getStatsCount', async () => {
   console.log(await datastoreDB.getStatsCount('Session'))
+})
+
+test('getStats', async () => {
+  console.log(await datastoreDB.getStats('Session'))
+})
+
+test('getAllStats', async () => {
+  console.log(await datastoreDB.getAllStats())
+})
+
+test('getTables', async () => {
+  console.log(await datastoreDB.getTables())
+})
+
+test('getTableSchema', async () => {
+  console.log(await datastoreDB.getTableSchema('Session'))
 })

@@ -1,6 +1,6 @@
 import { DatastoreOptions } from '@google-cloud/datastore'
 import { entity } from '@google-cloud/datastore/build/src/entity'
-import { CommonDBOptions, CommonDBSaveOptions } from '@naturalcycles/db-lib'
+import { CommonDBOptions, CommonDBSaveOptions, DATA_TYPE } from '@naturalcycles/db-lib'
 import { CredentialBody } from 'google-auth-library'
 
 export type DatastoreKey = entity.Key
@@ -40,5 +40,46 @@ export interface DatastoreDBOptions extends CommonDBOptions {}
 export interface DatastoreDBSaveOptions extends CommonDBSaveOptions {}
 
 export interface DatastoreStats {
+  composite_index_count: number
+  builtin_index_count: number
+  kind_name: string
+  bytes: number
+  entity_bytes: number
   count: number
+}
+
+export enum DATASTORE_TYPE {
+  Blob = 'Blob',
+  Text = 'Text',
+  String = 'String',
+  EmbeddedEntity = 'EmbeddedEntity',
+  Float = 'Float',
+  Integer = 'Integer',
+  DATE_TIME = 'Date/Time',
+  Boolean = 'Boolean',
+  NULL = 'NULL',
+}
+
+export const datastoreTypeToDataType: Record<DATASTORE_TYPE, DATA_TYPE> = {
+  [DATASTORE_TYPE.Blob]: DATA_TYPE.BINARY,
+  [DATASTORE_TYPE.Text]: DATA_TYPE.STRING,
+  [DATASTORE_TYPE.String]: DATA_TYPE.STRING,
+  [DATASTORE_TYPE.EmbeddedEntity]: DATA_TYPE.OBJECT,
+  [DATASTORE_TYPE.Float]: DATA_TYPE.FLOAT,
+  [DATASTORE_TYPE.Integer]: DATA_TYPE.INT,
+  [DATASTORE_TYPE.DATE_TIME]: DATA_TYPE.TIMESTAMP,
+  [DATASTORE_TYPE.Boolean]: DATA_TYPE.BOOLEAN,
+  [DATASTORE_TYPE.NULL]: DATA_TYPE.NULL,
+}
+
+export interface DatastorePropertyStats {
+  kind_name: string
+  property_name: string
+  property_type: DATASTORE_TYPE
+  count: number
+  bytes: number
+  entity_bytes: number
+  builtin_index_count: number
+  // timestamp: 2019-11-06T09:04:18.000Z,
+  builtin_index_bytes: number
 }
