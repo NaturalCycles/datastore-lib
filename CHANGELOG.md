@@ -1,3 +1,10 @@
+# [3.2.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.1.0...v3.2.0) (2019-11-07)
+
+
+### Features
+
+* implement getTables(), getTableSchema() ([1e5aa6b](https://github.com/NaturalCycles/datastore-lib/commit/1e5aa6b435217075c503aab243c140bef4af4feb))
+
 # [3.1.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.0.1...v3.1.0) (2019-11-04)
 
 
