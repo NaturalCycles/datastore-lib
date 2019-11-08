@@ -1,3 +1,10 @@
+## [3.2.2](https://github.com/NaturalCycles/datastore-lib/compare/v3.2.1...v3.2.2) (2019-11-08)
+
+
+### Bug Fixes
+
+* getTableSchema was missing `id` ([e080b28](https://github.com/NaturalCycles/datastore-lib/commit/e080b281635f182290312219fc7655288e05a682))
+
 ## [3.2.1](https://github.com/NaturalCycles/datastore-lib/compare/v3.2.0...v3.2.1) (2019-11-08)
 
 
