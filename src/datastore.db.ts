@@ -281,6 +281,12 @@ export class DatastoreDB implements CommonDB {
       }
     })
 
+    fieldsMap['id'] = {
+      name: 'id',
+      type: DATA_TYPE.STRING,
+      notNull: true,
+    }
+
     return { table, fields: Object.values(fieldsMap) }
   }
 }
