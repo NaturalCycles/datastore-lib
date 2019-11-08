@@ -1,3 +1,10 @@
+## [3.2.1](https://github.com/NaturalCycles/datastore-lib/compare/v3.2.0...v3.2.1) (2019-11-08)
+
+
+### Bug Fixes
+
+* getTableSchema type merging ([3c41101](https://github.com/NaturalCycles/datastore-lib/commit/3c41101bece3f65499c19a4b8e9884dab6f5ec1e))
+
 # [3.2.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.1.0...v3.2.0) (2019-11-07)
 
 
