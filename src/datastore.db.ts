@@ -2,6 +2,8 @@ import { Datastore, Query } from '@google-cloud/datastore'
 import {
   CommonDB,
   CommonSchema,
+  CommonSchemaField,
+  DATA_TYPE,
   DBQuery,
   RunQueryResult,
   SavedDBEntity,
@@ -262,20 +264,23 @@ export class DatastoreDB implements CommonDB {
   async getTableSchema<DBM extends SavedDBEntity>(table: string): Promise<CommonSchema<DBM>> {
     const stats = await this.getTableProperties(table)
 
-    const fields = stats.map(stats => {
+    const fieldsMap: Record<string, CommonSchemaField> = {}
+
+    stats.forEach(stats => {
+      const { property_name: name } = stats
       const type = datastoreTypeToDataType[stats.property_type]
       if (!type) {
-        throw new Error(
-          `Unknown Datastore Type '${stats.property_type}' for ${table}.${stats.property_name}`,
-        )
+        throw new Error(`Unknown Datastore Type '${stats.property_type}' for ${table}.${name}`)
       }
 
-      return {
-        name: stats.property_name,
-        type,
+      if (type === DATA_TYPE.NULL) {
+        // don't override existing type
+        fieldsMap[name] = fieldsMap[name] || { name, type }
+      } else {
+        fieldsMap[name] = { name, type }
       }
     })
 
-    return { table, fields }
+    return { table, fields: Object.values(fieldsMap) }
   }
 }

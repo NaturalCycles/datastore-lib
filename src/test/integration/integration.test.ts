@@ -50,5 +50,6 @@ test('getTables', async () => {
 })
 
 test('getTableSchema', async () => {
-  console.log(await datastoreDB.getTableSchema('Session'))
+  // console.log(await datastoreDB.getTableProperties('Account'))
+  console.log(await datastoreDB.getTableSchema('Account'))
 })
