@@ -271,20 +271,22 @@ export class DatastoreDB implements CommonDB {
 
     const fieldsMap: Record<string, CommonSchemaField> = {}
 
-    stats.forEach(stats => {
-      const { property_name: name } = stats
-      const type = datastoreTypeToDataType[stats.property_type]
-      if (!type) {
-        throw new Error(`Unknown Datastore Type '${stats.property_type}' for ${table}.${name}`)
-      }
+    stats
+      .filter(s => !s.property_name.includes('.')) // filter out objectify's "virtual properties"
+      .forEach(stats => {
+        const { property_name: name } = stats
+        const type = datastoreTypeToDataType[stats.property_type]
+        if (!type) {
+          throw new Error(`Unknown Datastore Type '${stats.property_type}' for ${table}.${name}`)
+        }
 
-      if (type === DATA_TYPE.NULL) {
-        // don't override existing type
-        fieldsMap[name] = fieldsMap[name] || { name, type }
-      } else {
-        fieldsMap[name] = { name, type }
-      }
-    })
+        if (type === DATA_TYPE.NULL) {
+          // don't override existing type
+          fieldsMap[name] = fieldsMap[name] || { name, type }
+        } else {
+          fieldsMap[name] = { name, type }
+        }
+      })
 
     fieldsMap['id'] = {
       name: 'id',
