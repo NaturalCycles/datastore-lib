@@ -1,3 +1,10 @@
+## [3.2.5](https://github.com/NaturalCycles/datastore-lib/compare/v3.2.4...v3.2.5) (2019-11-09)
+
+
+### Bug Fixes
+
+* **schema:** order id first ([3899334](https://github.com/NaturalCycles/datastore-lib/commit/389933485f2450ed58175edd7d257664b4b5af17))
+
 ## [3.2.4](https://github.com/NaturalCycles/datastore-lib/compare/v3.2.3...v3.2.4) (2019-11-09)
 
 
