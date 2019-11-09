@@ -1,3 +1,10 @@
+## [3.2.4](https://github.com/NaturalCycles/datastore-lib/compare/v3.2.3...v3.2.4) (2019-11-09)
+
+
+### Bug Fixes
+
+* exclude dot-properties from schema ([8865867](https://github.com/NaturalCycles/datastore-lib/commit/8865867b94b77188d6c38fda1ca08292083d09d7))
+
 ## [3.2.3](https://github.com/NaturalCycles/datastore-lib/compare/v3.2.2...v3.2.3) (2019-11-09)
 
 
