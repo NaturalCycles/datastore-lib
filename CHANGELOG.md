@@ -1,3 +1,10 @@
+# [3.3.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.2.5...v3.3.0) (2019-11-09)
+
+
+### Features
+
+* getDBAdapter(), changed DatastoreDBCfg format ([0794bc2](https://github.com/NaturalCycles/datastore-lib/commit/0794bc2abf4bb25897ca73ec798dd2a3a09de513))
+
 ## [3.2.5](https://github.com/NaturalCycles/datastore-lib/compare/v3.2.4...v3.2.5) (2019-11-09)
 
 
