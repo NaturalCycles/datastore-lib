@@ -1,6 +1,7 @@
 import { Datastore, Query } from '@google-cloud/datastore'
 import {
   CommonDB,
+  CommonDBCreateOptions,
   CommonSchema,
   CommonSchemaField,
   DATA_TYPE,
@@ -75,7 +76,7 @@ export class DatastoreDB implements CommonDB {
   async getByIds<DBM extends SavedDBEntity>(
     table: string,
     ids: string[],
-    opts?: DatastoreDBOptions,
+    opt?: DatastoreDBOptions,
   ): Promise<DBM[]> {
     if (!ids.length) return []
     const keys = ids.map(id => this.key(table, id))
@@ -92,13 +93,13 @@ export class DatastoreDB implements CommonDB {
 
   async runQuery<DBM extends SavedDBEntity, OUT = DBM>(
     dbQuery: DBQuery<any, DBM>,
-    opts?: DatastoreDBOptions,
+    opt?: DatastoreDBOptions,
   ): Promise<RunQueryResult<OUT>> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
     return await this.runDatastoreQuery<DBM, OUT>(q)
   }
 
-  async runQueryCount(dbQuery: DBQuery, opts?: DatastoreDBOptions): Promise<number> {
+  async runQueryCount(dbQuery: DBQuery, opt?: DatastoreDBOptions): Promise<number> {
     const q = dbQueryToDatastoreQuery(dbQuery.select([]), this.ds().createQuery(dbQuery.table))
     const [entities] = await this.ds().runQuery(q)
     return entities.length
@@ -135,7 +136,7 @@ export class DatastoreDB implements CommonDB {
 
   streamQuery<DBM extends SavedDBEntity, OUT = DBM>(
     dbQuery: DBQuery<any, DBM>,
-    opts?: DatastoreDBOptions,
+    opt?: DatastoreDBOptions,
   ): ReadableTyped<OUT> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
     return this.runQueryStream(q)
@@ -165,18 +166,22 @@ export class DatastoreDB implements CommonDB {
 
   async deleteByQuery<DBM extends SavedDBEntity>(
     q: DBQuery<any, DBM>,
-    opts?: DatastoreDBOptions,
+    opt?: DatastoreDBOptions,
   ): Promise<number> {
     const datastoreQuery = dbQueryToDatastoreQuery(q.select([]), this.ds().createQuery(q.table))
     const { records } = await this.runDatastoreQuery<DBM>(datastoreQuery)
-    return await this.deleteByIds(q.table, records.map(obj => obj.id), opts)
+    return await this.deleteByIds(
+      q.table,
+      records.map(obj => obj.id),
+      opt,
+    )
   }
 
   /**
    * Limitation: Datastore's delete returns void, so we always return all ids here as "deleted"
    * regardless if they were actually deleted or not.
    */
-  async deleteByIds(table: string, ids: string[], opts?: DatastoreDBOptions): Promise<number> {
+  async deleteByIds(table: string, ids: string[], opt?: DatastoreDBOptions): Promise<number> {
     const keys = ids.map(id => this.key(table, id))
     await this.ds().delete(keys)
     return ids.length
@@ -289,4 +294,7 @@ export class DatastoreDB implements CommonDB {
 
     return { table, fields: Object.values(fieldsMap) }
   }
+
+  // no-op
+  async createTable(schema: CommonSchema, opt?: CommonDBCreateOptions): Promise<void> {}
 }
