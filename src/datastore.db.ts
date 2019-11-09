@@ -269,10 +269,16 @@ export class DatastoreDB implements CommonDB {
   async getTableSchema<DBM extends SavedDBEntity>(table: string): Promise<CommonSchema<DBM>> {
     const stats = await this.getTableProperties(table)
 
-    const fieldsMap: Record<string, CommonSchemaField> = {}
+    const fieldsMap: Record<string, CommonSchemaField> = {
+      id: {
+        name: 'id',
+        type: DATA_TYPE.STRING,
+        notNull: true,
+      },
+    }
 
     stats
-      .filter(s => !s.property_name.includes('.')) // filter out objectify's "virtual properties"
+      .filter(s => !s.property_name.includes('.') && s.property_name !== 'id') // filter out objectify's "virtual properties"
       .forEach(stats => {
         const { property_name: name } = stats
         const type = datastoreTypeToDataType[stats.property_type]
@@ -287,12 +293,6 @@ export class DatastoreDB implements CommonDB {
           fieldsMap[name] = { name, type }
         }
       })
-
-    fieldsMap['id'] = {
-      name: 'id',
-      type: DATA_TYPE.STRING,
-      notNull: true,
-    }
 
     return { table, fields: Object.values(fieldsMap) }
   }
