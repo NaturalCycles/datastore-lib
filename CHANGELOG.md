@@ -1,3 +1,10 @@
+## [3.2.3](https://github.com/NaturalCycles/datastore-lib/compare/v3.2.2...v3.2.3) (2019-11-09)
+
+
+### Bug Fixes
+
+* createTable ([c509e75](https://github.com/NaturalCycles/datastore-lib/commit/c509e758de4acac3e2416857f166107a434505b6))
+
 ## [3.2.2](https://github.com/NaturalCycles/datastore-lib/compare/v3.2.1...v3.2.2) (2019-11-08)
 
 
