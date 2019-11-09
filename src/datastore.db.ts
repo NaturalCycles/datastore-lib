@@ -9,18 +9,17 @@ import {
   RunQueryResult,
   SavedDBEntity,
 } from '@naturalcycles/db-lib'
-import { ReadableTyped } from '@naturalcycles/nodejs-lib'
+import { ReadableTyped, white } from '@naturalcycles/nodejs-lib'
 import { Transform } from 'stream'
 import {
+  DatastoreDBCfg,
   DatastoreDBOptions,
   DatastoreDBSaveOptions,
   DatastoreKey,
   DatastorePayload,
   DatastorePropertyStats,
-  DatastoreServiceCfg,
   DatastoreStats,
   datastoreTypeToDataType,
-  IDatastoreOptions,
 } from './datastore.model'
 import { dbQueryToDatastoreQuery } from './query.util'
 
@@ -30,7 +29,7 @@ import { dbQueryToDatastoreQuery } from './query.util'
  * https://cloud.google.com/datastore/docs/datastore-api-tutorial
  */
 export class DatastoreDB implements CommonDB {
-  constructor(public datastoreServiceCfg: DatastoreServiceCfg) {}
+  constructor(public cfg: DatastoreDBCfg = {}) {}
 
   private cachedDatastore?: Datastore
 
@@ -49,19 +48,20 @@ export class DatastoreDB implements CommonDB {
       // Lazy-loading
       const DatastoreLib = require('@google-cloud/datastore')
       const DS = DatastoreLib.Datastore as typeof Datastore
-      const { datastoreOptions = {} as IDatastoreOptions } = this.datastoreServiceCfg
-      let { projectId } = datastoreOptions
-      if (!projectId) {
-        projectId = process.env.GOOGLE_CLOUD_PROJECT!
+      this.cfg.projectId =
+        this.cfg.projectId || this.cfg.credentials?.project_id || process.env.GOOGLE_CLOUD_PROJECT!
+
+      console.log(`DatastoreDB connected to ${white(this.cfg.projectId)}`)
+
+      if (this.cfg.useLegacyGRPC) {
+        this.cfg.grpc = require('grpc')
       }
 
-      console.log(`DatastoreService init (${projectId})...`)
-
-      if (datastoreOptions.grpc) {
-        console.log('!!! DatastoreService custom grpc object passed !!!')
+      if (this.cfg.grpc) {
+        console.log('!!! DatastoreDB using custom grpc !!!')
       }
 
-      this.cachedDatastore = new DS(datastoreOptions)
+      this.cachedDatastore = new DS(this.cfg)
       this.KEY = this.cachedDatastore.KEY
     }
 

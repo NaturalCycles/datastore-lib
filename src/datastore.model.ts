@@ -1,7 +1,6 @@
 import { DatastoreOptions } from '@google-cloud/datastore'
 import { entity } from '@google-cloud/datastore/build/src/entity'
 import { CommonDBOptions, CommonDBSaveOptions, DATA_TYPE } from '@naturalcycles/db-lib'
-import { CredentialBody } from 'google-auth-library'
 
 export type DatastoreKey = entity.Key
 
@@ -14,13 +13,19 @@ export interface DatastorePayload<T = any> {
 /**
  * Extends DatastoreOptions by requiring needed properties.
  */
-export interface IDatastoreOptions extends DatastoreOptions {
-  projectId: string
+export interface DatastoreDBCfg extends DatastoreOptions {
+  /**
+   * Optional. AppEngine will infer projectId and credential automatically.
+   */
+  projectId?: string
+
+  credentials?: DatastoreCredentials
 
   /**
-   * Object containing client_email and private_key properties
+   * @default false
+   * set to `true` to load and use `grpc` module (legacy)
    */
-  credentials: CredentialBody
+  useLegacyGRPC?: boolean
 
   /**
    * As described here: https://github.com/googleapis/nodejs-pubsub/issues/770#issuecomment-541226361
@@ -29,11 +34,15 @@ export interface IDatastoreOptions extends DatastoreOptions {
   grpc?: any
 }
 
-export interface DatastoreServiceCfg {
-  /**
-   * Optional. AppEngine will infer projectId and credential automatically.
-   */
-  datastoreOptions?: IDatastoreOptions
+export interface DatastoreCredentials {
+  type?: string
+  client_email?: string
+  private_key?: string
+  private_key_id?: string
+  project_id?: string
+  client_id?: string
+  client_secret?: string
+  refresh_token?: string
 }
 
 export interface DatastoreDBOptions extends CommonDBOptions {}

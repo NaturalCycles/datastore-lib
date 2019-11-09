@@ -1,23 +1,25 @@
 import { DatastoreDB } from './datastore.db'
 import {
   DATASTORE_TYPE,
+  DatastoreCredentials,
+  DatastoreDBCfg,
   DatastoreKey,
   DatastorePayload,
   DatastorePropertyStats,
-  DatastoreServiceCfg,
   DatastoreStats,
   datastoreTypeToDataType,
-  IDatastoreOptions,
 } from './datastore.model'
+import { getDBAdapter } from './dbAdapter'
 
 export {
   DatastoreDB,
   DatastoreKey,
   DatastorePayload,
-  IDatastoreOptions,
-  DatastoreServiceCfg,
+  DatastoreDBCfg,
   DatastoreStats,
+  DatastoreCredentials,
   DatastorePropertyStats,
   DATASTORE_TYPE,
   datastoreTypeToDataType,
+  getDBAdapter,
 }

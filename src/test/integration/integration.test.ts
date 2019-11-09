@@ -9,14 +9,10 @@ const { SECRET_GCP_SERVICE_ACCOUNT } = requireEnvKeys('SECRET_GCP_SERVICE_ACCOUN
 process.env.APP_ENV = 'master'
 
 const credentials = JSON.parse(SECRET_GCP_SERVICE_ACCOUNT)
-const projectId = credentials.project_id
 
 export const datastoreDB = new DatastoreDB({
-  datastoreOptions: {
-    projectId,
-    credentials,
-    grpc: require('grpc'),
-  },
+  credentials,
+  useLegacyGRPC: true,
 })
 
 const opts: CommonDBTestOptions = {
