@@ -1,3 +1,10 @@
+## [3.3.1](https://github.com/NaturalCycles/datastore-lib/compare/v3.3.0...v3.3.1) (2019-11-19)
+
+
+### Bug Fixes
+
+* support @google-cloud/datastore@5 ([2ffd5d1](https://github.com/NaturalCycles/datastore-lib/commit/2ffd5d10f50d743c037e5bbab7e8cfcddf3f824c))
+
 # [3.3.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.2.5...v3.3.0) (2019-11-09)
 
 
