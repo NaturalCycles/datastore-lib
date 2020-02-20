@@ -1,6 +1,5 @@
 import { DatastoreDB } from './datastore.db'
 import {
-  DATASTORE_TYPE,
   DatastoreCredentials,
   DatastoreDBCfg,
   DatastoreKey,
@@ -8,6 +7,7 @@ import {
   DatastorePropertyStats,
   DatastoreStats,
   datastoreTypeToDataType,
+  DATASTORE_TYPE,
 } from './datastore.model'
 import { getDBAdapter } from './dbAdapter'
 
