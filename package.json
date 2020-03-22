@@ -5,12 +5,12 @@
   "scripts": {},
   "peerDependencies": {
     "@google-cloud/datastore": ">=5.0.0",
-    "@naturalcycles/db-lib": ">=3.0.0"
+    "@naturalcycles/db-lib": ">=3.17.0"
   },
   "dependencies": {
     "@naturalcycles/db-lib": "^3.0.0",
     "@naturalcycles/js-lib": "^10.0.0",
-    "@naturalcycles/nodejs-lib": "^7.1.1",
+    "@naturalcycles/nodejs-lib": "^8.0.0",
     "grpc": "^1.24.2"
   },
   "devDependencies": {
@@ -19,9 +19,6 @@
     "@naturalcycles/test-lib": "^1.0.2",
     "@types/node": "^13.7.4",
     "jest": "^25.1.0"
-  },
-  "resolutions": {
-    "@types/hapi__joi": "15.0.4"
   },
   "files": [
     "dist",

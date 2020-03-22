@@ -197,10 +197,7 @@ export class DatastoreDB implements CommonDB {
    * Returns undefined e.g when Table is non-existing
    */
   async getStats(table: string): Promise<DatastoreStats | undefined> {
-    const q = this.ds()
-      .createQuery('__Stat_Kind__')
-      .filter('kind_name', table)
-      .limit(1)
+    const q = this.ds().createQuery('__Stat_Kind__').filter('kind_name', table).limit(1)
     const [statsArray] = await this.ds().runQuery(q)
     const [stats] = statsArray
     return stats
