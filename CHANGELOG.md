@@ -1,3 +1,10 @@
+# [3.5.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.4.1...v3.5.0) (2020-03-22)
+
+
+### Features
+
+* bump nodejs-lib (joi 17) ([ba337ac](https://github.com/NaturalCycles/datastore-lib/commit/ba337ac61ac2a291cd544c4dfa68fd7abc124ba9))
+
 ## [3.4.1](https://github.com/NaturalCycles/datastore-lib/compare/v3.4.0...v3.4.1) (2020-03-16)
 
 
