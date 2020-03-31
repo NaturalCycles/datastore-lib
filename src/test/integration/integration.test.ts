@@ -1,4 +1,8 @@
-import { CommonDBTestOptions, runCommonDaoTest, runCommonDBTest } from '@naturalcycles/db-lib'
+import {
+  CommonDBTestOptions,
+  runCommonDaoTest,
+  runCommonDBTest,
+} from '@naturalcycles/db-lib/dist/testing'
 import { requireEnvKeys } from '@naturalcycles/nodejs-lib'
 import { DatastoreDB } from '../../datastore.db'
 
