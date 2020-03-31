@@ -9,7 +9,8 @@ import {
   RunQueryResult,
   SavedDBEntity,
 } from '@naturalcycles/db-lib'
-import { ReadableTyped, white } from '@naturalcycles/nodejs-lib'
+import { ReadableTyped } from '@naturalcycles/nodejs-lib'
+import { boldWhite } from '@naturalcycles/nodejs-lib/dist/colors'
 import { Transform } from 'stream'
 import {
   DatastoreDBCfg,
@@ -51,7 +52,7 @@ export class DatastoreDB implements CommonDB {
       this.cfg.projectId =
         this.cfg.projectId || this.cfg.credentials?.project_id || process.env.GOOGLE_CLOUD_PROJECT!
 
-      console.log(`DatastoreDB connected to ${white(this.cfg.projectId)}`)
+      console.log(`DatastoreDB connected to ${boldWhite(this.cfg.projectId)}`)
 
       if (this.cfg.useLegacyGRPC) {
         this.cfg.grpc = require('grpc')
