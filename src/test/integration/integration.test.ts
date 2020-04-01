@@ -1,5 +1,6 @@
 import {
-  CommonDBTestOptions,
+  CommonDBImplementationFeatures,
+  CommonDBImplementationQuirks,
   runCommonDaoTest,
   runCommonDBTest,
 } from '@naturalcycles/db-lib/dist/testing'
@@ -19,14 +20,16 @@ export const datastoreDB = new DatastoreDB({
   useLegacyGRPC: true,
 })
 
-const opts: CommonDBTestOptions = {
-  allowGetByIdsUnsorted: true,
+const features: CommonDBImplementationFeatures = {
+  strongConsistency: false,
+}
+const quirks: CommonDBImplementationQuirks = {
   eventualConsistencyDelay: 100,
 }
 
-describe('runCommonDBTest', () => runCommonDBTest(datastoreDB, opts))
+describe('runCommonDBTest', () => runCommonDBTest(datastoreDB, features, quirks))
 
-describe('runCommonDaoTest', () => runCommonDaoTest(datastoreDB, opts))
+describe('runCommonDaoTest', () => runCommonDaoTest(datastoreDB, features, quirks))
 
 test('getStats, getStatsCount non-existing table', async () => {
   expect(await datastoreDB.getStats('NonEx')).toBeUndefined()

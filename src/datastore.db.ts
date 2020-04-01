@@ -1,4 +1,4 @@
-import { Datastore, Query } from '@google-cloud/datastore'
+import type { Datastore, Query } from '@google-cloud/datastore'
 import {
   CommonDB,
   CommonDBCreateOptions,
@@ -74,6 +74,10 @@ export class DatastoreDB implements CommonDB {
    */
   async resetCache(): Promise<void> {}
 
+  async ping(): Promise<void> {
+    await this.getAllStats()
+  }
+
   async getByIds<DBM extends SavedDBEntity>(
     table: string,
     ids: string[],
@@ -82,9 +86,14 @@ export class DatastoreDB implements CommonDB {
     if (!ids.length) return []
     const keys = ids.map(id => this.key(table, id))
     const [entities] = await this.ds().get(keys)
-    // Seems like datastore .get() method doesn't return items properly sorted by input ids, so we gonna sort them here
-    // const rowsById = by((entities as any[]).map(e => this.mapId<DBM>(e)), r => r.id)
-    return (entities as any[]).map(e => this.mapId<DBM>(e))
+
+    return (
+      (entities as any[])
+        .map(e => this.mapId<DBM>(e))
+        // Seems like datastore .get() method doesn't return items properly sorted by input ids, so we gonna sort them here
+        // same ids are not expected here
+        .sort((a, b) => (a.id > b.id ? 1 : -1))
+    )
   }
 
   getQueryKind(q: Query): string {
