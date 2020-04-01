@@ -1,3 +1,10 @@
+## [3.5.3](https://github.com/NaturalCycles/datastore-lib/compare/v3.5.2...v3.5.3) (2020-04-01)
+
+
+### Bug Fixes
+
+* ping method, getByIds sorting ([16f5d15](https://github.com/NaturalCycles/datastore-lib/commit/16f5d15c6d283757fcf950c23654669c8e2c4746))
+
 ## [3.5.2](https://github.com/NaturalCycles/datastore-lib/compare/v3.5.1...v3.5.2) (2020-03-31)
 
 
