@@ -5,7 +5,7 @@ const FNAME_MAP: Record<string, string | undefined> = {
   id: '__key__',
 }
 
-export function dbQueryToDatastoreQuery(dbQuery: DBQuery, emptyQuery: Query): Query {
+export function dbQueryToDatastoreQuery(dbQuery: Readonly<DBQuery>, emptyQuery: Query): Query {
   let q = emptyQuery
 
   // filter

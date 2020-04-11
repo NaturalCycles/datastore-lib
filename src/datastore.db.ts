@@ -9,6 +9,7 @@ import {
   RunQueryResult,
   SavedDBEntity,
 } from '@naturalcycles/db-lib'
+import { _omit } from '@naturalcycles/js-lib'
 import { ReadableTyped } from '@naturalcycles/nodejs-lib'
 import { boldWhite } from '@naturalcycles/nodejs-lib/dist/colors'
 import { Transform } from 'stream'
@@ -106,7 +107,14 @@ export class DatastoreDB implements CommonDB {
     opt?: DatastoreDBOptions,
   ): Promise<RunQueryResult<OUT>> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
-    return await this.runDatastoreQuery<DBM, OUT>(q)
+    const qr = await this.runDatastoreQuery<DBM, OUT>(q)
+
+    // Special case when projection query didn't specify 'id'
+    if (dbQuery._selectedFieldNames && !dbQuery._selectedFieldNames.includes('id')) {
+      qr.records = qr.records.map(r => _omit(r as any, ['id']))
+    }
+
+    return qr
   }
 
   async runQueryCount(dbQuery: DBQuery, opt?: DatastoreDBOptions): Promise<number> {
@@ -117,10 +125,11 @@ export class DatastoreDB implements CommonDB {
 
   async runDatastoreQuery<DBM extends SavedDBEntity, OUT = DBM>(
     q: Query,
-    name?: string,
   ): Promise<RunQueryResult<OUT>> {
     const [entities, queryResult] = await this.ds().runQuery(q)
+
     const records = entities.map(e => this.mapId<OUT>(e))
+
     return {
       ...queryResult,
       records,
