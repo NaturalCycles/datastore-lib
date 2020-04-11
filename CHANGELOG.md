@@ -1,3 +1,10 @@
+## [3.5.4](https://github.com/NaturalCycles/datastore-lib/compare/v3.5.3...v3.5.4) (2020-04-11)
+
+
+### Bug Fixes
+
+* support projection queries without 'id' field ([699191a](https://github.com/NaturalCycles/datastore-lib/commit/699191a103be78c22b07d4df97af3068d2e05d9d))
+
 ## [3.5.3](https://github.com/NaturalCycles/datastore-lib/compare/v3.5.2...v3.5.3) (2020-04-01)
 
 
