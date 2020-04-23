@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@naturalcycles/db-lib": "^4.0.0",
-    "@naturalcycles/js-lib": "^12.0.1",
+    "@naturalcycles/js-lib": "^13.0.0",
     "@naturalcycles/nodejs-lib": "^10.1.0",
     "grpc": "^1.24.2"
   },
