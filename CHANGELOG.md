@@ -1,3 +1,10 @@
+## [3.5.7](https://github.com/NaturalCycles/datastore-lib/compare/v3.5.6...v3.5.7) (2020-04-25)
+
+
+### Bug Fixes
+
+* deps ([7614462](https://github.com/NaturalCycles/datastore-lib/commit/7614462b87942eaf5bb390f67daf9a3f63add477))
+
 ## [3.5.6](https://github.com/NaturalCycles/datastore-lib/compare/v3.5.5...v3.5.6) (2020-04-23)
 
 
