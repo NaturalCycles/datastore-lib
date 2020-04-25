@@ -5,10 +5,10 @@
   "scripts": {},
   "peerDependencies": {
     "@google-cloud/datastore": ">=5.0.0",
-    "@naturalcycles/db-lib": ">=4.0.0"
+    "@naturalcycles/db-lib": ">=5.0.0"
   },
   "dependencies": {
-    "@naturalcycles/db-lib": "^4.0.0",
+    "@naturalcycles/db-lib": "^5.0.0",
     "@naturalcycles/js-lib": "^13.0.0",
     "@naturalcycles/nodejs-lib": "^10.1.0",
     "grpc": "^1.24.2"
@@ -30,7 +30,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "engines": {
-    "node": ">=10.13"
+    "node": ">=12.13.1"
   },
   "publishConfig": {
     "access": "public"
