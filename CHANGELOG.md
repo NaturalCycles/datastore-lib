@@ -1,3 +1,10 @@
+## [3.6.1](https://github.com/NaturalCycles/datastore-lib/compare/v3.6.0...v3.6.1) (2020-05-24)
+
+
+### Bug Fixes
+
+* adapt to CommonDB ([abafb97](https://github.com/NaturalCycles/datastore-lib/commit/abafb9739455b0466a09920c07e23e30253f8220))
+
 # [3.6.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.5.7...v3.6.0) (2020-05-24)
 
 
