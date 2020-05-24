@@ -1,3 +1,10 @@
+# [3.6.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.5.7...v3.6.0) (2020-05-24)
+
+
+### Features
+
+* CommonDB@6 (transactions) ([f44f8a4](https://github.com/NaturalCycles/datastore-lib/commit/f44f8a4e2aa7b8f405f944490aabc978c9117527))
+
 ## [3.5.7](https://github.com/NaturalCycles/datastore-lib/compare/v3.5.6...v3.5.7) (2020-04-25)
 
 
