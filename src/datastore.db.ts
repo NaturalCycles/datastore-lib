@@ -6,8 +6,8 @@ import {
   CommonSchemaField,
   DATA_TYPE,
   DBQuery,
+  ObjectWithId,
   RunQueryResult,
-  SavedDBEntity,
 } from '@naturalcycles/db-lib'
 import { _omit } from '@naturalcycles/js-lib'
 import { ReadableTyped } from '@naturalcycles/nodejs-lib'
@@ -80,7 +80,7 @@ export class DatastoreDB implements CommonDB {
     await this.getAllStats()
   }
 
-  async getByIds<DBM extends SavedDBEntity>(
+  async getByIds<DBM extends ObjectWithId>(
     table: string,
     ids: string[],
     opt?: DatastoreDBOptions,
@@ -103,8 +103,8 @@ export class DatastoreDB implements CommonDB {
     return q.kinds[0]
   }
 
-  async runQuery<DBM extends SavedDBEntity, OUT = DBM>(
-    dbQuery: DBQuery<any, DBM>,
+  async runQuery<DBM extends ObjectWithId, OUT = DBM>(
+    dbQuery: DBQuery<DBM>,
     opt?: DatastoreDBOptions,
   ): Promise<RunQueryResult<OUT>> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
@@ -124,7 +124,7 @@ export class DatastoreDB implements CommonDB {
     return entities.length
   }
 
-  async runDatastoreQuery<DBM extends SavedDBEntity, OUT = DBM>(
+  async runDatastoreQuery<DBM extends ObjectWithId, OUT = DBM>(
     q: Query,
   ): Promise<RunQueryResult<OUT>> {
     const [entities, queryResult] = await this.ds().runQuery(q)
@@ -154,8 +154,8 @@ export class DatastoreDB implements CommonDB {
     )
   }
 
-  streamQuery<DBM extends SavedDBEntity, OUT = DBM>(
-    dbQuery: DBQuery<any, DBM>,
+  streamQuery<DBM extends ObjectWithId, OUT = DBM>(
+    dbQuery: DBQuery<DBM>,
     opt?: DatastoreDBOptions,
   ): ReadableTyped<OUT> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
@@ -167,7 +167,7 @@ export class DatastoreDB implements CommonDB {
   /**
    * Returns saved entities with generated id/updated/created (non-mutating!)
    */
-  async saveBatch<DBM extends SavedDBEntity>(
+  async saveBatch<DBM extends ObjectWithId>(
     table: string,
     dbms: DBM[],
     opt: DatastoreDBSaveOptions = {},
@@ -188,8 +188,8 @@ export class DatastoreDB implements CommonDB {
     }
   }
 
-  async deleteByQuery<DBM extends SavedDBEntity>(
-    q: DBQuery<any, DBM>,
+  async deleteByQuery<DBM extends ObjectWithId>(
+    q: DBQuery<DBM>,
     opt?: DatastoreDBOptions,
   ): Promise<number> {
     const datastoreQuery = dbQueryToDatastoreQuery(q.select([]), this.ds().createQuery(q.table))
@@ -291,7 +291,7 @@ export class DatastoreDB implements CommonDB {
     return statsArray.map(stats => stats.kind_name).filter(table => table && !table.startsWith('_'))
   }
 
-  async getTableSchema<DBM extends SavedDBEntity>(table: string): Promise<CommonSchema<DBM>> {
+  async getTableSchema<DBM extends ObjectWithId>(table: string): Promise<CommonSchema<DBM>> {
     const stats = await this.getTableProperties(table)
 
     const fieldsMap: Record<string, CommonSchemaField> = {
