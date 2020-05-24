@@ -8,7 +8,7 @@
     "@naturalcycles/db-lib": ">=5.0.0"
   },
   "dependencies": {
-    "@naturalcycles/db-lib": "^5.0.0",
+    "@naturalcycles/db-lib": "^6.0.0",
     "@naturalcycles/js-lib": "^13.0.0",
     "@naturalcycles/nodejs-lib": "^10.1.0",
     "grpc": "^1.24.2"
@@ -16,8 +16,8 @@
   "devDependencies": {
     "@google-cloud/datastore": "^5.0.0",
     "@naturalcycles/dev-lib": "^10.1.0",
-    "@types/node": "^13.7.4",
-    "jest": "^25.1.0"
+    "@types/node": "^14.0.5",
+    "jest": "^26.0.1"
   },
   "files": [
     "dist",

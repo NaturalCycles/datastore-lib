@@ -1,5 +1,5 @@
-import { DatastoreOptions } from '@google-cloud/datastore'
-import { entity } from '@google-cloud/datastore/build/src/entity'
+import type { DatastoreOptions, Transaction } from '@google-cloud/datastore'
+import type { entity } from '@google-cloud/datastore/build/src/entity'
 import { CommonDBOptions, CommonDBSaveOptions, DATA_TYPE } from '@naturalcycles/db-lib'
 
 export type DatastoreKey = entity.Key
@@ -45,8 +45,12 @@ export interface DatastoreCredentials {
   refresh_token?: string
 }
 
-export interface DatastoreDBOptions extends CommonDBOptions {}
-export interface DatastoreDBSaveOptions extends CommonDBSaveOptions {}
+export interface DatastoreDBOptions extends CommonDBOptions {
+  tx?: Transaction
+}
+export interface DatastoreDBSaveOptions extends CommonDBSaveOptions {
+  tx?: Transaction
+}
 
 export interface DatastoreStats {
   composite_index_count: number

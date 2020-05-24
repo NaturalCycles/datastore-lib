@@ -5,7 +5,7 @@ import {
   runCommonDBTest,
 } from '@naturalcycles/db-lib/dist/testing'
 import { requireEnvKeys } from '@naturalcycles/nodejs-lib'
-import { DatastoreDB } from '../../datastore.db'
+import { DatastoreDB } from '../datastore.db'
 
 jest.setTimeout(60000)
 

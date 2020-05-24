@@ -23,6 +23,7 @@ import {
   DatastoreStats,
   datastoreTypeToDataType,
 } from './datastore.model'
+import { DatastoreDBTransaction } from './datastoreDBTransaction'
 import { dbQueryToDatastoreQuery } from './query.util'
 
 /**
@@ -174,7 +175,11 @@ export class DatastoreDB implements CommonDB {
     const entities = dbms.map(obj => this.toDatastoreEntity(table, obj, opt.excludeFromIndexes))
 
     try {
-      await this.ds().save(entities)
+      if (opt.tx) {
+        await opt.tx.save(entities)
+      } else {
+        await this.ds().save(entities)
+      }
     } catch (err) {
       // console.log(`datastore.save ${kind}`, { obj, entity })
       console.error('error in datastore.save! throwing', err)
@@ -200,9 +205,13 @@ export class DatastoreDB implements CommonDB {
    * Limitation: Datastore's delete returns void, so we always return all ids here as "deleted"
    * regardless if they were actually deleted or not.
    */
-  async deleteByIds(table: string, ids: string[], opt?: DatastoreDBOptions): Promise<number> {
+  async deleteByIds(table: string, ids: string[], opt: DatastoreDBOptions = {}): Promise<number> {
     const keys = ids.map(id => this.key(table, id))
-    await this.ds().delete(keys)
+    if (opt.tx) {
+      await opt.tx.delete(keys)
+    } else {
+      await this.ds().delete(keys)
+    }
     return ids.length
   }
 
@@ -315,4 +324,8 @@ export class DatastoreDB implements CommonDB {
 
   // no-op
   async createTable(schema: CommonSchema, opt?: CommonDBCreateOptions): Promise<void> {}
+
+  transaction(): DatastoreDBTransaction {
+    return new DatastoreDBTransaction(this)
+  }
 }
