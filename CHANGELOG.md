@@ -1,3 +1,10 @@
+# [3.7.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.6.1...v3.7.0) (2020-05-31)
+
+
+### Features
+
+* adapt to db-lib@7 ([2d34fb4](https://github.com/NaturalCycles/datastore-lib/commit/2d34fb4a170b1d92c0fd23cfdd18ac3521b4a50b))
+
 ## [3.6.1](https://github.com/NaturalCycles/datastore-lib/compare/v3.6.0...v3.6.1) (2020-05-24)
 
 
