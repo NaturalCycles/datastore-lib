@@ -1,11 +1,13 @@
 import type { Datastore, Query } from '@google-cloud/datastore'
 import {
+  BaseCommonDB,
   CommonDB,
-  CommonDBCreateOptions,
   CommonSchema,
   CommonSchemaField,
   DATA_TYPE,
   DBQuery,
+  DBTransaction,
+  mergeDBOperations,
   ObjectWithId,
   RunQueryResult,
 } from '@naturalcycles/db-lib'
@@ -23,7 +25,6 @@ import {
   DatastoreStats,
   datastoreTypeToDataType,
 } from './datastore.model'
-import { DatastoreDBTransaction } from './datastoreDBTransaction'
 import { dbQueryToDatastoreQuery } from './query.util'
 
 /**
@@ -31,8 +32,10 @@ import { dbQueryToDatastoreQuery } from './query.util'
  * https://googlecloudplatform.github.io/google-cloud-node/#/docs/datastore/1.0.3/datastore
  * https://cloud.google.com/datastore/docs/datastore-api-tutorial
  */
-export class DatastoreDB implements CommonDB {
-  constructor(public cfg: DatastoreDBCfg = {}) {}
+export class DatastoreDB extends BaseCommonDB implements CommonDB {
+  constructor(public cfg: DatastoreDBCfg = {}) {
+    super()
+  }
 
   private cachedDatastore?: Datastore
 
@@ -71,27 +74,22 @@ export class DatastoreDB implements CommonDB {
     return this.cachedDatastore
   }
 
-  /**
-   * Method to be used by InMemoryDB
-   */
-  async resetCache(): Promise<void> {}
-
   async ping(): Promise<void> {
     await this.getAllStats()
   }
 
-  async getByIds<DBM extends ObjectWithId>(
+  async getByIds<ROW extends ObjectWithId>(
     table: string,
     ids: string[],
     opt?: DatastoreDBOptions,
-  ): Promise<DBM[]> {
+  ): Promise<ROW[]> {
     if (!ids.length) return []
     const keys = ids.map(id => this.key(table, id))
     const [entities] = await this.ds().get(keys)
 
     return (
       (entities as any[])
-        .map(e => this.mapId<DBM>(e))
+        .map(e => this.mapId<ROW>(e))
         // Seems like datastore .get() method doesn't return items properly sorted by input ids, so we gonna sort them here
         // same ids are not expected here
         .sort((a, b) => (a.id > b.id ? 1 : -1))
@@ -103,16 +101,16 @@ export class DatastoreDB implements CommonDB {
     return q.kinds[0]
   }
 
-  async runQuery<DBM extends ObjectWithId, OUT = DBM>(
-    dbQuery: DBQuery<DBM>,
+  async runQuery<ROW extends ObjectWithId, OUT = ROW>(
+    dbQuery: DBQuery<ROW>,
     opt?: DatastoreDBOptions,
   ): Promise<RunQueryResult<OUT>> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
-    const qr = await this.runDatastoreQuery<DBM, OUT>(q)
+    const qr = await this.runDatastoreQuery<ROW, OUT>(q)
 
     // Special case when projection query didn't specify 'id'
     if (dbQuery._selectedFieldNames && !dbQuery._selectedFieldNames.includes('id')) {
-      qr.records = qr.records.map(r => _omit(r as any, ['id']))
+      qr.rows = qr.rows.map(r => _omit(r as any, ['id']))
     }
 
     return qr
@@ -124,20 +122,20 @@ export class DatastoreDB implements CommonDB {
     return entities.length
   }
 
-  async runDatastoreQuery<DBM extends ObjectWithId, OUT = DBM>(
+  async runDatastoreQuery<ROW extends ObjectWithId, OUT = ROW>(
     q: Query,
   ): Promise<RunQueryResult<OUT>> {
     const [entities, queryResult] = await this.ds().runQuery(q)
 
-    const records = entities.map(e => this.mapId<OUT>(e))
+    const rows = entities.map(e => this.mapId<OUT>(e))
 
     return {
       ...queryResult,
-      records,
+      rows,
     }
   }
 
-  runQueryStream<DBM = any>(q: Query): ReadableTyped<DBM> {
+  runQueryStream<ROW = any>(q: Query): ReadableTyped<ROW> {
     return (
       this.ds()
         .runQueryStream(q)
@@ -154,8 +152,8 @@ export class DatastoreDB implements CommonDB {
     )
   }
 
-  streamQuery<DBM extends ObjectWithId, OUT = DBM>(
-    dbQuery: DBQuery<DBM>,
+  streamQuery<ROW extends ObjectWithId, OUT = ROW>(
+    dbQuery: DBQuery<ROW>,
     opt?: DatastoreDBOptions,
   ): ReadableTyped<OUT> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
@@ -167,12 +165,12 @@ export class DatastoreDB implements CommonDB {
   /**
    * Returns saved entities with generated id/updated/created (non-mutating!)
    */
-  async saveBatch<DBM extends ObjectWithId>(
+  async saveBatch<ROW extends ObjectWithId>(
     table: string,
-    dbms: DBM[],
+    rows: ROW[],
     opt: DatastoreDBSaveOptions = {},
   ): Promise<void> {
-    const entities = dbms.map(obj => this.toDatastoreEntity(table, obj, opt.excludeFromIndexes))
+    const entities = rows.map(obj => this.toDatastoreEntity(table, obj, opt.excludeFromIndexes))
 
     try {
       if (opt.tx) {
@@ -188,15 +186,15 @@ export class DatastoreDB implements CommonDB {
     }
   }
 
-  async deleteByQuery<DBM extends ObjectWithId>(
-    q: DBQuery<DBM>,
+  async deleteByQuery<ROW extends ObjectWithId>(
+    q: DBQuery<ROW>,
     opt?: DatastoreDBOptions,
   ): Promise<number> {
     const datastoreQuery = dbQueryToDatastoreQuery(q.select([]), this.ds().createQuery(q.table))
-    const { records } = await this.runDatastoreQuery<DBM>(datastoreQuery)
+    const { rows } = await this.runDatastoreQuery<ROW>(datastoreQuery)
     return await this.deleteByIds(
       q.table,
-      records.map(obj => obj.id),
+      rows.map(obj => obj.id),
       opt,
     )
   }
@@ -213,6 +211,34 @@ export class DatastoreDB implements CommonDB {
       await this.ds().delete(keys)
     }
     return ids.length
+  }
+
+  /**
+   * https://cloud.google.com/datastore/docs/concepts/transactions#datastore-datastore-transactional-update-nodejs
+   */
+  async commitTransaction(_tx: DBTransaction, opt?: DatastoreDBSaveOptions): Promise<void> {
+    const tx = this.ds().transaction()
+
+    try {
+      await tx.run()
+
+      const ops = mergeDBOperations(_tx.ops)
+
+      for await (const op of ops) {
+        if (op.type === 'saveBatch') {
+          await this.saveBatch(op.table, op.rows, { ...opt, tx })
+        } else if (op.type === 'deleteByIds') {
+          await this.deleteByIds(op.table, op.ids, { ...opt, tx })
+        } else {
+          throw new Error(`DBOperation not supported: ${op!.type}`)
+        }
+      }
+
+      await tx.commit()
+    } catch (err) {
+      void tx.rollback()
+      throw err // rethrow
+    }
   }
 
   async getAllStats(): Promise<DatastoreStats[]> {
@@ -291,7 +317,7 @@ export class DatastoreDB implements CommonDB {
     return statsArray.map(stats => stats.kind_name).filter(table => table && !table.startsWith('_'))
   }
 
-  async getTableSchema<DBM extends ObjectWithId>(table: string): Promise<CommonSchema<DBM>> {
+  async getTableSchema<ROW extends ObjectWithId>(table: string): Promise<CommonSchema<ROW>> {
     const stats = await this.getTableProperties(table)
 
     const fieldsMap: Record<string, CommonSchemaField> = {
@@ -320,12 +346,5 @@ export class DatastoreDB implements CommonDB {
       })
 
     return { table, fields: Object.values(fieldsMap) }
-  }
-
-  // no-op
-  async createTable(schema: CommonSchema, opt?: CommonDBCreateOptions): Promise<void> {}
-
-  transaction(): DatastoreDBTransaction {
-    return new DatastoreDBTransaction(this)
   }
 }
