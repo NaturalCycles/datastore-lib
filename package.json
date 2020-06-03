@@ -4,7 +4,7 @@
   "description": "Opinionated library to work with Google Datastore",
   "scripts": {},
   "peerDependencies": {
-    "@google-cloud/datastore": ">=5.0.0",
+    "@google-cloud/datastore": ">=6.0.0",
     "@naturalcycles/db-lib": ">=7.0.0"
   },
   "dependencies": {
@@ -14,7 +14,7 @@
     "grpc": "^1.24.2"
   },
   "devDependencies": {
-    "@google-cloud/datastore": "^5.0.0",
+    "@google-cloud/datastore": "^6.0.0",
     "@naturalcycles/dev-lib": "^10.1.0",
     "@types/node": "^14.0.5",
     "jest": "^26.0.1"
