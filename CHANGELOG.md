@@ -1,3 +1,10 @@
+# [3.8.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.7.2...v3.8.0) (2020-08-14)
+
+
+### Features
+
+* allow > 500 items in save/delete by chunking the array ([c552d3a](https://github.com/NaturalCycles/datastore-lib/commit/c552d3a5ffd217690342ade090eaf2ba35855c3d))
+
 ## [3.7.2](https://github.com/NaturalCycles/datastore-lib/compare/v3.7.1...v3.7.2) (2020-08-10)
 
 
