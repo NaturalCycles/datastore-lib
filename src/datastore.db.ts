@@ -11,7 +11,7 @@ import {
   ObjectWithId,
   RunQueryResult,
 } from '@naturalcycles/db-lib'
-import { _omit } from '@naturalcycles/js-lib'
+import { pMap, _chunk, _omit } from '@naturalcycles/js-lib'
 import { ReadableTyped } from '@naturalcycles/nodejs-lib'
 import { boldWhite } from '@naturalcycles/nodejs-lib/dist/colors'
 import { Transform } from 'stream'
@@ -26,6 +26,9 @@ import {
   datastoreTypeToDataType,
 } from './datastore.model'
 import { dbQueryToDatastoreQuery } from './query.util'
+
+// Datastore (also Firestore and other Google APIs) supports max 500 of items when saving/deleting, etc.
+const MAX_ITEMS = 500
 
 /**
  * Datastore API:
@@ -173,11 +176,10 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     const entities = rows.map(obj => this.toDatastoreEntity(table, obj, opt.excludeFromIndexes))
 
     try {
-      if (opt.tx) {
-        await opt.tx.save(entities)
-      } else {
-        await this.ds().save(entities)
-      }
+      await pMap(
+        _chunk(entities, MAX_ITEMS),
+        async batch => await (opt.tx || this.ds()).save(batch),
+      )
     } catch (err) {
       // console.log(`datastore.save ${kind}`, { obj, entity })
       console.error('error in datastore.save! throwing', err)
@@ -205,11 +207,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
    */
   async deleteByIds(table: string, ids: string[], opt: DatastoreDBOptions = {}): Promise<number> {
     const keys = ids.map(id => this.key(table, id))
-    if (opt.tx) {
-      await opt.tx.delete(keys)
-    } else {
-      await this.ds().delete(keys)
-    }
+    await pMap(_chunk(keys, MAX_ITEMS), async batch => await (opt.tx || this.ds()).delete(batch))
     return ids.length
   }
 
