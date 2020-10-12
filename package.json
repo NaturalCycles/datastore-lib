@@ -5,10 +5,10 @@
   "scripts": {},
   "peerDependencies": {
     "@google-cloud/datastore": ">=6.0.0",
-    "@naturalcycles/db-lib": ">=7.0.0"
+    "@naturalcycles/db-lib": ">=8.0.0"
   },
   "dependencies": {
-    "@naturalcycles/db-lib": "^7.0.0",
+    "@naturalcycles/db-lib": "^8.0.0",
     "@naturalcycles/js-lib": "^14.0.0",
     "@naturalcycles/nodejs-lib": "^12.0.0",
     "grpc": "^1.24.2"
