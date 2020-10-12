@@ -1,3 +1,10 @@
+## [3.8.3](https://github.com/NaturalCycles/datastore-lib/compare/v3.8.2...v3.8.3) (2020-10-12)
+
+
+### Bug Fixes
+
+* support db-lib@8 ([f46a5bd](https://github.com/NaturalCycles/datastore-lib/commit/f46a5bdc14dbff7c062292a45f93829b1d4c4cb9))
+
 ## [3.8.2](https://github.com/NaturalCycles/datastore-lib/compare/v3.8.1...v3.8.2) (2020-09-21)
 
 
