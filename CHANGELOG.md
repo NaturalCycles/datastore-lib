@@ -1,3 +1,10 @@
+## [3.8.4](https://github.com/NaturalCycles/datastore-lib/compare/v3.8.3...v3.8.4) (2020-10-25)
+
+
+### Bug Fixes
+
+* adapt to recent db-lib (map '==' operator to '=') ([8e36412](https://github.com/NaturalCycles/datastore-lib/commit/8e36412abbc15ed6ec0132124fa811b8393de06f))
+
 ## [3.8.3](https://github.com/NaturalCycles/datastore-lib/compare/v3.8.2...v3.8.3) (2020-10-12)
 
 
