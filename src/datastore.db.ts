@@ -104,12 +104,12 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return q.kinds[0]
   }
 
-  async runQuery<ROW extends ObjectWithId, OUT = ROW>(
+  async runQuery<ROW extends ObjectWithId>(
     dbQuery: DBQuery<ROW>,
     opt?: DatastoreDBOptions,
-  ): Promise<RunQueryResult<OUT>> {
+  ): Promise<RunQueryResult<ROW>> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
-    const qr = await this.runDatastoreQuery<ROW, OUT>(q)
+    const qr = await this.runDatastoreQuery<ROW>(q)
 
     // Special case when projection query didn't specify 'id'
     if (dbQuery._selectedFieldNames && !dbQuery._selectedFieldNames.includes('id')) {
@@ -119,18 +119,19 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return qr
   }
 
-  async runQueryCount(dbQuery: DBQuery, opt?: DatastoreDBOptions): Promise<number> {
+  async runQueryCount<ROW extends ObjectWithId>(
+    dbQuery: DBQuery<ROW>,
+    opt?: DatastoreDBOptions,
+  ): Promise<number> {
     const q = dbQueryToDatastoreQuery(dbQuery.select([]), this.ds().createQuery(dbQuery.table))
     const [entities] = await this.ds().runQuery(q)
     return entities.length
   }
 
-  async runDatastoreQuery<ROW extends ObjectWithId, OUT = ROW>(
-    q: Query,
-  ): Promise<RunQueryResult<OUT>> {
+  async runDatastoreQuery<ROW extends ObjectWithId>(q: Query): Promise<RunQueryResult<ROW>> {
     const [entities, queryResult] = await this.ds().runQuery(q)
 
-    const rows = entities.map(e => this.mapId<OUT>(e))
+    const rows = entities.map(e => this.mapId<ROW>(e))
 
     return {
       ...queryResult,
@@ -138,7 +139,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     }
   }
 
-  runQueryStream<ROW = any>(q: Query): ReadableTyped<ROW> {
+  runQueryStream<ROW extends ObjectWithId>(q: Query): ReadableTyped<ROW> {
     return (
       this.ds()
         .runQueryStream(q)
@@ -155,10 +156,10 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     )
   }
 
-  streamQuery<ROW extends ObjectWithId, OUT = ROW>(
+  streamQuery<ROW extends ObjectWithId>(
     dbQuery: DBQuery<ROW>,
     opt?: DatastoreDBOptions,
-  ): ReadableTyped<OUT> {
+  ): ReadableTyped<ROW> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
     return this.runQueryStream(q)
   }

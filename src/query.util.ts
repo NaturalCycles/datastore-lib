@@ -1,5 +1,5 @@
 import { Query } from '@google-cloud/datastore'
-import { DBQuery, DBQueryFilterOperator } from '@naturalcycles/db-lib'
+import { DBQuery, DBQueryFilterOperator, ObjectWithId } from '@naturalcycles/db-lib'
 import { StringMap } from '@naturalcycles/js-lib'
 // import Operator = google.datastore.v1.CompositeFilter.Operator
 
@@ -11,7 +11,10 @@ const OP_MAP: Partial<Record<DBQueryFilterOperator, string>> = {
   '==': '=',
 }
 
-export function dbQueryToDatastoreQuery(dbQuery: Readonly<DBQuery>, emptyQuery: Query): Query {
+export function dbQueryToDatastoreQuery<ROW extends ObjectWithId>(
+  dbQuery: Readonly<DBQuery<ROW>>,
+  emptyQuery: Query,
+): Query {
   let q = emptyQuery
 
   // filter
