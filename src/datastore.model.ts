@@ -1,11 +1,8 @@
-import type { DatastoreOptions, Transaction } from '@google-cloud/datastore'
-import type { entity } from '@google-cloud/datastore/build/src/entity'
+import type { DatastoreOptions, Key, Transaction } from '@google-cloud/datastore'
 import { CommonDBOptions, CommonDBSaveOptions, DATA_TYPE } from '@naturalcycles/db-lib'
 
-export type DatastoreKey = entity.Key
-
 export interface DatastorePayload<T = any> {
-  key: DatastoreKey
+  key: Key
   data: T
   excludeFromIndexes: string[]
 }

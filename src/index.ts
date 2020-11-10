@@ -2,7 +2,6 @@ import { DatastoreDB } from './datastore.db'
 import {
   DatastoreCredentials,
   DatastoreDBCfg,
-  DatastoreKey,
   DatastorePayload,
   DatastorePropertyStats,
   DatastoreStats,
@@ -13,7 +12,6 @@ import { getDBAdapter } from './dbAdapter'
 
 export {
   DatastoreDB,
-  DatastoreKey,
   DatastorePayload,
   DatastoreDBCfg,
   DatastoreStats,

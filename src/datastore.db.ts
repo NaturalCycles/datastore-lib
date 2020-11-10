@@ -1,4 +1,4 @@
-import type { Datastore, Query } from '@google-cloud/datastore'
+import type { Datastore, Key, Query } from '@google-cloud/datastore'
 import {
   BaseCommonDB,
   CommonDB,
@@ -19,7 +19,6 @@ import {
   DatastoreDBCfg,
   DatastoreDBOptions,
   DatastoreDBSaveOptions,
-  DatastoreKey,
   DatastorePayload,
   DatastorePropertyStats,
   DatastoreStats,
@@ -297,15 +296,15 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     }
   }
 
-  key(kind: string, id: string): DatastoreKey {
+  key(kind: string, id: string): Key {
     return this.ds().key([kind, String(id)])
   }
 
-  getDsKey(o: any): DatastoreKey | undefined {
+  getDsKey(o: any): Key | undefined {
     return o && o[this.KEY]
   }
 
-  getKey(key: DatastoreKey): string | undefined {
+  getKey(key: Key): string | undefined {
     const id = key.id || key.name
     return id && id.toString()
   }
