@@ -1,3 +1,10 @@
+## [3.8.6](https://github.com/NaturalCycles/datastore-lib/compare/v3.8.5...v3.8.6) (2020-11-10)
+
+
+### Bug Fixes
+
+* use Key type from Datastore that is properly exported now ([931e978](https://github.com/NaturalCycles/datastore-lib/commit/931e97861f5075971fc3d1a5fa971f64197fefcc))
+
 ## [3.8.5](https://github.com/NaturalCycles/datastore-lib/compare/v3.8.4...v3.8.5) (2020-11-05)
 
 
