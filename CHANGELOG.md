@@ -1,3 +1,10 @@
+## [3.9.2](https://github.com/NaturalCycles/datastore-lib/compare/v3.9.1...v3.9.2) (2021-02-23)
+
+
+### Bug Fixes
+
+* tune pRetry options for .saveBatch, GOAWAY test passes now! ([cac1ece](https://github.com/NaturalCycles/datastore-lib/commit/cac1ecec29afaf3bb38e382d481b09a2977c1eea))
+
 ## [3.9.1](https://github.com/NaturalCycles/datastore-lib/compare/v3.9.0...v3.9.1) (2021-02-23)
 
 
