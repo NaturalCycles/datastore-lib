@@ -11,7 +11,7 @@ import {
   ObjectWithId,
   RunQueryResult,
 } from '@naturalcycles/db-lib'
-import { pMap, _chunk, _omit } from '@naturalcycles/js-lib'
+import { pMap, pRetry, _chunk, _omit } from '@naturalcycles/js-lib'
 import { ReadableTyped } from '@naturalcycles/nodejs-lib'
 import { boldWhite } from '@naturalcycles/nodejs-lib/dist/colors'
 import { Transform } from 'stream'
@@ -175,11 +175,21 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   ): Promise<void> {
     const entities = rows.map(obj => this.toDatastoreEntity(table, obj, opt.excludeFromIndexes))
 
+    const save = await pRetry(
+      async (batch: DatastorePayload<ROW>[]) => {
+        await (opt.tx || this.ds()).save(batch)
+      },
+      {
+        // Here we retry the GOAWAY errors that are somewhat common for Datastore
+        // Currently only retrying them here in .saveBatch(), cause probably they're only thrown when saving
+        predicate: (err: Error) => err?.message.includes('GOAWAY'),
+        maxAttempts: 5,
+        // logAll: true,
+      },
+    )
+
     try {
-      await pMap(
-        _chunk(entities, MAX_ITEMS),
-        async batch => await (opt.tx || this.ds()).save(batch),
-      )
+      await pMap(_chunk(entities, MAX_ITEMS), async batch => await save(batch))
     } catch (err) {
       // console.log(`datastore.save ${kind}`, { obj, entity })
       console.error('error in datastore.save! throwing', err)
