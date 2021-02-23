@@ -175,7 +175,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   ): Promise<void> {
     const entities = rows.map(obj => this.toDatastoreEntity(table, obj, opt.excludeFromIndexes))
 
-    const save = await pRetry(
+    const save = pRetry(
       async (batch: DatastorePayload<ROW>[]) => {
         await (opt.tx || this.ds()).save(batch)
       },
