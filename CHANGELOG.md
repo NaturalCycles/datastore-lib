@@ -1,3 +1,10 @@
+## [3.9.1](https://github.com/NaturalCycles/datastore-lib/compare/v3.9.0...v3.9.1) (2021-02-23)
+
+
+### Bug Fixes
+
+* unnecessary await in .saveBatch ([12b1b75](https://github.com/NaturalCycles/datastore-lib/commit/12b1b7528383fbf9406d91515008c51d4a08a807))
+
 # [3.9.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.8.6...v3.9.0) (2021-02-23)
 
 
