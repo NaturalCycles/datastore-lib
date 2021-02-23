@@ -184,6 +184,10 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
         // Currently only retrying them here in .saveBatch(), cause probably they're only thrown when saving
         predicate: (err: Error) => err?.message.includes('GOAWAY'),
         maxAttempts: 5,
+        delay: 5_000,
+        delayMultiplier: 2,
+        logFirstAttempt: false,
+        logFailures: true,
         // logAll: true,
       },
     )

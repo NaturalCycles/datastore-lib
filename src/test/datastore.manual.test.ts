@@ -1,9 +1,12 @@
 import {
   CommonDBImplementationFeatures,
   CommonDBImplementationQuirks,
+  createTestItemsDBM,
   runCommonDaoTest,
   runCommonDBTest,
+  TEST_TABLE,
 } from '@naturalcycles/db-lib/dist/testing'
+import { pMap } from '@naturalcycles/js-lib'
 import { requireEnvKeys } from '@naturalcycles/nodejs-lib'
 import { DatastoreDB } from '../datastore.db'
 
@@ -55,4 +58,12 @@ test('getTables', async () => {
 test('getTableSchema', async () => {
   // console.log(await datastoreDB.getTableProperties('Account'))
   console.log(await datastoreDB.getTableSchema('Account'))
+})
+
+test.skip('GOAWAY stress test', async () => {
+  const items = createTestItemsDBM(10_001)
+
+  await pMap(items, async item => {
+    await datastoreDB.saveBatch(TEST_TABLE, [item])
+  })
 })
