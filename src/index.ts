@@ -10,14 +10,12 @@ import {
 } from './datastore.model'
 import { getDBAdapter } from './dbAdapter'
 
-export {
-  DatastoreDB,
+export type {
   DatastorePayload,
   DatastoreDBCfg,
   DatastoreStats,
   DatastoreCredentials,
   DatastorePropertyStats,
-  DATASTORE_TYPE,
-  datastoreTypeToDataType,
-  getDBAdapter,
 }
+
+export { DatastoreDB, DATASTORE_TYPE, datastoreTypeToDataType, getDBAdapter }

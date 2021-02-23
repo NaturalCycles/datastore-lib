@@ -100,7 +100,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
   getQueryKind(q: Query): string {
     if (!q || !q.kinds || !q.kinds.length) return '' // should never be the case, but
-    return q.kinds[0]
+    return q.kinds[0]!
   }
 
   async runQuery<ROW extends ObjectWithId>(
