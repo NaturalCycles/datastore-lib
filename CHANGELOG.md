@@ -1,3 +1,15 @@
+# [3.9.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.8.6...v3.9.0) (2021-02-23)
+
+
+### Bug Fixes
+
+* modernize ([2a4eac5](https://github.com/NaturalCycles/datastore-lib/commit/2a4eac5e521a6dc7da073e0f0d8df17df776a03d))
+
+
+### Features
+
+* retry on GOAWAY in .saveBatch (experimental) ([e381ed5](https://github.com/NaturalCycles/datastore-lib/commit/e381ed58d2999b86f2035479bfbc9b759a07aa05))
+
 ## [3.8.6](https://github.com/NaturalCycles/datastore-lib/compare/v3.8.5...v3.8.6) (2020-11-10)
 
 
