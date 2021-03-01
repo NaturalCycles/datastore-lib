@@ -29,6 +29,8 @@ import { dbQueryToDatastoreQuery } from './query.util'
 // Datastore (also Firestore and other Google APIs) supports max 500 of items when saving/deleting, etc.
 const MAX_ITEMS = 500
 
+const RETRY_ON = ['GOAWAY', 'UNAVAILABLE']
+
 /**
  * Datastore API:
  * https://googlecloudplatform.github.io/google-cloud-node/#/docs/datastore/1.0.3/datastore
@@ -184,7 +186,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       {
         // Here we retry the GOAWAY errors that are somewhat common for Datastore
         // Currently only retrying them here in .saveBatch(), cause probably they're only thrown when saving
-        predicate: (err: Error) => err?.message.includes('GOAWAY'),
+        predicate: (err: Error) => RETRY_ON.some(s => err.message.includes(s)),
         maxAttempts: 5,
         delay: 5_000,
         delayMultiplier: 2,
