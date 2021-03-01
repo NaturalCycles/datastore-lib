@@ -14,7 +14,7 @@ jest.setTimeout(60000)
 
 require('dotenv').config()
 const { SECRET_GCP_SERVICE_ACCOUNT } = requireEnvKeys('SECRET_GCP_SERVICE_ACCOUNT')
-process.env.APP_ENV = 'master'
+process.env['APP_ENV'] = 'master'
 
 const credentials = JSON.parse(SECRET_GCP_SERVICE_ACCOUNT)
 

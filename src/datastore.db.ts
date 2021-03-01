@@ -49,7 +49,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   // @memo() // not used to be able to connect to many DBs in the same server instance
   ds(): Datastore {
     if (!this.cachedDatastore) {
-      if (process.env.APP_ENV === 'test') {
+      if (process.env['APP_ENV'] === 'test') {
         throw new Error('DatastoreDB cannot be used in Test env, please use InMemoryDB')
       }
 
@@ -57,7 +57,9 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       const DatastoreLib = require('@google-cloud/datastore')
       const DS = DatastoreLib.Datastore as typeof Datastore
       this.cfg.projectId =
-        this.cfg.projectId || this.cfg.credentials?.project_id || process.env.GOOGLE_CLOUD_PROJECT!
+        this.cfg.projectId ||
+        this.cfg.credentials?.project_id ||
+        process.env['GOOGLE_CLOUD_PROJECT']!
 
       console.log(`DatastoreDB connected to ${boldWhite(this.cfg.projectId)}`)
 
