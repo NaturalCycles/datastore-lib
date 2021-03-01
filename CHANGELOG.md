@@ -1,3 +1,10 @@
+# [3.10.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.9.2...v3.10.0) (2021-03-01)
+
+
+### Features
+
+* also retry on UNAVAILABLE ([fb4bfdc](https://github.com/NaturalCycles/datastore-lib/commit/fb4bfdc57224f9753ef40e1db682615f172c19d7))
+
 ## [3.9.2](https://github.com/NaturalCycles/datastore-lib/compare/v3.9.1...v3.9.2) (2021-02-23)
 
 
