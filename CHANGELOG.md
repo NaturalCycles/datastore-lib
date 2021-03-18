@@ -1,3 +1,10 @@
+# [3.11.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.10.0...v3.11.0) (2021-03-18)
+
+
+### Features
+
+* also retry on UNKNOWN errors ([a916386](https://github.com/NaturalCycles/datastore-lib/commit/a9163866e3d87963c0c2b389079e05af4c6d56a6))
+
 # [3.10.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.9.2...v3.10.0) (2021-03-01)
 
 
