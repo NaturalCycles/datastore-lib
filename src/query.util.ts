@@ -18,12 +18,14 @@ export function dbQueryToDatastoreQuery<ROW extends ObjectWithId>(
   let q = emptyQuery
 
   // filter
+  // eslint-disable-next-line unicorn/no-array-reduce
   q = dbQuery._filters.reduce((q, f) => q.filter(f.name, OP_MAP[f.op] || (f.op as any), f.val), q)
 
   // limit
   q = q.limit(dbQuery._limitValue || 0)
 
   // order
+  // eslint-disable-next-line unicorn/no-array-reduce
   q = dbQuery._orders.reduce((q, ord) => q.order(ord.name, { descending: ord.descending }), q)
 
   // select

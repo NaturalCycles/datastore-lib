@@ -89,7 +89,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   async getByIds<ROW extends ObjectWithId>(
     table: string,
     ids: string[],
-    opt?: DatastoreDBOptions,
+    _opt?: DatastoreDBOptions,
   ): Promise<ROW[]> {
     if (!ids.length) return []
     const keys = ids.map(id => this.key(table, id))
@@ -111,7 +111,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
   async runQuery<ROW extends ObjectWithId>(
     dbQuery: DBQuery<ROW>,
-    opt?: DatastoreDBOptions,
+    _opt?: DatastoreDBOptions,
   ): Promise<RunQueryResult<ROW>> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
     const qr = await this.runDatastoreQuery<ROW>(q)
@@ -126,7 +126,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
   async runQueryCount<ROW extends ObjectWithId>(
     dbQuery: DBQuery<ROW>,
-    opt?: DatastoreDBOptions,
+    _opt?: DatastoreDBOptions,
   ): Promise<number> {
     const q = dbQueryToDatastoreQuery(dbQuery.select([]), this.ds().createQuery(dbQuery.table))
     const [entities] = await this.ds().runQuery(q)
@@ -163,7 +163,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
   streamQuery<ROW extends ObjectWithId>(
     dbQuery: DBQuery<ROW>,
-    opt?: DatastoreDBOptions,
+    _opt?: DatastoreDBOptions,
   ): ReadableTyped<ROW> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
     return this.runQueryStream(q)
@@ -190,7 +190,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
         // Currently only retrying them here in .saveBatch(), cause probably they're only thrown when saving
         predicate: (err: Error) => RETRY_ON.some(s => err.message.includes(s)),
         maxAttempts: 5,
-        delay: 5_000,
+        delay: 5000,
         delayMultiplier: 2,
         logFirstAttempt: false,
         logFailures: true,
@@ -204,7 +204,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       // console.log(`datastore.save ${kind}`, { obj, entity })
       console.error('error in datastore.save! throwing', err)
       // don't throw, because datastore SDK makes it in separate thread, so exception will be unhandled otherwise
-      return Promise.reject(err)
+      return await Promise.reject(err)
     }
   }
 
@@ -227,6 +227,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
    */
   async deleteByIds(table: string, ids: string[], opt: DatastoreDBOptions = {}): Promise<number> {
     const keys = ids.map(id => this.key(table, id))
+    // eslint-disable-next-line @typescript-eslint/return-await
     await pMap(_chunk(keys, MAX_ITEMS), async batch => await (opt.tx || this.ds()).delete(batch))
     return ids.length
   }
@@ -248,7 +249,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
         } else if (op.type === 'deleteByIds') {
           await this.deleteByIds(op.table, op.ids, { ...opt, tx })
         } else {
-          throw new Error(`DBOperation not supported: ${op!.type}`)
+          throw new Error(`DBOperation not supported: ${(op as any).type}`)
         }
       }
 

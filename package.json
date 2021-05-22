@@ -15,8 +15,8 @@
   },
   "devDependencies": {
     "@google-cloud/datastore": "^6.0.0",
-    "@naturalcycles/dev-lib": "^10.1.0",
-    "@types/node": "^14.0.5",
+    "@naturalcycles/dev-lib": "^11.0.5",
+    "@types/node": "^15.6.0",
     "jest": "^26.0.1"
   },
   "files": [
