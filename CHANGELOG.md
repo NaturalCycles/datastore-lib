@@ -1,3 +1,10 @@
+## [3.11.1](https://github.com/NaturalCycles/datastore-lib/compare/v3.11.0...v3.11.1) (2021-05-22)
+
+
+### Bug Fixes
+
+* adopt eslint ([123f16c](https://github.com/NaturalCycles/datastore-lib/commit/123f16cb913e0df0f45c5c3266af01463c467217))
+
 # [3.11.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.10.0...v3.11.0) (2021-03-18)
 
 
