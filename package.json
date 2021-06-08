@@ -17,7 +17,7 @@
     "@google-cloud/datastore": "^6.0.0",
     "@naturalcycles/dev-lib": "^11.0.5",
     "@types/node": "^15.6.0",
-    "jest": "^26.0.1"
+    "jest": "^27.0.4"
   },
   "files": [
     "dist",

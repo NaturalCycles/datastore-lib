@@ -82,11 +82,11 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return this.cachedDatastore
   }
 
-  async ping(): Promise<void> {
+  override async ping(): Promise<void> {
     await this.getAllStats()
   }
 
-  async getByIds<ROW extends ObjectWithId>(
+  override async getByIds<ROW extends ObjectWithId>(
     table: string,
     ids: string[],
     _opt?: DatastoreDBOptions,
@@ -109,7 +109,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return q.kinds[0]!
   }
 
-  async runQuery<ROW extends ObjectWithId>(
+  override async runQuery<ROW extends ObjectWithId>(
     dbQuery: DBQuery<ROW>,
     _opt?: DatastoreDBOptions,
   ): Promise<RunQueryResult<ROW>> {
@@ -124,7 +124,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return qr
   }
 
-  async runQueryCount<ROW extends ObjectWithId>(
+  override async runQueryCount<ROW extends ObjectWithId>(
     dbQuery: DBQuery<ROW>,
     _opt?: DatastoreDBOptions,
   ): Promise<number> {
@@ -161,7 +161,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     )
   }
 
-  streamQuery<ROW extends ObjectWithId>(
+  override streamQuery<ROW extends ObjectWithId>(
     dbQuery: DBQuery<ROW>,
     _opt?: DatastoreDBOptions,
   ): ReadableTyped<ROW> {
@@ -174,7 +174,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   /**
    * Returns saved entities with generated id/updated/created (non-mutating!)
    */
-  async saveBatch<ROW extends ObjectWithId>(
+  override async saveBatch<ROW extends ObjectWithId>(
     table: string,
     rows: ROW[],
     opt: DatastoreDBSaveOptions = {},
@@ -208,7 +208,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     }
   }
 
-  async deleteByQuery<ROW extends ObjectWithId>(
+  override async deleteByQuery<ROW extends ObjectWithId>(
     q: DBQuery<ROW>,
     opt?: DatastoreDBOptions,
   ): Promise<number> {
@@ -225,7 +225,11 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
    * Limitation: Datastore's delete returns void, so we always return all ids here as "deleted"
    * regardless if they were actually deleted or not.
    */
-  async deleteByIds(table: string, ids: string[], opt: DatastoreDBOptions = {}): Promise<number> {
+  override async deleteByIds(
+    table: string,
+    ids: string[],
+    opt: DatastoreDBOptions = {},
+  ): Promise<number> {
     const keys = ids.map(id => this.key(table, id))
     // eslint-disable-next-line @typescript-eslint/return-await
     await pMap(_chunk(keys, MAX_ITEMS), async batch => await (opt.tx || this.ds()).delete(batch))
@@ -235,7 +239,10 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   /**
    * https://cloud.google.com/datastore/docs/concepts/transactions#datastore-datastore-transactional-update-nodejs
    */
-  async commitTransaction(_tx: DBTransaction, opt?: DatastoreDBSaveOptions): Promise<void> {
+  override async commitTransaction(
+    _tx: DBTransaction,
+    opt?: DatastoreDBSaveOptions,
+  ): Promise<void> {
     const tx = this.ds().transaction()
 
     try {
@@ -330,13 +337,15 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return id && id.toString()
   }
 
-  async getTables(): Promise<string[]> {
+  override async getTables(): Promise<string[]> {
     const statsArray = await this.getAllStats()
     // Filter out tables starting with `_` by default (internal Datastore tables)
     return statsArray.map(stats => stats.kind_name).filter(table => table && !table.startsWith('_'))
   }
 
-  async getTableSchema<ROW extends ObjectWithId>(table: string): Promise<CommonSchema<ROW>> {
+  override async getTableSchema<ROW extends ObjectWithId>(
+    table: string,
+  ): Promise<CommonSchema<ROW>> {
     const stats = await this.getTableProperties(table)
 
     const fieldsMap: Record<string, CommonSchemaField> = {
