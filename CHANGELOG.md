@@ -1,3 +1,10 @@
+# [3.12.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.11.1...v3.12.0) (2021-07-04)
+
+
+### Features
+
+* DatastoreKeyValueDB ([d03ac8c](https://github.com/NaturalCycles/datastore-lib/commit/d03ac8c6a8febba6b5b43fe373433f15ac2659d6))
+
 ## [3.11.1](https://github.com/NaturalCycles/datastore-lib/compare/v3.11.0...v3.11.1) (2021-05-22)
 
 
