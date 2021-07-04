@@ -23,11 +23,12 @@ export const datastoreDB = new DatastoreDB({
   useLegacyGRPC: true,
 })
 
+// Seems like consistency quirks are no longer needed?
 const features: CommonDBImplementationFeatures = {
-  strongConsistency: false,
+  // strongConsistency: false,
 }
 const quirks: CommonDBImplementationQuirks = {
-  eventualConsistencyDelay: 100,
+  // eventualConsistencyDelay: 100,
 }
 
 describe('runCommonDBTest', () => runCommonDBTest(datastoreDB, features, quirks))
