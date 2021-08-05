@@ -6,8 +6,7 @@
     "prepare": "husky install"
   },
   "peerDependencies": {
-    "@google-cloud/datastore": ">=6.0.0",
-    "@naturalcycles/db-lib": ">=8.0.0"
+    "@google-cloud/datastore": ">=6.0.0"
   },
   "dependencies": {
     "@naturalcycles/db-lib": "^8.0.0",

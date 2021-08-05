@@ -24,11 +24,12 @@ export const datastoreDB = new DatastoreDB({
 })
 
 // Seems like consistency quirks are no longer needed?
+// UPD 2021-08-05: nope, still needed
 const features: CommonDBImplementationFeatures = {
   // strongConsistency: false,
 }
 const quirks: CommonDBImplementationQuirks = {
-  // eventualConsistencyDelay: 100,
+  eventualConsistencyDelay: 100,
 }
 
 describe('runCommonDBTest', () => runCommonDBTest(datastoreDB, features, quirks))

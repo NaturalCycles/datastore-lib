@@ -11,7 +11,7 @@ import {
   ObjectWithId,
   RunQueryResult,
 } from '@naturalcycles/db-lib'
-import { pMap, pRetry, _chunk, _omit } from '@naturalcycles/js-lib'
+import { pMap, pRetry, _assert, _chunk, _omit } from '@naturalcycles/js-lib'
 import { ReadableTyped } from '@naturalcycles/nodejs-lib'
 import { boldWhite } from '@naturalcycles/nodejs-lib/dist/colors'
 import { Transform } from 'stream'
@@ -202,7 +202,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       await pMap(_chunk(entities, MAX_ITEMS), async batch => await save(batch))
     } catch (err) {
       // console.log(`datastore.save ${kind}`, { obj, entity })
-      console.error('error in datastore.save! throwing', err)
+      console.error(`error in datastore.save for ${table}`, err)
       // don't throw, because datastore SDK makes it in separate thread, so exception will be unhandled otherwise
       return await Promise.reject(err)
     }
@@ -306,13 +306,13 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return r
   }
 
-  // if key field is exist on entity, it will be used as key (prevent to duplication of numeric keyed entities)
+  // if key field exists on entity, it will be used as key (prevent to duplication of numeric keyed entities)
   toDatastoreEntity<T = any>(
     kind: string,
     o: T & { id?: string },
     excludeFromIndexes: string[] = [],
   ): DatastorePayload<T> {
-    const key = this.getDsKey(o) || this.key(kind, o.id!.toString())
+    const key = this.getDsKey(o) || this.key(kind, o.id!)
     const data = Object.assign({}, o) as any
     delete data.id
     delete data[this.KEY]
@@ -325,16 +325,17 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   }
 
   key(kind: string, id: string): Key {
+    _assert(id, `Cannot save "${kind}" entity without "id"`)
     return this.ds().key([kind, String(id)])
   }
 
   getDsKey(o: any): Key | undefined {
-    return o && o[this.KEY]
+    return o?.[this.KEY]
   }
 
   getKey(key: Key): string | undefined {
     const id = key.id || key.name
-    return id && id.toString()
+    return id?.toString()
   }
 
   override async getTables(): Promise<string[]> {
