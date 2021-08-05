@@ -1,3 +1,10 @@
+## [3.12.1](https://github.com/NaturalCycles/datastore-lib/compare/v3.12.0...v3.12.1) (2021-08-05)
+
+
+### Bug Fixes
+
+* throw explicit error on missing `id` when doing saveBatch ([1a2f29e](https://github.com/NaturalCycles/datastore-lib/commit/1a2f29e57f20d95004d2cd6a79f9f9eafe26cf56))
+
 # [3.12.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.11.1...v3.12.0) (2021-07-04)
 
 
