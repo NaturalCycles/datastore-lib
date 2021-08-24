@@ -1,5 +1,6 @@
-import { CommonKeyValueDB } from '@naturalcycles/db-lib'
-import { StringMap, _stringMapEntries } from '@naturalcycles/js-lib'
+import { CommonKeyValueDB, DBQuery, KeyValueDBTuple, ObjectWithId } from '@naturalcycles/db-lib'
+import { ErrorMode } from '@naturalcycles/js-lib'
+import { ReadableTyped, transformMapSimple } from '@naturalcycles/nodejs-lib'
 import { DatastoreDB } from './datastore.db'
 import { DatastoreDBCfg } from './datastore.model'
 
@@ -25,21 +26,54 @@ export class DatastoreKeyValueDB implements CommonKeyValueDB {
 
   async createTable(): Promise<void> {}
 
-  async getByIds(table: string, ids: string[]): Promise<Buffer[]> {
-    return (await this.db.getByIds<KVObject>(table, ids)).map(r => r.v)
+  async getByIds(table: string, ids: string[]): Promise<KeyValueDBTuple[]> {
+    return (await this.db.getByIds<KVObject>(table, ids)).map(r => [r.id, r.v])
   }
 
   async deleteByIds(table: string, ids: string[]): Promise<void> {
     await this.db.deleteByIds(table, ids)
   }
 
-  async saveBatch(table: string, batch: StringMap<Buffer>): Promise<void> {
+  async saveBatch(table: string, entries: KeyValueDBTuple[]): Promise<void> {
     await this.db.saveBatch<KVObject>(
       table,
-      _stringMapEntries(batch).map(([id, v]) => ({ id, v })),
+      entries.map(([id, v]) => ({ id, v })),
       {
         excludeFromIndexes,
       },
+    )
+  }
+
+  streamIds(table: string, limit?: number): ReadableTyped<string> {
+    const q = DBQuery.create(table)
+      .select(['id'])
+      .limit(limit || 0)
+
+    return this.db.streamQuery<KVObject>(q).pipe(
+      transformMapSimple<ObjectWithId, string>(objectWithId => objectWithId.id, {
+        errorMode: ErrorMode.SUPPRESS, // cause .pipe() cannot propagate errors
+      }),
+    )
+  }
+
+  streamValues(table: string, limit?: number): ReadableTyped<Buffer> {
+    // `select v` doesn't work for some reason
+    const q = DBQuery.create(table).limit(limit || 0)
+
+    return this.db.streamQuery<KVObject>(q).pipe(
+      transformMapSimple<{ v: Buffer }, Buffer>(obj => obj.v, {
+        errorMode: ErrorMode.SUPPRESS, // cause .pipe() cannot propagate errors
+      }),
+    )
+  }
+
+  streamEntries(table: string, limit?: number): ReadableTyped<KeyValueDBTuple> {
+    const q = DBQuery.create(table).limit(limit || 0)
+
+    return this.db.streamQuery<KVObject>(q).pipe(
+      transformMapSimple<KVObject, KeyValueDBTuple>(obj => [obj.id, obj.v], {
+        errorMode: ErrorMode.SUPPRESS, // cause .pipe() cannot propagate errors
+      }),
     )
   }
 }
