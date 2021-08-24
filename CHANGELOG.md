@@ -1,3 +1,10 @@
+## [3.12.2](https://github.com/NaturalCycles/datastore-lib/compare/v3.12.1...v3.12.2) (2021-08-24)
+
+
+### Bug Fixes
+
+* deps, adapt KeyValueDB implementation ([6ef0538](https://github.com/NaturalCycles/datastore-lib/commit/6ef0538873f9e02b1b7fc5e380b6be10ea38e436))
+
 ## [3.12.1](https://github.com/NaturalCycles/datastore-lib/compare/v3.12.0...v3.12.1) (2021-08-05)
 
 
