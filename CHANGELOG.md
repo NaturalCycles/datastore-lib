@@ -1,3 +1,10 @@
+# [3.13.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.12.2...v3.13.0) (2021-10-01)
+
+
+### Features
+
+* adapt to db-lib (return jsonSchema instead of CommonSchema) ([8065764](https://github.com/NaturalCycles/datastore-lib/commit/8065764e2f93ee981c1bbb5b98b50a2a965fb0c7))
+
 ## [3.12.2](https://github.com/NaturalCycles/datastore-lib/compare/v3.12.1...v3.12.2) (2021-08-24)
 
 
