@@ -1,5 +1,5 @@
 import type { DatastoreOptions, Key, Transaction } from '@google-cloud/datastore'
-import { CommonDBOptions, CommonDBSaveOptions, DATA_TYPE } from '@naturalcycles/db-lib'
+import { CommonDBOptions, CommonDBSaveOptions } from '@naturalcycles/db-lib'
 
 export interface DatastorePayload<T = any> {
   key: Key
@@ -68,18 +68,6 @@ export enum DATASTORE_TYPE {
   DATE_TIME = 'Date/Time',
   Boolean = 'Boolean', // eslint-disable-line id-blacklist
   NULL = 'NULL',
-}
-
-export const datastoreTypeToDataType: Record<DATASTORE_TYPE, DATA_TYPE> = {
-  [DATASTORE_TYPE.Blob]: DATA_TYPE.BINARY,
-  [DATASTORE_TYPE.Text]: DATA_TYPE.STRING,
-  [DATASTORE_TYPE.String]: DATA_TYPE.STRING,
-  [DATASTORE_TYPE.EmbeddedEntity]: DATA_TYPE.OBJECT,
-  [DATASTORE_TYPE.Float]: DATA_TYPE.FLOAT,
-  [DATASTORE_TYPE.Integer]: DATA_TYPE.INT,
-  [DATASTORE_TYPE.DATE_TIME]: DATA_TYPE.TIMESTAMP,
-  [DATASTORE_TYPE.Boolean]: DATA_TYPE.BOOLEAN,
-  [DATASTORE_TYPE.NULL]: DATA_TYPE.NULL,
 }
 
 export interface DatastorePropertyStats {

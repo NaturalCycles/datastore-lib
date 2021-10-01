@@ -2,16 +2,25 @@ import type { Datastore, Key, Query } from '@google-cloud/datastore'
 import {
   BaseCommonDB,
   CommonDB,
-  CommonSchema,
-  CommonSchemaField,
-  DATA_TYPE,
   DBQuery,
   DBTransaction,
   mergeDBOperations,
   ObjectWithId,
   RunQueryResult,
 } from '@naturalcycles/db-lib'
-import { pMap, pRetry, _assert, _chunk, _omit } from '@naturalcycles/js-lib'
+import {
+  JsonSchemaAny,
+  JsonSchemaBoolean,
+  JsonSchemaNull,
+  JsonSchemaNumber,
+  JsonSchemaObject,
+  JsonSchemaString,
+  pMap,
+  pRetry,
+  _assert,
+  _chunk,
+  _omit,
+} from '@naturalcycles/js-lib'
 import { ReadableTyped } from '@naturalcycles/nodejs-lib'
 import { boldWhite } from '@naturalcycles/nodejs-lib/dist/colors'
 import { Transform } from 'stream'
@@ -22,7 +31,7 @@ import {
   DatastorePayload,
   DatastorePropertyStats,
   DatastoreStats,
-  datastoreTypeToDataType,
+  DATASTORE_TYPE,
 } from './datastore.model'
 import { dbQueryToDatastoreQuery } from './query.util'
 
@@ -188,7 +197,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       {
         // Here we retry the GOAWAY errors that are somewhat common for Datastore
         // Currently only retrying them here in .saveBatch(), cause probably they're only thrown when saving
-        predicate: (err: Error) => RETRY_ON.some(s => err.message.includes(s)),
+        predicate: err => RETRY_ON.some(s => (err as Error)?.message.includes(s)),
         maxAttempts: 5,
         delay: 5000,
         delayMultiplier: 2,
@@ -346,34 +355,65 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
   override async getTableSchema<ROW extends ObjectWithId>(
     table: string,
-  ): Promise<CommonSchema<ROW>> {
+  ): Promise<JsonSchemaObject<ROW>> {
     const stats = await this.getTableProperties(table)
 
-    const fieldsMap: Record<string, CommonSchemaField> = {
-      id: {
-        name: 'id',
-        type: DATA_TYPE.STRING,
-        notNull: true,
-      },
+    const s: JsonSchemaObject<ROW> = {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+      } as any,
+      additionalProperties: true,
+      required: [],
     }
 
     stats
       .filter(s => !s.property_name.includes('.') && s.property_name !== 'id') // filter out objectify's "virtual properties"
       .forEach(stats => {
-        const { property_name: name } = stats
-        const type = datastoreTypeToDataType[stats.property_type]
-        if (!type) {
-          throw new Error(`Unknown Datastore Type '${stats.property_type}' for ${table}.${name}`)
-        }
+        const { property_name: name, property_type: dtype } = stats
 
-        if (type === DATA_TYPE.NULL) {
-          // don't override existing type
-          fieldsMap[name] = fieldsMap[name] || { name, type }
+        if (dtype === DATASTORE_TYPE.Blob) {
+          s.properties[name] = {
+            instanceof: 'Buffer',
+          } as JsonSchemaAny
+        } else if (dtype === DATASTORE_TYPE.Text || dtype === DATASTORE_TYPE.String) {
+          s.properties[name] = {
+            type: 'string',
+          } as JsonSchemaString
+        } else if (dtype === DATASTORE_TYPE.EmbeddedEntity) {
+          s.properties[name] = {
+            type: 'object',
+            additionalProperties: true,
+            properties: {},
+            required: [],
+          } as JsonSchemaObject
+        } else if (dtype === DATASTORE_TYPE.Integer) {
+          s.properties[name] = {
+            type: 'integer',
+          } as JsonSchemaNumber
+        } else if (dtype === DATASTORE_TYPE.Float) {
+          s.properties[name] = {
+            type: 'number',
+          } as JsonSchemaNumber
+        } else if (dtype === DATASTORE_TYPE.Boolean) {
+          s.properties[name] = {
+            type: 'boolean',
+          } as JsonSchemaBoolean
+        } else if (dtype === DATASTORE_TYPE.DATE_TIME) {
+          // Don't know how to map it properly
+          s.properties[name] = {} as JsonSchemaAny
+        } else if (dtype === DATASTORE_TYPE.NULL) {
+          // check, maybe we can just skip this type and do nothing?
+          if (!s.properties[name]) {
+            s.properties[name] = {
+              type: 'null',
+            } as JsonSchemaNull
+          }
         } else {
-          fieldsMap[name] = { name, type }
+          throw new Error(`Unknown Datastore Type '${stats.property_type}' for ${table}.${name}`)
         }
       })
 
-    return { table, fields: Object.values(fieldsMap) }
+    return s
   }
 }
