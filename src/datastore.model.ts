@@ -58,7 +58,7 @@ export interface DatastoreStats {
   count: number
 }
 
-export enum DATASTORE_TYPE {
+export enum DatastoreType {
   Blob = 'Blob',
   Text = 'Text',
   String = 'String', // eslint-disable-line id-blacklist
@@ -73,7 +73,7 @@ export enum DATASTORE_TYPE {
 export interface DatastorePropertyStats {
   kind_name: string
   property_name: string
-  property_type: DATASTORE_TYPE
+  property_type: DatastoreType
   count: number
   bytes: number
   entity_bytes: number

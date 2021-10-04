@@ -1,3 +1,4 @@
+import { Transform } from 'stream'
 import type { Datastore, Key, Query } from '@google-cloud/datastore'
 import {
   BaseCommonDB,
@@ -23,7 +24,6 @@ import {
 } from '@naturalcycles/js-lib'
 import { ReadableTyped } from '@naturalcycles/nodejs-lib'
 import { boldWhite } from '@naturalcycles/nodejs-lib/dist/colors'
-import { Transform } from 'stream'
 import {
   DatastoreDBCfg,
   DatastoreDBOptions,
@@ -31,7 +31,7 @@ import {
   DatastorePayload,
   DatastorePropertyStats,
   DatastoreStats,
-  DATASTORE_TYPE,
+  DatastoreType,
 } from './datastore.model'
 import { dbQueryToDatastoreQuery } from './query.util'
 
@@ -67,8 +67,8 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       }
 
       // Lazy-loading
-      const DatastoreLib = require('@google-cloud/datastore')
-      const DS = DatastoreLib.Datastore as typeof Datastore
+      const datastoreLib = require('@google-cloud/datastore')
+      const DS = datastoreLib.Datastore as typeof Datastore
       this.cfg.projectId =
         this.cfg.projectId ||
         this.cfg.credentials?.project_id ||
@@ -359,6 +359,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     const stats = await this.getTableProperties(table)
 
     const s: JsonSchemaObject<ROW> = {
+      $id: `${table}.schema.json`,
       type: 'object',
       properties: {
         id: { type: 'string' },
@@ -372,37 +373,37 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       .forEach(stats => {
         const { property_name: name, property_type: dtype } = stats
 
-        if (dtype === DATASTORE_TYPE.Blob) {
+        if (dtype === DatastoreType.Blob) {
           s.properties[name] = {
             instanceof: 'Buffer',
           } as JsonSchemaAny
-        } else if (dtype === DATASTORE_TYPE.Text || dtype === DATASTORE_TYPE.String) {
+        } else if (dtype === DatastoreType.Text || dtype === DatastoreType.String) {
           s.properties[name] = {
             type: 'string',
           } as JsonSchemaString
-        } else if (dtype === DATASTORE_TYPE.EmbeddedEntity) {
+        } else if (dtype === DatastoreType.EmbeddedEntity) {
           s.properties[name] = {
             type: 'object',
             additionalProperties: true,
             properties: {},
             required: [],
           } as JsonSchemaObject
-        } else if (dtype === DATASTORE_TYPE.Integer) {
+        } else if (dtype === DatastoreType.Integer) {
           s.properties[name] = {
             type: 'integer',
           } as JsonSchemaNumber
-        } else if (dtype === DATASTORE_TYPE.Float) {
+        } else if (dtype === DatastoreType.Float) {
           s.properties[name] = {
             type: 'number',
           } as JsonSchemaNumber
-        } else if (dtype === DATASTORE_TYPE.Boolean) {
+        } else if (dtype === DatastoreType.Boolean) {
           s.properties[name] = {
             type: 'boolean',
           } as JsonSchemaBoolean
-        } else if (dtype === DATASTORE_TYPE.DATE_TIME) {
+        } else if (dtype === DatastoreType.DATE_TIME) {
           // Don't know how to map it properly
           s.properties[name] = {} as JsonSchemaAny
-        } else if (dtype === DATASTORE_TYPE.NULL) {
+        } else if (dtype === DatastoreType.NULL) {
           // check, maybe we can just skip this type and do nothing?
           if (!s.properties[name]) {
             s.properties[name] = {

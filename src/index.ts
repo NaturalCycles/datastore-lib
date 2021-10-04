@@ -5,7 +5,7 @@ import {
   DatastorePayload,
   DatastorePropertyStats,
   DatastoreStats,
-  DATASTORE_TYPE,
+  DatastoreType,
 } from './datastore.model'
 import { DatastoreKeyValueDB, DatastoreKeyValueDBCfg } from './datastoreKeyValueDB'
 import { getDBAdapter } from './dbAdapter'
@@ -19,4 +19,4 @@ export type {
   DatastorePropertyStats,
 }
 
-export { DatastoreDB, DATASTORE_TYPE, getDBAdapter, DatastoreKeyValueDB }
+export { DatastoreDB, DatastoreType, getDBAdapter, DatastoreKeyValueDB }
