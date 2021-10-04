@@ -21,6 +21,7 @@ import {
   _assert,
   _chunk,
   _omit,
+  JsonSchemaRootObject,
 } from '@naturalcycles/js-lib'
 import { ReadableTyped } from '@naturalcycles/nodejs-lib'
 import { boldWhite } from '@naturalcycles/nodejs-lib/dist/colors'
@@ -355,10 +356,10 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
   override async getTableSchema<ROW extends ObjectWithId>(
     table: string,
-  ): Promise<JsonSchemaObject<ROW>> {
+  ): Promise<JsonSchemaRootObject<ROW>> {
     const stats = await this.getTableProperties(table)
 
-    const s: JsonSchemaObject<ROW> = {
+    const s: JsonSchemaRootObject<ROW> = {
       $id: `${table}.schema.json`,
       type: 'object',
       properties: {
