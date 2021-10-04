@@ -1,3 +1,10 @@
+# [3.14.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.13.0...v3.14.0) (2021-10-04)
+
+
+### Features
+
+* support $id=`${table}.schema.json` ([afe235d](https://github.com/NaturalCycles/datastore-lib/commit/afe235d2c1e556a34391f241517f87f6c52f57de))
+
 # [3.13.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.12.2...v3.13.0) (2021-10-01)
 
 
