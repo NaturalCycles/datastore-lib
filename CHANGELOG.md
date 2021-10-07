@@ -1,3 +1,10 @@
+# [3.16.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.15.0...v3.16.0) (2021-10-07)
+
+
+### Features
+
+* allow to set streamOptions in DatastoreCfg ([c9fb5f0](https://github.com/NaturalCycles/datastore-lib/commit/c9fb5f08760f113d3b563ce80579df189d06b7b1))
+
 # [3.15.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.14.1...v3.15.0) (2021-10-07)
 
 
