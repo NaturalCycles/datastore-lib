@@ -1,3 +1,10 @@
+# [3.15.0](https://github.com/NaturalCycles/datastore-lib/compare/v3.14.1...v3.15.0) (2021-10-07)
+
+
+### Features
+
+* experimentalCursorStream mode to fix backpressure ([419f8e1](https://github.com/NaturalCycles/datastore-lib/commit/419f8e16ccb9722771a01b90001ae19f2a7a8595))
+
 ## [3.14.1](https://github.com/NaturalCycles/datastore-lib/compare/v3.14.0...v3.14.1) (2021-10-04)
 
 
