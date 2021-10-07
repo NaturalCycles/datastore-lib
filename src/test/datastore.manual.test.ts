@@ -21,6 +21,10 @@ const credentials = JSON.parse(SECRET_GCP_SERVICE_ACCOUNT)
 export const datastoreDB = new DatastoreDB({
   credentials,
   useLegacyGRPC: true,
+  streamOptions: {
+    // experimentalCursorStream: true,
+    // debug: true,
+  },
 })
 
 // Seems like consistency quirks are no longer needed?
@@ -29,7 +33,8 @@ const features: CommonDBImplementationFeatures = {
   // strongConsistency: false,
 }
 const quirks: CommonDBImplementationQuirks = {
-  eventualConsistencyDelay: 100,
+  // 2021-10-07: fails when set to 100, bumped up to 300
+  eventualConsistencyDelay: 300,
 }
 
 describe('runCommonDBTest', () => runCommonDBTest(datastoreDB, features, quirks))

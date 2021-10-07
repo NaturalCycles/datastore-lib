@@ -16,6 +16,9 @@ process.env['APP_ENV'] = 'master'
 const db = new DatastoreDB({
   credentials: JSON.parse(SECRET_GCP_SERVICE_ACCOUNT),
   useLegacyGRPC: true,
+  streamOptions: {
+    // experimentalCursorStream: true,
+  },
 })
 
 // const TABLE = 'TEST1'
@@ -49,7 +52,7 @@ runScript(async () => {
       experimentalCursorStream: true,
       batchSize: 1000,
       rssLimitMB: 1000,
-      debug: true,
+      // debug: true,
     }),
 
     // This thing logs every 100's object + some memory and speed metrics

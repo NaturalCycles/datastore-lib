@@ -1,7 +1,8 @@
 import { Readable } from 'stream'
 import { Query } from '@google-cloud/datastore'
 import { _ms } from '@naturalcycles/js-lib'
-import { ReadableTyped } from '@naturalcycles/nodejs-lib'
+import type { ReadableTyped } from '@naturalcycles/nodejs-lib'
+import type { DatastoreDBStreamOptions } from './datastore.model'
 
 export class DatastoreStreamReadable<T = any> extends Readable implements ReadableTyped<T> {
   private originalLimit: number
@@ -15,14 +16,22 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
   // private log = (...args: any[]): void => console.log(...args)
   private log = console.log.bind(console)
 
-  constructor(private q: Query, private batchSize = 100, private rssLimitMB = 1000, debug = false) {
+  private opt: DatastoreDBStreamOptions & { batchSize: number }
+
+  constructor(private q: Query, opt: DatastoreDBStreamOptions) {
     super({ objectMode: true })
 
-    if (!debug) this.log = () => {}
+    this.opt = {
+      rssLimitMB: 1000,
+      batchSize: 1000,
+      ...opt,
+    }
+
+    if (!opt.debug) this.log = () => {}
 
     this.originalLimit = q.limitVal
 
-    console.log(`!! using experimentalCursorStream !! batchSize: ${batchSize}`)
+    console.log(`!! using experimentalCursorStream !! batchSize: ${opt.batchSize}`)
   }
 
   private async runNextQuery(): Promise<void> {
@@ -36,10 +45,10 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
     this.running = true
     // console.log('running query...')
 
-    let limit = this.batchSize
+    let limit = this.opt.batchSize
 
     if (this.originalLimit) {
-      limit = Math.min(this.batchSize, this.originalLimit - this.rowsRetrieved)
+      limit = Math.min(this.opt.batchSize, this.originalLimit - this.rowsRetrieved)
     }
 
     // console.log(`limit: ${limit}`)
@@ -75,13 +84,13 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
         )
         this.push(null)
         this.done = true
-      } else if (this.rssLimitMB) {
+      } else if (this.opt.rssLimitMB) {
         const rssMB = Math.round(process.memoryUsage().rss / 1024 / 1024)
 
-        if (rssMB <= this.rssLimitMB) {
+        if (rssMB <= this.opt.rssLimitMB) {
           void this.runNextQuery()
         } else {
-          this.log(`rssLimitMB reached ${rssMB} > ${this.rssLimitMB}, pausing stream`)
+          this.log(`rssLimitMB reached ${rssMB} > ${this.opt.rssLimitMB}, pausing stream`)
         }
       }
     } catch (err) {

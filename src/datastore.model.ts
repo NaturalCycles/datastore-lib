@@ -29,6 +29,12 @@ export interface DatastoreDBCfg extends DatastoreOptions {
    * Allows to set the old native library here, e.g `grpc: require('grpc')`
    */
   grpc?: any
+
+  /**
+   * Use it to set default options to stream operations,
+   * e.g you can globally enable `experimentalCursorStream` here, set the batchSize, etc.
+   */
+  streamOptions?: DatastoreDBStreamOptions
 }
 
 export interface DatastoreCredentials {
@@ -53,7 +59,7 @@ export interface DatastoreDBStreamOptions extends DatastoreDBOptions {
   /**
    * Applicable to `experimentalCursorStream`
    *
-   * @default 100
+   * @default 1000
    */
   batchSize?: number
 
@@ -63,6 +69,9 @@ export interface DatastoreDBStreamOptions extends DatastoreDBOptions {
    * Set to a value (number of Megabytes) to control the peak RSS size.
    * If limit is reached - streaming will pause until the stream keeps up, and then
    * resumes.
+   *
+   * Set to 0/undefined to disable. Stream will get "slow" then, cause it'll only run the query
+   * when _read is called.
    *
    * @default 1000
    */

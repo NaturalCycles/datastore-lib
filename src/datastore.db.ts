@@ -156,13 +156,18 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     }
   }
 
-  runQueryStream<ROW extends ObjectWithId>(
+  private runQueryStream<ROW extends ObjectWithId>(
     q: Query,
-    opt: DatastoreDBStreamOptions = {},
+    _opt?: DatastoreDBStreamOptions,
   ): ReadableTyped<ROW> {
+    const opt = {
+      ...this.cfg.streamOptions,
+      ..._opt,
+    }
+
     return (
       opt.experimentalCursorStream
-        ? new DatastoreStreamReadable(q, opt.batchSize, opt.rssLimitMB, opt.debug)
+        ? new DatastoreStreamReadable(q, opt)
         : this.ds().runQueryStream(q)
     ).pipe(
       new Transform({
@@ -176,7 +181,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
   override streamQuery<ROW extends ObjectWithId>(
     dbQuery: DBQuery<ROW>,
-    opt: DatastoreDBStreamOptions = {},
+    opt?: DatastoreDBStreamOptions,
   ): ReadableTyped<ROW> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
     return this.runQueryStream(q, opt)
