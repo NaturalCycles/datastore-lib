@@ -2,6 +2,9 @@ import { DatastoreDB } from './datastore.db'
 import {
   DatastoreCredentials,
   DatastoreDBCfg,
+  DatastoreDBOptions,
+  DatastoreDBSaveOptions,
+  DatastoreDBStreamOptions,
   DatastorePayload,
   DatastorePropertyStats,
   DatastoreStats,
@@ -17,6 +20,9 @@ export type {
   DatastoreStats,
   DatastoreCredentials,
   DatastorePropertyStats,
+  DatastoreDBStreamOptions,
+  DatastoreDBOptions,
+  DatastoreDBSaveOptions,
 }
 
 export { DatastoreDB, DatastoreType, getDBAdapter, DatastoreKeyValueDB }

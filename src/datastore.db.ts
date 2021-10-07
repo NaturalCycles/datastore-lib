@@ -29,11 +29,13 @@ import {
   DatastoreDBCfg,
   DatastoreDBOptions,
   DatastoreDBSaveOptions,
+  DatastoreDBStreamOptions,
   DatastorePayload,
   DatastorePropertyStats,
   DatastoreStats,
   DatastoreType,
 } from './datastore.model'
+import { DatastoreStreamReadable } from './DatastoreStreamReadable'
 import { dbQueryToDatastoreQuery } from './query.util'
 
 // Datastore (also Firestore and other Google APIs) supports max 500 of items when saving/deleting, etc.
@@ -154,29 +156,30 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     }
   }
 
-  runQueryStream<ROW extends ObjectWithId>(q: Query): ReadableTyped<ROW> {
+  runQueryStream<ROW extends ObjectWithId>(
+    q: Query,
+    opt: DatastoreDBStreamOptions = {},
+  ): ReadableTyped<ROW> {
     return (
-      this.ds()
-        .runQueryStream(q)
-        // Important that new instance of Transform should be created every time!
-        // Otherwise they share shate and affect each other
-        .pipe(
-          new Transform({
-            objectMode: true,
-            transform: (chunk, _enc, cb) => {
-              cb(null, this.mapId(chunk))
-            },
-          }),
-        )
+      opt.experimentalCursorStream
+        ? new DatastoreStreamReadable(q, opt.batchSize, opt.rssLimitMB, opt.debug)
+        : this.ds().runQueryStream(q)
+    ).pipe(
+      new Transform({
+        objectMode: true,
+        transform: (chunk, _enc, cb) => {
+          cb(null, this.mapId(chunk))
+        },
+      }),
     )
   }
 
   override streamQuery<ROW extends ObjectWithId>(
     dbQuery: DBQuery<ROW>,
-    _opt?: DatastoreDBOptions,
+    opt: DatastoreDBStreamOptions = {},
   ): ReadableTyped<ROW> {
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
-    return this.runQueryStream(q)
+    return this.runQueryStream(q, opt)
   }
 
   // https://github.com/GoogleCloudPlatform/nodejs-getting-started/blob/master/2-structured-data/books/model-datastore.js

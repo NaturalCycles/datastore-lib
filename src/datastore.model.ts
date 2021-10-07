@@ -42,6 +42,40 @@ export interface DatastoreCredentials {
   refresh_token?: string
 }
 
+export interface DatastoreDBStreamOptions extends DatastoreDBOptions {
+  /**
+   * Set to `true` to stream via experimental "cursor-query based stream".
+   *
+   * @default false
+   */
+  experimentalCursorStream?: boolean
+
+  /**
+   * Applicable to `experimentalCursorStream`
+   *
+   * @default 100
+   */
+  batchSize?: number
+
+  /**
+   * Applicable to `experimentalCursorStream`
+   *
+   * Set to a value (number of Megabytes) to control the peak RSS size.
+   * If limit is reached - streaming will pause until the stream keeps up, and then
+   * resumes.
+   *
+   * @default 1000
+   */
+  rssLimitMB?: number
+
+  /**
+   * Set to `true` to log additional debug info, when using experimentalCursorStream.
+   *
+   * @default false
+   */
+  debug?: boolean
+}
+
 export interface DatastoreDBOptions extends CommonDBOptions {
   tx?: Transaction
 }
