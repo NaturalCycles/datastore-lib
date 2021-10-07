@@ -105,7 +105,7 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
     // console.log(`_read called ${++this.count}, wasRunning: ${this.running}`) // debugging
     this.count++
     if (this.running) {
-      console.warn(`_read ${this.count}, wasRunning: true`)
+      this.log(`_read ${this.count}, wasRunning: true`)
     }
 
     if (this.done) {
