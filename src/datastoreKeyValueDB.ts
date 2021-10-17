@@ -9,7 +9,7 @@ interface KVObject {
   v: Buffer
 }
 
-const excludeFromIndexes = ['v']
+const excludeFromIndexes: (keyof KVObject)[] = ['v']
 
 export interface DatastoreKeyValueDBCfg extends DatastoreDBCfg {}
 

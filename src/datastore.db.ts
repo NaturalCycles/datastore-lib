@@ -195,9 +195,11 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   override async saveBatch<ROW extends ObjectWithId>(
     table: string,
     rows: ROW[],
-    opt: DatastoreDBSaveOptions = {},
+    opt: DatastoreDBSaveOptions<ROW> = {},
   ): Promise<void> {
-    const entities = rows.map(obj => this.toDatastoreEntity(table, obj, opt.excludeFromIndexes))
+    const entities = rows.map(obj =>
+      this.toDatastoreEntity(table, obj, opt.excludeFromIndexes as string[]),
+    )
 
     const save = pRetry(
       async (batch: DatastorePayload<ROW>[]) => {
