@@ -1,6 +1,10 @@
 import type { DatastoreOptions, Key, Transaction } from '@google-cloud/datastore'
-import { CommonDBOptions, CommonDBSaveOptions } from '@naturalcycles/db-lib'
-import { AnyObjectWithId, ObjectWithId } from '@naturalcycles/db-lib/src/db.model'
+import {
+  CommonDBOptions,
+  CommonDBSaveOptions,
+  AnyObjectWithId,
+  ObjectWithId,
+} from '@naturalcycles/db-lib'
 
 export interface DatastorePayload<T = any> {
   key: Key
