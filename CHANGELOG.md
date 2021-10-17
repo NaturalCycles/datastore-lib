@@ -1,3 +1,10 @@
+## [3.16.3](https://github.com/NaturalCycles/datastore-lib/compare/v3.16.2...v3.16.3) (2021-10-17)
+
+
+### Bug Fixes
+
+* types ([8ee6857](https://github.com/NaturalCycles/datastore-lib/commit/8ee6857ed14739413c7df0e9b7395fb6c9b6b85d))
+
 ## [3.16.2](https://github.com/NaturalCycles/datastore-lib/compare/v3.16.1...v3.16.2) (2021-10-17)
 
 
