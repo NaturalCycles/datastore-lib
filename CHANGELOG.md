@@ -1,3 +1,10 @@
+## [3.16.2](https://github.com/NaturalCycles/datastore-lib/compare/v3.16.1...v3.16.2) (2021-10-17)
+
+
+### Bug Fixes
+
+* adapt to latest db-lib with typed queries ([21d31ea](https://github.com/NaturalCycles/datastore-lib/commit/21d31ea7343ca0b2590950c067f6ce472dc82501))
+
 ## [3.16.1](https://github.com/NaturalCycles/datastore-lib/compare/v3.16.0...v3.16.1) (2021-10-07)
 
 
