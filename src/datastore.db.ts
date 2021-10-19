@@ -6,10 +6,10 @@ import {
   DBQuery,
   DBTransaction,
   mergeDBOperations,
-  ObjectWithId,
   RunQueryResult,
 } from '@naturalcycles/db-lib'
 import {
+  ObjectWithId,
   JsonSchemaAny,
   JsonSchemaBoolean,
   JsonSchemaNull,

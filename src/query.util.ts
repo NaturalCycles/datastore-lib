@@ -1,6 +1,6 @@
 import { Query } from '@google-cloud/datastore'
-import { DBQuery, DBQueryFilterOperator, ObjectWithId } from '@naturalcycles/db-lib'
-import { StringMap } from '@naturalcycles/js-lib'
+import { DBQuery, DBQueryFilterOperator } from '@naturalcycles/db-lib'
+import { ObjectWithId, StringMap } from '@naturalcycles/js-lib'
 // import Operator = google.datastore.v1.CompositeFilter.Operator
 
 const FNAME_MAP: StringMap = {

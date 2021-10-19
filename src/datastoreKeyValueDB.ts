@@ -1,5 +1,5 @@
-import { CommonKeyValueDB, DBQuery, KeyValueDBTuple, ObjectWithId } from '@naturalcycles/db-lib'
-import { ErrorMode } from '@naturalcycles/js-lib'
+import { CommonKeyValueDB, DBQuery, KeyValueDBTuple } from '@naturalcycles/db-lib'
+import { ErrorMode, ObjectWithId } from '@naturalcycles/js-lib'
 import { ReadableTyped, transformMapSimple } from '@naturalcycles/nodejs-lib'
 import { DatastoreDB } from './datastore.db'
 import { DatastoreDBCfg } from './datastore.model'
