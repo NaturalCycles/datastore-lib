@@ -22,6 +22,8 @@ import {
   _chunk,
   _omit,
   JsonSchemaRootObject,
+  CommonLogger,
+  commonLoggerMinLevel,
 } from '@naturalcycles/js-lib'
 import { ReadableTyped } from '@naturalcycles/nodejs-lib'
 import { boldWhite } from '@naturalcycles/nodejs-lib/dist/colors'
@@ -51,9 +53,15 @@ const RETRY_ON = ['GOAWAY', 'UNAVAILABLE', 'UNKNOWN']
  * https://cloud.google.com/datastore/docs/datastore-api-tutorial
  */
 export class DatastoreDB extends BaseCommonDB implements CommonDB {
-  constructor(public cfg: DatastoreDBCfg = {}) {
+  constructor(cfg: DatastoreDBCfg = {}) {
     super()
+    this.cfg = {
+      logger: console,
+      ...cfg,
+    }
   }
+
+  public cfg: DatastoreDBCfg & { logger: CommonLogger }
 
   private cachedDatastore?: Datastore
 
@@ -65,26 +73,26 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   // @memo() // not used to be able to connect to many DBs in the same server instance
   ds(): Datastore {
     if (!this.cachedDatastore) {
-      if (process.env['APP_ENV'] === 'test') {
-        throw new Error('DatastoreDB cannot be used in Test env, please use InMemoryDB')
-      }
+      _assert(
+        process.env['APP_ENV'] !== 'test',
+        'DatastoreDB cannot be used in Test env, please use InMemoryDB',
+      )
 
       // Lazy-loading
       const datastoreLib = require('@google-cloud/datastore')
       const DS = datastoreLib.Datastore as typeof Datastore
-      this.cfg.projectId =
-        this.cfg.projectId ||
-        this.cfg.credentials?.project_id ||
-        process.env['GOOGLE_CLOUD_PROJECT']!
+      this.cfg.projectId ||= this.cfg.credentials?.project_id || process.env['GOOGLE_CLOUD_PROJECT']
 
-      console.log(`DatastoreDB connected to ${boldWhite(this.cfg.projectId)}`)
+      _assert(this.cfg.projectId, '"projectId" is not set for DatastoreDB')
+
+      this.cfg.logger.log(`DatastoreDB connected to ${boldWhite(this.cfg.projectId)}`)
 
       if (this.cfg.useLegacyGRPC) {
         this.cfg.grpc = require('grpc')
       }
 
       if (this.cfg.grpc) {
-        console.log('!!! DatastoreDB using custom grpc !!!')
+        this.cfg.logger.log('!!! DatastoreDB using custom grpc !!!')
       }
 
       this.cachedDatastore = new DS(this.cfg)
@@ -167,7 +175,11 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
     return (
       opt.experimentalCursorStream
-        ? new DatastoreStreamReadable(q, opt)
+        ? new DatastoreStreamReadable(
+            q,
+            opt,
+            commonLoggerMinLevel(this.cfg.logger, opt.debug ? 'log' : 'warn'),
+          )
         : this.ds().runQueryStream(q)
     ).pipe(
       new Transform({
@@ -222,7 +234,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       await pMap(_chunk(entities, MAX_ITEMS), async batch => await save(batch))
     } catch (err) {
       // console.log(`datastore.save ${kind}`, { obj, entity })
-      console.error(`error in datastore.save for ${table}`, err)
+      this.cfg.logger.error(`error in datastore.save for ${table}`, err)
       // don't throw, because datastore SDK makes it in separate thread, so exception will be unhandled otherwise
       return await Promise.reject(err)
     }

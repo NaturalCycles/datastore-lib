@@ -1,6 +1,6 @@
 import type { DatastoreOptions, Key, Transaction } from '@google-cloud/datastore'
 import { CommonDBOptions, CommonDBSaveOptions } from '@naturalcycles/db-lib'
-import { AnyObjectWithId, ObjectWithId } from '@naturalcycles/js-lib'
+import { AnyObjectWithId, CommonLogger, ObjectWithId } from '@naturalcycles/js-lib'
 
 export interface DatastorePayload<T = any> {
   key: Key
@@ -36,6 +36,11 @@ export interface DatastoreDBCfg extends DatastoreOptions {
    * e.g you can globally enable `experimentalCursorStream` here, set the batchSize, etc.
    */
   streamOptions?: DatastoreDBStreamOptions
+
+  /**
+   * Default to `console`
+   */
+  logger?: CommonLogger
 }
 
 export interface DatastoreCredentials {
