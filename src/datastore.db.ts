@@ -221,12 +221,14 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
         // Here we retry the GOAWAY errors that are somewhat common for Datastore
         // Currently only retrying them here in .saveBatch(), cause probably they're only thrown when saving
         predicate: err => RETRY_ON.some(s => (err as Error)?.message.includes(s)),
+        name: `DatastoreLib.saveBatch(${table})`,
         maxAttempts: 5,
         delay: 5000,
         delayMultiplier: 2,
         logFirstAttempt: false,
         logFailures: true,
         // logAll: true,
+        logger: this.cfg.logger,
       },
     )
 
@@ -234,7 +236,10 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       await pMap(_chunk(entities, MAX_ITEMS), async batch => await save(batch))
     } catch (err) {
       // console.log(`datastore.save ${kind}`, { obj, entity })
-      this.cfg.logger.error(`error in datastore.save for ${table}`, err)
+      this.cfg.logger.error(
+        `error in DatastoreLib.saveBatch for ${table} (${rows.length} rows)`,
+        err,
+      )
       // don't throw, because datastore SDK makes it in separate thread, so exception will be unhandled otherwise
       return await Promise.reject(err)
     }
