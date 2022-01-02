@@ -76,4 +76,9 @@ export class DatastoreKeyValueDB implements CommonKeyValueDB {
       }),
     )
   }
+
+  async count(_table: string): Promise<number> {
+    this.db.cfg.logger.warn(`DatastoreKeyValueDB.count is not supported`)
+    return 0
+  }
 }
