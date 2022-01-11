@@ -41,6 +41,14 @@ export interface DatastoreDBCfg extends DatastoreOptions {
    * Default to `console`
    */
   logger?: CommonLogger
+
+  /**
+   * Experimental option, currently only applies to `getByIds`.
+   * Applies pTimeout to Datastore operation, re-creates Datastore on any error.
+   *
+   * @experimental
+   */
+  timeout?: number
 }
 
 export interface DatastoreCredentials {

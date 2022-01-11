@@ -24,6 +24,7 @@ import {
   JsonSchemaRootObject,
   CommonLogger,
   commonLoggerMinLevel,
+  pTimeout,
 } from '@naturalcycles/js-lib'
 import { ReadableTyped } from '@naturalcycles/nodejs-lib'
 import { boldWhite } from '@naturalcycles/nodejs-lib/dist/colors'
@@ -116,7 +117,15 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     let rows: any[]
 
     try {
-      rows = (await this.ds().get(keys))[0]
+      if (this.cfg.timeout) {
+        const r = await pTimeout(this.ds().get(keys), {
+          timeout: this.cfg.timeout,
+          name: `datastore.getByIds(${table})`,
+        })
+        rows = r[0]
+      } else {
+        rows = (await this.ds().get(keys))[0]
+      }
     } catch (err) {
       this.cfg.logger.log('datastore recreated on error')
 
