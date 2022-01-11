@@ -113,11 +113,24 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   ): Promise<ROW[]> {
     if (!ids.length) return []
     const keys = ids.map(id => this.key(table, id))
-    const [entities] = await this.ds().get(keys)
+    let rows: any[]
+
+    try {
+      rows = (await this.ds().get(keys))[0]
+    } catch (err) {
+      this.cfg.logger.log('datastore recreated on error')
+
+      // This is to debug "GCP Datastore Timeout issue"
+      const datastoreLib = require('@google-cloud/datastore')
+      const DS = datastoreLib.Datastore as typeof Datastore
+      this.cachedDatastore = new DS(this.cfg)
+
+      throw err
+    }
 
     return (
-      (entities as any[])
-        .map(e => this.mapId<ROW>(e))
+      rows
+        .map(r => this.mapId<ROW>(r))
         // Seems like datastore .get() method doesn't return items properly sorted by input ids, so we gonna sort them here
         // same ids are not expected here
         .sort((a, b) => (a.id > b.id ? 1 : -1))
