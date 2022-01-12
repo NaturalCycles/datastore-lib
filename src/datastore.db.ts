@@ -86,7 +86,11 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
       _assert(this.cfg.projectId, '"projectId" is not set for DatastoreDB')
 
-      this.cfg.logger.log(`DatastoreDB connected to ${boldWhite(this.cfg.projectId)}`)
+      if (this.cfg.projectId) {
+        this.cfg.logger.log(`DatastoreDB connected to ${boldWhite(this.cfg.projectId)}`)
+      } else if (process.env['GOOGLE_APPLICATION_CREDENTIALS']) {
+        this.cfg.logger.log(`DatastoreDB connected via GOOGLE_APPLICATION_CREDENTIALS`)
+      }
 
       if (this.cfg.useLegacyGRPC) {
         this.cfg.grpc = require('grpc')
