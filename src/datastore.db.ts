@@ -84,8 +84,6 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       const DS = datastoreLib.Datastore as typeof Datastore
       this.cfg.projectId ||= this.cfg.credentials?.project_id || process.env['GOOGLE_CLOUD_PROJECT']
 
-      _assert(this.cfg.projectId, '"projectId" is not set for DatastoreDB')
-
       if (this.cfg.projectId) {
         this.cfg.logger.log(`DatastoreDB connected to ${boldWhite(this.cfg.projectId)}`)
       } else if (process.env['GOOGLE_APPLICATION_CREDENTIALS']) {
