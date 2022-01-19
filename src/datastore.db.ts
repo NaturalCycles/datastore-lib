@@ -17,7 +17,6 @@ import {
   JsonSchemaObject,
   JsonSchemaString,
   pMap,
-  pRetry,
   _assert,
   _chunk,
   _omit,
@@ -25,6 +24,7 @@ import {
   CommonLogger,
   commonLoggerMinLevel,
   pTimeout,
+  pRetryFn,
 } from '@naturalcycles/js-lib'
 import { ReadableTyped } from '@naturalcycles/nodejs-lib'
 import { boldWhite } from '@naturalcycles/nodejs-lib/dist/colors'
@@ -118,25 +118,31 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     const keys = ids.map(id => this.key(table, id))
     let rows: any[]
 
-    try {
-      if (this.cfg.timeout) {
+    if (this.cfg.timeout) {
+      // First try
+      try {
         const r = await pTimeout(this.ds().get(keys), {
           timeout: this.cfg.timeout,
           name: `datastore.getByIds(${table})`,
         })
         rows = r[0]
-      } else {
-        rows = (await this.ds().get(keys))[0]
+      } catch {
+        this.cfg.logger.log('datastore recreated on error')
+
+        // This is to debug "GCP Datastore Timeout issue"
+        const datastoreLib = require('@google-cloud/datastore')
+        const DS = datastoreLib.Datastore as typeof Datastore
+        this.cachedDatastore = new DS(this.cfg)
+
+        // Second try (will throw)
+        const r = await pTimeout(this.ds().get(keys), {
+          timeout: this.cfg.timeout,
+          name: `datastore.getByIds(${table}) second try`,
+        })
+        rows = r[0]
       }
-    } catch (err) {
-      this.cfg.logger.log('datastore recreated on error')
-
-      // This is to debug "GCP Datastore Timeout issue"
-      const datastoreLib = require('@google-cloud/datastore')
-      const DS = datastoreLib.Datastore as typeof Datastore
-      this.cachedDatastore = new DS(this.cfg)
-
-      throw err
+    } else {
+      rows = (await this.ds().get(keys))[0]
     }
 
     return (
@@ -237,14 +243,14 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       this.toDatastoreEntity(table, obj, opt.excludeFromIndexes as string[]),
     )
 
-    const save = pRetry(
+    const save = pRetryFn(
       async (batch: DatastorePayload<ROW>[]) => {
         await (opt.tx || this.ds()).save(batch)
       },
       {
         // Here we retry the GOAWAY errors that are somewhat common for Datastore
         // Currently only retrying them here in .saveBatch(), cause probably they're only thrown when saving
-        predicate: err => RETRY_ON.some(s => (err as Error)?.message.includes(s)),
+        predicate: err => RETRY_ON.some(s => err?.message?.includes(s)),
         name: `DatastoreLib.saveBatch(${table})`,
         maxAttempts: 5,
         delay: 5000,
@@ -257,15 +263,21 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     )
 
     try {
-      await pMap(_chunk(entities, MAX_ITEMS), async batch => await save(batch))
+      const chunks = _chunk(entities, MAX_ITEMS)
+      if (chunks.length === 1) {
+        // Not using pMap in hope to preserve stack trace
+        await save(chunks[0]!)
+      } else {
+        await pMap(chunks, async batch => await save(batch))
+      }
     } catch (err) {
       // console.log(`datastore.save ${kind}`, { obj, entity })
       this.cfg.logger.error(
         `error in DatastoreLib.saveBatch for ${table} (${rows.length} rows)`,
         err,
       )
-      // don't throw, because datastore SDK makes it in separate thread, so exception will be unhandled otherwise
-      return await Promise.reject(err)
+
+      throw err
     }
   }
 
