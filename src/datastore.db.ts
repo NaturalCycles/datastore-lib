@@ -138,6 +138,10 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
         const r = await pTimeout(this.ds().get(keys), {
           timeout: this.cfg.timeout,
           name: `datastore.getByIds(${table}) second try`,
+          errorData: {
+            // This error will be grouped ACROSS all endpoints and usages
+            fingerprint: ['DATASTORE_TIMEOUT'],
+          },
         })
         rows = r[0]
       }
