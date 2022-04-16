@@ -3,6 +3,7 @@ import type { Datastore, Key, Query } from '@google-cloud/datastore'
 import {
   BaseCommonDB,
   CommonDB,
+  CommonDBSaveMethod,
   DBQuery,
   DBTransaction,
   mergeDBOperations,
@@ -47,6 +48,12 @@ const MAX_ITEMS = 500
 const RETRY_ON = ['GOAWAY', 'UNAVAILABLE', 'UNKNOWN']
 // Examples of errors:
 // UNKNOWN: Stream removed
+
+const methodMap: Record<CommonDBSaveMethod, string> = {
+  insert: 'insert',
+  update: 'update',
+  upsert: 'save',
+}
 
 /**
  * Datastore API:
@@ -238,7 +245,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   /**
    * Returns saved entities with generated id/updated/created (non-mutating!)
    */
-  override async saveBatch<ROW extends ObjectWithId>(
+  override async saveBatch<ROW extends Partial<ObjectWithId>>(
     table: string,
     rows: ROW[],
     opt: DatastoreDBSaveOptions<ROW> = {},
@@ -247,9 +254,11 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       this.toDatastoreEntity(table, obj, opt.excludeFromIndexes as string[]),
     )
 
+    const method = methodMap[opt.saveMethod || 'upsert'] || 'save'
+
     const save = pRetryFn(
       async (batch: DatastorePayload<ROW>[]) => {
-        await (opt.tx || this.ds()).save(batch)
+        await (opt.tx || this.ds())[method](batch)
       },
       {
         // Here we retry the GOAWAY errors that are somewhat common for Datastore

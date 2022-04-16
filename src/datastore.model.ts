@@ -102,7 +102,7 @@ export interface DatastoreDBStreamOptions extends DatastoreDBOptions {
 export interface DatastoreDBOptions extends CommonDBOptions {
   tx?: Transaction
 }
-export interface DatastoreDBSaveOptions<ROW extends ObjectWithId = AnyObjectWithId>
+export interface DatastoreDBSaveOptions<ROW extends Partial<ObjectWithId> = AnyObjectWithId>
   extends CommonDBSaveOptions<ROW> {
   tx?: Transaction
 }

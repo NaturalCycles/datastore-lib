@@ -11,7 +11,6 @@ import {
   DatastoreType,
 } from './datastore.model'
 import { DatastoreKeyValueDB, DatastoreKeyValueDBCfg } from './datastoreKeyValueDB'
-import { getDBAdapter } from './dbAdapter'
 
 export type {
   DatastorePayload,
@@ -25,4 +24,4 @@ export type {
   DatastoreDBSaveOptions,
 }
 
-export { DatastoreDB, DatastoreType, getDBAdapter, DatastoreKeyValueDB }
+export { DatastoreDB, DatastoreType, DatastoreKeyValueDB }
