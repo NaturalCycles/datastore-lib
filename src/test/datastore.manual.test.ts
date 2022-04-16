@@ -34,7 +34,7 @@ const features: CommonDBImplementationFeatures = {
 }
 const quirks: CommonDBImplementationQuirks = {
   // 2021-10-07: fails when set to 100, bumped up to 300
-  eventualConsistencyDelay: 300,
+  // eventualConsistencyDelay: 300,
 }
 
 describe('runCommonDBTest', () => runCommonDBTest(datastoreDB, features, quirks))

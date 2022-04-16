@@ -111,7 +111,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
   override async getByIds<ROW extends ObjectWithId>(
     table: string,
-    ids: string[],
+    ids: ROW['id'][],
     _opt?: DatastoreDBOptions,
   ): Promise<ROW[]> {
     if (!ids.length) return []
@@ -302,9 +302,9 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
    * Limitation: Datastore's delete returns void, so we always return all ids here as "deleted"
    * regardless if they were actually deleted or not.
    */
-  override async deleteByIds(
+  override async deleteByIds<ROW extends ObjectWithId>(
     table: string,
-    ids: string[],
+    ids: ROW['id'][],
     opt: DatastoreDBOptions = {},
   ): Promise<number> {
     const keys = ids.map(id => this.key(table, id))
@@ -386,7 +386,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   // if key field exists on entity, it will be used as key (prevent to duplication of numeric keyed entities)
   toDatastoreEntity<T = any>(
     kind: string,
-    o: T & { id?: string },
+    o: T & { id?: string | number },
     excludeFromIndexes: string[] = [],
   ): DatastorePayload<T> {
     const key = this.getDsKey(o) || this.key(kind, o.id!)
@@ -401,7 +401,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     }
   }
 
-  key(kind: string, id: string): Key {
+  key(kind: string, id: string | number): Key {
     _assert(id, `Cannot save "${kind}" entity without "id"`)
     return this.ds().key([kind, String(id)])
   }
