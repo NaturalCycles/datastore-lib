@@ -9,7 +9,5 @@ test('should throw on missing id', async () => {
 
   await expect(
     db.saveBatch(TEST_TABLE, [{ k: 'k' } as any]),
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"Cannot save \\"TEST_TABLE\\" entity without \\"id\\""`,
-  )
+  ).rejects.toThrowErrorMatchingInlineSnapshot(`"Cannot save "TEST_TABLE" entity without "id""`)
 })
