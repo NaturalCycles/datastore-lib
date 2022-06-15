@@ -1,7 +1,6 @@
 import { Query } from '@google-cloud/datastore'
 import { DBQuery, DBQueryFilterOperator } from '@naturalcycles/db-lib'
 import { ObjectWithId, StringMap } from '@naturalcycles/js-lib'
-// import Operator = google.datastore.v1.CompositeFilter.Operator
 
 const FNAME_MAP: StringMap = {
   id: '__key__',
@@ -9,6 +8,8 @@ const FNAME_MAP: StringMap = {
 
 const OP_MAP: Partial<Record<DBQueryFilterOperator, string>> = {
   '==': '=',
+  in: 'IN',
+  'not-in': 'NOT_IN',
 }
 
 export function dbQueryToDatastoreQuery<ROW extends ObjectWithId>(

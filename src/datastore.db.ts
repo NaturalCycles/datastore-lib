@@ -448,7 +448,8 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     stats
       .filter(s => !s.property_name.includes('.') && s.property_name !== 'id') // filter out objectify's "virtual properties"
       .forEach(stats => {
-        const { property_name: name, property_type: dtype } = stats
+        const { property_type: dtype } = stats
+        const name = stats.property_name as keyof ROW
 
         if (dtype === DatastoreType.Blob) {
           s.properties[name] = {
@@ -488,7 +489,9 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
             } as JsonSchemaNull
           }
         } else {
-          throw new Error(`Unknown Datastore Type '${stats.property_type}' for ${table}.${name}`)
+          throw new Error(
+            `Unknown Datastore Type '${stats.property_type}' for ${table}.${name as string}`,
+          )
         }
       })
 
