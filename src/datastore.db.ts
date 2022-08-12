@@ -45,7 +45,7 @@ import { dbQueryToDatastoreQuery } from './query.util'
 // Datastore (also Firestore and other Google APIs) supports max 500 of items when saving/deleting, etc.
 const MAX_ITEMS = 500
 
-const RETRY_ON = ['GOAWAY', 'UNAVAILABLE', 'UNKNOWN']
+const RETRY_ON = ['GOAWAY', 'UNAVAILABLE', 'UNKNOWN', 'much contention']
 // Examples of errors:
 // UNKNOWN: Stream removed
 
