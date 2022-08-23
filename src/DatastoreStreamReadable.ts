@@ -79,6 +79,9 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
         )
         this.push(null)
         this.done = true
+      } else if (this.opt.singleBatchBuffer) {
+        // here we don't start next query until we're asked (via next _read call)
+        // do, let's do nothing
       } else if (this.opt.rssLimitMB) {
         const rssMB = Math.round(process.memoryUsage().rss / 1024 / 1024)
 

@@ -71,7 +71,8 @@ export interface DatastoreDBStreamOptions extends DatastoreDBOptions {
   experimentalCursorStream?: boolean
 
   /**
-   * Applicable to `experimentalCursorStream`
+   * Applicable to `experimentalCursorStream`.
+   * Defines the size (limit) of each individual query.
    *
    * @default 1000
    */
@@ -90,6 +91,17 @@ export interface DatastoreDBStreamOptions extends DatastoreDBOptions {
    * @default 1000
    */
   rssLimitMB?: number
+
+  /**
+   * Applicable to `experimentalCursorStream`
+   * Default false.
+   * If true, stream will pause until consumer requests more data (via _read).
+   * It means it'll run slower, as buffer will be equal to batchSize (1000) at max.
+   * There will be gaps in time between "last query loaded" and "next query requested".
+   * This mode is useful e.g for DB migrations, where you want to avoid "stale data".
+   * So, it minimizes the time between "item loaded" and "item saved" during DB migration.
+   */
+  singleBatchBuffer?: boolean
 
   /**
    * Set to `true` to log additional debug info, when using experimentalCursorStream.

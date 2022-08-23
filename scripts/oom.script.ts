@@ -52,7 +52,8 @@ runScript(async () => {
       experimentalCursorStream: true,
       batchSize: 1000,
       rssLimitMB: 1000,
-      // debug: true,
+      singleBatchBuffer: true,
+      debug: true,
     }),
 
     // This thing logs every 100's object + some memory and speed metrics
