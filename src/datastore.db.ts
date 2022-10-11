@@ -6,7 +6,6 @@ import {
   CommonDBSaveMethod,
   DBQuery,
   DBTransaction,
-  mergeDBOperations,
   RunQueryResult,
 } from '@naturalcycles/db-lib'
 import {
@@ -334,9 +333,9 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     try {
       await tx.run()
 
-      const ops = mergeDBOperations(_tx.ops)
+      // const ops = mergeDBOperations(_tx.ops)
 
-      for await (const op of ops) {
+      for await (const op of _tx.ops) {
         if (op.type === 'saveBatch') {
           await this.saveBatch(op.table, op.rows, { ...opt, tx })
         } else if (op.type === 'deleteByIds') {
