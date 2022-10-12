@@ -842,9 +842,9 @@
     typescript "^4.0.2"
 
 "@naturalcycles/db-lib@^8.0.0":
-  version "8.42.0"
-  resolved "https://registry.yarnpkg.com/@naturalcycles/db-lib/-/db-lib-8.42.0.tgz#1302add91b0db0692a76ce992380327e3c41e2cc"
-  integrity sha512-31KOVT5zL2kQ/iSVLnXHXLwgBzWJod86k/tLXag+IcZjNs9xc/AKwd5LGAXOU6SBvZl86ylaSlQp4f8KpestTg==
+  version "8.43.4"
+  resolved "https://registry.yarnpkg.com/@naturalcycles/db-lib/-/db-lib-8.43.4.tgz#2608630b1e4c385db6b26f7535abd540d86d5e3e"
+  integrity sha512-CprRzOIVwaK9/3lUJWEXB/daJSe3yCZLuLQbtiwZ/BBdd59xFpl8pZksAwVkWbOkpZSLtSwkMS4HgzIGT0FAdQ==
   dependencies:
     "@naturalcycles/js-lib" "^14.0.0"
     "@naturalcycles/nodejs-lib" "^12.0.0"
@@ -892,9 +892,9 @@
     yargs "^17.0.0"
 
 "@naturalcycles/js-lib@^14.0.0":
-  version "14.113.0"
-  resolved "https://registry.yarnpkg.com/@naturalcycles/js-lib/-/js-lib-14.113.0.tgz#65bfd16f45d26706b6cd4f9be5551cfca7fbb103"
-  integrity sha512-3cTCm6VGF/18Am7Fk58uHACTaehN5ifDHLe76aCo6FPIfOF21OcVZJVJo2kzp4Un65vpG168P66Js5MGICOqCA==
+  version "14.113.1"
+  resolved "https://registry.yarnpkg.com/@naturalcycles/js-lib/-/js-lib-14.113.1.tgz#8d39c87a66a4706ab51d98a5a5fc2e0b7d517a2a"
+  integrity sha512-jE81s2sdfvkFW63noEnRoN6i4c+HFKbxbFFVzP/Z8zHxmuze2XMZ7thIizXWQm4mnxyhjXuzj90EjScrujbIzg==
   dependencies:
     tslib "^2.0.0"
 
@@ -1018,9 +1018,9 @@
   integrity sha512-RNiOoTPkptFtSVzQevY/yWtZwf/RxyVnPy/OcA9HBM3MlGDnBEYL5B41H0MTn0Uec8Hi+2qUtTfG2WWZBmMejQ==
 
 "@sinclair/typebox@^0.24.1":
-  version "0.24.44"
-  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.24.44.tgz#0a0aa3bf4a155a678418527342a3ee84bd8caa5c"
-  integrity sha512-ka0W0KN5i6LfrSocduwliMMpqVgohtPFidKdMEOUjoOFCHcOOYkKsPRxfs5f15oPNHTm6ERAm0GV/+/LTKeiWg==
+  version "0.24.46"
+  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.24.46.tgz#57501b58023776dbbae9e25619146286440be34c"
+  integrity sha512-ng4ut1z2MCBhK/NwDVwIQp3pAUOCs/KNaW3cBxdFB2xTDrOuo1xuNmpr/9HHFhxqIvHrs1NTH3KJg6q+JSy1Kw==
 
 "@sindresorhus/is@^4.0.0":
   version "4.6.0"
@@ -1501,9 +1501,9 @@ ansi-styles@^5.0.0:
   integrity sha512-Cxwpt2SfTzTtXcfOlzGEee8O+c+MmUgGrNiBcXnuWxuFJHe6a5Hz7qwhwe5OgaSYI0IJvkLqWX1ASG+cJOkEiA==
 
 ansi-styles@^6.0.0:
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-6.2.0.tgz#24b0517e8156e12520f389a8ddf938f337f03143"
-  integrity sha512-3MWBO/XxbkDtc/qpECaUwDM0DQ++ujBjdjs0ElZvChUoPv/P7GOnl3x+R2RF2My5UJHEW5R87q556MiR8U3PLw==
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-6.2.1.tgz#0e62320cf99c21afff3b3012192546aacbfb05c5"
+  integrity sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug==
 
 anymatch@^3.0.3:
   version "3.1.2"
@@ -2293,9 +2293,9 @@ ecdsa-sig-formatter@1.0.11, ecdsa-sig-formatter@^1.0.11:
     safe-buffer "^5.0.1"
 
 electron-to-chromium@^1.4.251:
-  version "1.4.277"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.277.tgz#6dc3d9724a0a19b7ab155bf8e37967357a081dc5"
-  integrity sha512-Ej4VyUfGdVY5D2J5WHAVNqrEFBKgeNcX7p/bBQU4x/VKwvnyEvGd62NEkIK3lykLEe9Cg4MCcoWAa+u97o0u/A==
+  version "1.4.279"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.279.tgz#84267fec806a8b1c5a1daebf726c4e296e5bcdf9"
+  integrity sha512-xs7vEuSZ84+JsHSTFqqG0TE3i8EAivHomRQZhhcRvsmnjsh5C2KdhwNKf4ZRYtzq75wojpFyqb62m32Oam57wA==
 
 emittery@^0.10.2:
   version "0.10.2"

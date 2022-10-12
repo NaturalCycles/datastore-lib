@@ -1,6 +1,6 @@
 import type { DatastoreOptions, Key, Transaction } from '@google-cloud/datastore'
 import { CommonDBOptions, CommonDBSaveOptions } from '@naturalcycles/db-lib'
-import { AnyObjectWithId, CommonLogger, ObjectWithId } from '@naturalcycles/js-lib'
+import { CommonLogger, ObjectWithId } from '@naturalcycles/js-lib'
 
 export interface DatastorePayload<T = any> {
   key: Key
@@ -114,7 +114,7 @@ export interface DatastoreDBStreamOptions extends DatastoreDBOptions {
 export interface DatastoreDBOptions extends CommonDBOptions {
   tx?: Transaction
 }
-export interface DatastoreDBSaveOptions<ROW extends Partial<ObjectWithId> = AnyObjectWithId>
+export interface DatastoreDBSaveOptions<ROW extends Partial<ObjectWithId> = any>
   extends CommonDBSaveOptions<ROW> {
   tx?: Transaction
 }
