@@ -327,9 +327,9 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
         for await (const op of ops) {
           if (op.type === 'saveBatch') {
-            await this.saveBatch(op.table, op.rows, { ...opt, tx })
+            await this.saveBatch(op.table, op.rows, { ...op.opt, ...opt, tx })
           } else if (op.type === 'deleteByIds') {
-            await this.deleteByIds(op.table, op.ids, { ...opt, tx })
+            await this.deleteByIds(op.table, op.ids, { ...op.opt, ...opt, tx })
           } else {
             throw new Error(`DBOperation not supported: ${(op as any).type}`)
           }
