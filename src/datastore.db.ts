@@ -1,4 +1,4 @@
-import { Transform } from 'stream'
+import { Transform } from 'node:stream'
 import type { Datastore, Key, Query } from '@google-cloud/datastore'
 import {
   BaseCommonDB,
@@ -216,7 +216,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       ..._opt,
     }
 
-    return (
+    const stream: ReadableTyped<ROW> = (
       opt.experimentalCursorStream
         ? new DatastoreStreamReadable(
             q,
@@ -224,14 +224,18 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
             commonLoggerMinLevel(this.cfg.logger, opt.debug ? 'log' : 'warn'),
           )
         : this.ds().runQueryStream(q)
-    ).pipe(
-      new Transform({
-        objectMode: true,
-        transform: (chunk, _enc, cb) => {
-          cb(null, this.mapId(chunk))
-        },
-      }),
     )
+      .on('error', err => stream.emit('error', err))
+      .pipe(
+        new Transform({
+          objectMode: true,
+          transform: (chunk, _enc, cb) => {
+            cb(null, this.mapId(chunk))
+          },
+        }),
+      )
+
+    return stream
   }
 
   override streamQuery<ROW extends ObjectWithId>(

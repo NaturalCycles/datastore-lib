@@ -49,32 +49,47 @@ export class DatastoreKeyValueDB implements CommonKeyValueDB {
       .select(['id'])
       .limit(limit || 0)
 
-    return this.db.streamQuery<KVObject>(q).pipe(
-      transformMapSimple<ObjectWithId<string>, string>(objectWithId => objectWithId.id, {
-        errorMode: ErrorMode.SUPPRESS, // cause .pipe() cannot propagate errors
-      }),
-    )
+    const stream: ReadableTyped<string> = this.db
+      .streamQuery<KVObject>(q)
+      .on('error', err => stream.emit('error', err))
+      .pipe(
+        transformMapSimple<ObjectWithId<string>, string>(objectWithId => objectWithId.id, {
+          errorMode: ErrorMode.SUPPRESS, // cause .pipe() cannot propagate errors
+        }),
+      )
+
+    return stream
   }
 
   streamValues(table: string, limit?: number): ReadableTyped<Buffer> {
     // `select v` doesn't work for some reason
     const q = DBQuery.create(table).limit(limit || 0)
 
-    return this.db.streamQuery<KVObject>(q).pipe(
-      transformMapSimple<{ v: Buffer }, Buffer>(obj => obj.v, {
-        errorMode: ErrorMode.SUPPRESS, // cause .pipe() cannot propagate errors
-      }),
-    )
+    const stream: ReadableTyped<string> = this.db
+      .streamQuery<KVObject>(q)
+      .on('error', err => stream.emit('error', err))
+      .pipe(
+        transformMapSimple<{ v: Buffer }, Buffer>(obj => obj.v, {
+          errorMode: ErrorMode.SUPPRESS, // cause .pipe() cannot propagate errors
+        }),
+      )
+
+    return stream
   }
 
   streamEntries(table: string, limit?: number): ReadableTyped<KeyValueDBTuple> {
     const q = DBQuery.create(table).limit(limit || 0)
 
-    return this.db.streamQuery<KVObject>(q).pipe(
-      transformMapSimple<KVObject, KeyValueDBTuple>(obj => [obj.id, obj.v], {
-        errorMode: ErrorMode.SUPPRESS, // cause .pipe() cannot propagate errors
-      }),
-    )
+    const stream: ReadableTyped<string> = this.db
+      .streamQuery<KVObject>(q)
+      .on('error', err => stream.emit('error', err))
+      .pipe(
+        transformMapSimple<KVObject, KeyValueDBTuple>(obj => [obj.id, obj.v], {
+          errorMode: ErrorMode.SUPPRESS, // cause .pipe() cannot propagate errors
+        }),
+      )
+
+    return stream
   }
 
   async count(_table: string): Promise<number> {
