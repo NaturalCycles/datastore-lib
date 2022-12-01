@@ -130,7 +130,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     if (this.cfg.timeout) {
       // First try
       try {
-        const r = await pTimeout(this.ds().get(keys), {
+        const r = await pTimeout(() => this.ds().get(keys), {
           timeout: this.cfg.timeout,
           name: `datastore.getByIds(${table})`,
         })
@@ -144,7 +144,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
         this.cachedDatastore = new DS(this.cfg)
 
         // Second try (will throw)
-        const r = await pTimeout(this.ds().get(keys), {
+        const r = await pTimeout(() => this.ds().get(keys), {
           timeout: this.cfg.timeout,
           name: `datastore.getByIds(${table}) second try`,
           errorData: {
