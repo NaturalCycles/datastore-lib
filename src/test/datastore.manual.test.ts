@@ -31,6 +31,7 @@ export const datastoreDB = new DatastoreDB({
 // UPD 2021-08-05: nope, still needed
 const features: CommonDBImplementationFeatures = {
   // strongConsistency: false,
+  updateByQuery: false,
 }
 const quirks: CommonDBImplementationQuirks = {
   // 2021-10-07: fails when set to 100, bumped up to 300

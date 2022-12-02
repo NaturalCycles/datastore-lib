@@ -45,7 +45,7 @@ export class DatastoreKeyValueDB implements CommonKeyValueDB {
   }
 
   streamIds(table: string, limit?: number): ReadableTyped<string> {
-    const q = DBQuery.create(table)
+    const q = DBQuery.create<KVObject>(table)
       .select(['id'])
       .limit(limit || 0)
 
@@ -63,7 +63,7 @@ export class DatastoreKeyValueDB implements CommonKeyValueDB {
 
   streamValues(table: string, limit?: number): ReadableTyped<Buffer> {
     // `select v` doesn't work for some reason
-    const q = DBQuery.create(table).limit(limit || 0)
+    const q = DBQuery.create<KVObject>(table).limit(limit || 0)
 
     const stream: ReadableTyped<string> = this.db
       .streamQuery<KVObject>(q)
@@ -78,7 +78,7 @@ export class DatastoreKeyValueDB implements CommonKeyValueDB {
   }
 
   streamEntries(table: string, limit?: number): ReadableTyped<KeyValueDBTuple> {
-    const q = DBQuery.create(table).limit(limit || 0)
+    const q = DBQuery.create<KVObject>(table).limit(limit || 0)
 
     const stream: ReadableTyped<string> = this.db
       .streamQuery<KVObject>(q)

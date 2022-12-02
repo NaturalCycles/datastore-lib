@@ -176,6 +176,12 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     dbQuery: DBQuery<ROW>,
     _opt?: DatastoreDBOptions,
   ): Promise<RunQueryResult<ROW>> {
+    if (dbQuery._ids?.length) {
+      return {
+        rows: await this.getByIds(dbQuery.table, dbQuery._ids),
+      }
+    }
+
     const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
     const qr = await this.runDatastoreQuery<ROW>(q)
 
@@ -417,6 +423,11 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     const id = key.id || key.name
     return id?.toString()
   }
+
+  override async createTable<ROW extends ObjectWithId>(
+    _table: string,
+    _schema: JsonSchemaObject<ROW>,
+  ): Promise<void> {}
 
   override async getTables(): Promise<string[]> {
     const statsArray = await this.getAllStats()
