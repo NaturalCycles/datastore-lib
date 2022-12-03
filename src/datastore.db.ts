@@ -118,7 +118,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     await this.getAllStats()
   }
 
-  override async getByIds<ROW extends ObjectWithId>(
+  async getByIds<ROW extends ObjectWithId>(
     table: string,
     ids: ROW['id'][],
     _opt?: DatastoreDBOptions,
@@ -176,9 +176,12 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     dbQuery: DBQuery<ROW>,
     _opt?: DatastoreDBOptions,
   ): Promise<RunQueryResult<ROW>> {
-    if (dbQuery._ids?.length) {
+    const idFilter = dbQuery._filters.find(f => f.name === 'id')
+    if (idFilter) {
+      const ids: string[] = idFilter.op === '==' ? [idFilter.val] : idFilter.val
+
       return {
-        rows: await this.getByIds(dbQuery.table, dbQuery._ids),
+        rows: await this.getByIds(dbQuery.table, ids),
       }
     }
 
@@ -295,6 +298,12 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     q: DBQuery<ROW>,
     opt?: DatastoreDBOptions,
   ): Promise<number> {
+    const idFilter = q._filters.find(f => f.name === 'id')
+    if (idFilter) {
+      const ids: string[] = idFilter.op === '==' ? [idFilter.val] : idFilter.val
+      return await this.deleteByIds(q.table, ids, opt)
+    }
+
     const datastoreQuery = dbQueryToDatastoreQuery(q.select([]), this.ds().createQuery(q.table))
     const { rows } = await this.runDatastoreQuery<ROW>(datastoreQuery)
     return await this.deleteByIds(
@@ -308,7 +317,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
    * Limitation: Datastore's delete returns void, so we always return all ids here as "deleted"
    * regardless if they were actually deleted or not.
    */
-  override async deleteByIds<ROW extends ObjectWithId>(
+  async deleteByIds<ROW extends ObjectWithId>(
     table: string,
     ids: ROW['id'][],
     opt: DatastoreDBOptions = {},
