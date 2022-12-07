@@ -118,7 +118,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     await this.getAllStats()
   }
 
-  async getByIds<ROW extends ObjectWithId>(
+  override async getByIds<ROW extends ObjectWithId>(
     table: string,
     ids: ROW['id'][],
     _opt?: DatastoreDBOptions,
