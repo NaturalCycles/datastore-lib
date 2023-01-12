@@ -144,9 +144,10 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
         this.cachedDatastore = new DS(this.cfg)
 
         // Second try (will throw)
-        const r = await pTimeout(() => this.ds().get(keys), {
+        const r = await pRetry(() => this.ds().get(keys), {
+          ...this.getPRetryOptions(`datastore.getByIds(${table}) second try`),
+          maxAttempts: 3,
           timeout: this.cfg.timeout,
-          name: `datastore.getByIds(${table}) second try`,
           errorData: {
             // This error will be grouped ACROSS all endpoints and usages
             fingerprint: ['DATASTORE_TIMEOUT'],
@@ -155,7 +156,9 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
         rows = r[0]
       }
     } else {
-      rows = (await this.ds().get(keys))[0]
+      rows = await pRetry(async () => {
+        return (await this.ds().get(keys))[0]
+      }, this.getPRetryOptions(`datastore.getByIds(${table})`))
     }
 
     return (
@@ -168,7 +171,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   }
 
   getQueryKind(q: Query): string {
-    if (!q || !q.kinds || !q.kinds.length) return '' // should never be the case, but
+    if (!q?.kinds?.length) return '' // should never be the case, but
     return q.kinds[0]!
   }
 
@@ -380,7 +383,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
   async getStatsCount(table: string): Promise<number | undefined> {
     const stats = await this.getStats(table)
-    return stats && stats.count
+    return stats?.count
   }
 
   async getTableProperties(table: string): Promise<DatastorePropertyStats[]> {
@@ -391,7 +394,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return stats
   }
 
-  mapId<T = any>(o: any, preserveKey = false): T {
+  mapId<T extends ObjectWithId>(o: any, preserveKey = false): T {
     if (!o) return o
     const r = {
       ...o,
@@ -497,11 +500,9 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
           s.properties[name] = {} as JsonSchemaAny
         } else if (dtype === DatastoreType.NULL) {
           // check, maybe we can just skip this type and do nothing?
-          if (!s.properties[name]) {
-            s.properties[name] = {
-              type: 'null',
-            } as JsonSchemaNull
-          }
+          s.properties[name] ||= {
+            type: 'null',
+          } as JsonSchemaNull
         } else {
           throw new Error(
             `Unknown Datastore Type '${stats.property_type}' for ${table}.${name as string}`,
@@ -516,9 +517,10 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return {
       predicate: err => RETRY_ON.some(s => err?.message?.includes(s)),
       name,
+      timeout: 10_000,
       maxAttempts: 5,
       delay: 5000,
-      delayMultiplier: 2,
+      delayMultiplier: 1.5,
       logFirstAttempt: false,
       logFailures: true,
       // logAll: true,
