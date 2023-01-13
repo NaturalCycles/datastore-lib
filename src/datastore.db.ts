@@ -47,7 +47,14 @@ import { dbQueryToDatastoreQuery } from './query.util'
 // Datastore (also Firestore and other Google APIs) supports max 500 of items when saving/deleting, etc.
 const MAX_ITEMS = 500
 
-const RETRY_ON = ['GOAWAY', 'UNAVAILABLE', 'UNKNOWN', 'DEADLINE_EXCEEDED', 'much contention']
+const RETRY_ON = [
+  'GOAWAY',
+  'UNAVAILABLE',
+  'UNKNOWN',
+  'DEADLINE_EXCEEDED',
+  'much contention',
+  'timeout',
+].map(s => s.toLowerCase())
 // Examples of errors:
 // UNKNOWN: Stream removed
 
@@ -515,7 +522,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
   private getPRetryOptions(name: string): PRetryOptions {
     return {
-      predicate: err => RETRY_ON.some(s => err?.message?.includes(s)),
+      predicate: err => RETRY_ON.some(s => err?.message?.toLowerCase()?.includes(s)),
       name,
       timeout: 10_000,
       maxAttempts: 5,
