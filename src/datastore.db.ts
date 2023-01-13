@@ -524,7 +524,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return {
       predicate: err => RETRY_ON.some(s => err?.message?.toLowerCase()?.includes(s)),
       name,
-      timeout: 10_000,
+      timeout: 20_000,
       maxAttempts: 5,
       delay: 5000,
       delayMultiplier: 1.5,
