@@ -20,7 +20,6 @@ const credentials = JSON.parse(SECRET_GCP_SERVICE_ACCOUNT)
 
 export const datastoreDB = new DatastoreDB({
   credentials,
-  useLegacyGRPC: true,
   streamOptions: {
     // experimentalCursorStream: true,
     // debug: true,

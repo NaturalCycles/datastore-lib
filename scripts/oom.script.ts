@@ -15,7 +15,6 @@ process.env['APP_ENV'] = 'master'
 
 const db = new DatastoreDB({
   credentials: JSON.parse(SECRET_GCP_SERVICE_ACCOUNT),
-  useLegacyGRPC: true,
   streamOptions: {
     // experimentalCursorStream: true,
   },

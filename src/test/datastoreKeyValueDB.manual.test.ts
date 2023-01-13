@@ -14,7 +14,6 @@ const credentials = JSON.parse(SECRET_GCP_SERVICE_ACCOUNT)
 
 export const db = new DatastoreKeyValueDB({
   credentials,
-  useLegacyGRPC: true,
 })
 
 const dao = new CommonKeyValueDao<Buffer>({

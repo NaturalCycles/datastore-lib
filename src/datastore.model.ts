@@ -20,12 +20,6 @@ export interface DatastoreDBCfg extends DatastoreOptions {
   credentials?: DatastoreCredentials
 
   /**
-   * @default false
-   * set to `true` to load and use `grpc` module (legacy)
-   */
-  useLegacyGRPC?: boolean
-
-  /**
    * As described here: https://github.com/googleapis/nodejs-pubsub/issues/770#issuecomment-541226361
    * Allows to set the old native library here, e.g `grpc: require('grpc')`
    */

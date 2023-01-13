@@ -106,10 +106,6 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
         this.cfg.logger.log(`DatastoreDB connected via GOOGLE_APPLICATION_CREDENTIALS`)
       }
 
-      if (this.cfg.useLegacyGRPC) {
-        this.cfg.grpc = require('grpc')
-      }
-
       if (this.cfg.grpc) {
         this.cfg.logger.log('!!! DatastoreDB using custom grpc !!!')
       }
