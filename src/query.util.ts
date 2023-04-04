@@ -1,4 +1,4 @@
-import { Query } from '@google-cloud/datastore'
+import { PropertyFilter, Query } from '@google-cloud/datastore'
 import { DBQuery, DBQueryFilterOperator } from '@naturalcycles/db-lib'
 import { ObjectWithId, StringMap } from '@naturalcycles/js-lib'
 
@@ -21,7 +21,9 @@ export function dbQueryToDatastoreQuery<ROW extends ObjectWithId>(
   // filter
   // eslint-disable-next-line unicorn/no-array-reduce
   q = dbQuery._filters.reduce(
-    (q, f) => q.filter(f.name as string, OP_MAP[f.op] || (f.op as any), f.val),
+    // keeping "previous syntax" commented out
+    // (q, f) => q.filter(f.name as string, OP_MAP[f.op] || (f.op as any), f.val),
+    (q, f) => q.filter(new PropertyFilter(f.name as string, OP_MAP[f.op] || (f.op as any), f.val)),
     q,
   )
 

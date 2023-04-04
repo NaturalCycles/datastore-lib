@@ -1,4 +1,5 @@
 import { Transform } from 'node:stream'
+import { PropertyFilter } from '@google-cloud/datastore'
 import type { Datastore, Key, Query } from '@google-cloud/datastore'
 import {
   BaseCommonDB,
@@ -378,7 +379,11 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
    * Returns undefined e.g when Table is non-existing
    */
   async getStats(table: string): Promise<DatastoreStats | undefined> {
-    const q = this.ds().createQuery('__Stat_Kind__').filter('kind_name', table).limit(1)
+    const q = this.ds()
+      .createQuery('__Stat_Kind__')
+      // .filter('kind_name', table)
+      .filter(new PropertyFilter('kind_name', '=', table))
+      .limit(1)
     const [statsArray] = await this.ds().runQuery(q)
     const [stats] = statsArray
     return stats
@@ -392,7 +397,8 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   async getTableProperties(table: string): Promise<DatastorePropertyStats[]> {
     const q = this.ds()
       .createQuery('__Stat_PropertyType_PropertyName_Kind__')
-      .filter('kind_name', table)
+      // .filter('kind_name', table)
+      .filter(new PropertyFilter('kind_name', '=', table))
     const [stats] = await this.ds().runQuery(q)
     return stats
   }
