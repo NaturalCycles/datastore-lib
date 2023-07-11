@@ -17,7 +17,11 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
 
   private opt: DatastoreDBStreamOptions & { batchSize: number }
 
-  constructor(private q: Query, opt: DatastoreDBStreamOptions, private logger: CommonLogger) {
+  constructor(
+    private q: Query,
+    opt: DatastoreDBStreamOptions,
+    private logger: CommonLogger,
+  ) {
     super({ objectMode: true })
 
     this.opt = {

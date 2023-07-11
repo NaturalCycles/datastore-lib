@@ -79,7 +79,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     }
   }
 
-  public cfg: DatastoreDBCfg & { logger: CommonLogger }
+  cfg: DatastoreDBCfg & { logger: CommonLogger }
 
   private cachedDatastore?: Datastore
 
@@ -160,9 +160,12 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
         rows = r[0]
       }
     } else {
-      rows = await pRetry(async () => {
-        return (await this.ds().get(keys))[0]
-      }, this.getPRetryOptions(`datastore.getByIds(${table})`))
+      rows = await pRetry(
+        async () => {
+          return (await this.ds().get(keys))[0]
+        },
+        this.getPRetryOptions(`datastore.getByIds(${table})`),
+      )
     }
 
     return (
@@ -278,9 +281,12 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
     const method = methodMap[opt.saveMethod || 'upsert'] || 'save'
 
-    const save = pRetryFn(async (batch: DatastorePayload<ROW>[]) => {
-      await (opt.tx || this.ds())[method](batch)
-    }, this.getPRetryOptions(`DatastoreLib.saveBatch(${table})`))
+    const save = pRetryFn(
+      async (batch: DatastorePayload<ROW>[]) => {
+        await (opt.tx || this.ds())[method](batch)
+      },
+      this.getPRetryOptions(`DatastoreLib.saveBatch(${table})`),
+    )
 
     try {
       const chunks = _chunk(entities, MAX_ITEMS)
