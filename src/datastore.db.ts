@@ -59,6 +59,8 @@ const RETRY_ON = [
 // Examples of errors:
 // UNKNOWN: Stream removed
 
+const DATASTORE_TIMEOUT = 'DATASTORE_TIMEOUT'
+
 const methodMap: Record<CommonDBSaveMethod, string> = {
   insert: 'insert',
   update: 'update',
@@ -154,7 +156,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
           timeout: this.cfg.timeout,
           errorData: {
             // This error will be grouped ACROSS all endpoints and usages
-            fingerprint: ['DATASTORE_TIMEOUT'],
+            fingerprint: [DATASTORE_TIMEOUT],
           },
         })
         rows = r[0]
@@ -540,6 +542,9 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       logFailures: true,
       // logAll: true,
       logger: this.cfg.logger,
+      errorData: {
+        fingerprint: [DATASTORE_TIMEOUT],
+      },
     }
   }
 }

@@ -78,7 +78,7 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
         },
       )
     } catch (err) {
-      console.error(
+      console.log(
         `DatastoreStreamReadable error!\n`,
         {
           table: this.table,
