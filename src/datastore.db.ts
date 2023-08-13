@@ -31,7 +31,7 @@ import {
   PRetryOptions,
 } from '@naturalcycles/js-lib'
 import { ReadableTyped } from '@naturalcycles/nodejs-lib'
-import { boldWhite } from '@naturalcycles/nodejs-lib/dist/colors'
+import { boldWhite } from '@naturalcycles/nodejs-lib'
 import {
   DatastoreDBCfg,
   DatastoreDBOptions,
