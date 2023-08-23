@@ -4,6 +4,7 @@
 {
   "extends": "@naturalcycles/dev-lib/scripts/tsconfig.json",
   "compilerOptions": {
+    "skipLibCheck": true, // because of https://github.com/dcodeIO/long.js/issues/109
     "baseUrl": "./",
     "outDir": "../dist"
   },
