@@ -30,8 +30,8 @@ import {
   pRetry,
   PRetryOptions,
 } from '@naturalcycles/js-lib'
-import { ReadableTyped } from '@naturalcycles/nodejs-lib'
-import { boldWhite } from '@naturalcycles/nodejs-lib'
+import { ReadableTyped, boldWhite } from '@naturalcycles/nodejs-lib'
+import { DatastoreStreamReadable } from './DatastoreStreamReadable'
 import {
   DatastoreDBCfg,
   DatastoreDBOptions,
@@ -42,7 +42,6 @@ import {
   DatastoreStats,
   DatastoreType,
 } from './datastore.model'
-import { DatastoreStreamReadable } from './DatastoreStreamReadable'
 import { dbQueryToDatastoreQuery } from './query.util'
 
 // Datastore (also Firestore and other Google APIs) supports max 500 of items when saving/deleting, etc.

@@ -1,9 +1,7 @@
-import { Readable } from 'node:stream'
+import { Readable, Writable } from 'node:stream'
 import { finished } from 'node:stream/promises'
-import { Writable } from 'node:stream'
 import { pDelay } from '@naturalcycles/js-lib'
-import { transformMapSimple } from '@naturalcycles/nodejs-lib'
-import { runScript } from '@naturalcycles/nodejs-lib'
+import { transformMapSimple, runScript } from '@naturalcycles/nodejs-lib'
 
 runScript(async () => {
   const stream = Readable.from(gen())
