@@ -1,7 +1,7 @@
 import { Readable } from 'node:stream'
 import { Query } from '@google-cloud/datastore'
 import type { RunQueryInfo } from '@google-cloud/datastore/build/src/query'
-import { _ms, CommonLogger, pRetry } from '@naturalcycles/js-lib'
+import { _ms, CommonLogger, pRetry, UnixTimestampMillisNumber } from '@naturalcycles/js-lib'
 import type { ReadableTyped } from '@naturalcycles/nodejs-lib'
 import type { DatastoreDBStreamOptions } from './datastore.model'
 
@@ -14,6 +14,11 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
   private lastQueryDone?: number
   private totalWait = 0
   private table: string
+  /**
+   * Used to support maxWait
+   */
+  private lastReadTimestamp: UnixTimestampMillisNumber = 0
+  private maxWaitInterval: NodeJS.Timeout | undefined
 
   private opt: DatastoreDBStreamOptions & { batchSize: number }
 
@@ -28,6 +33,30 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
       rssLimitMB: 1000,
       batchSize: 1000,
       ...opt,
+    }
+
+    if (this.opt.maxWait) {
+      this.maxWaitInterval = setInterval(
+        () => {
+          if (Date.now() - this.lastReadTimestamp < this.opt.maxWait! * 1000) {
+            return
+          }
+
+          const { running, rowsRetrieved } = this
+          this.logger.warn(
+            `maxWait of ${this.opt.maxWait} seconds reached, force-triggering _read`,
+            {
+              running,
+              rowsRetrieved,
+            },
+          )
+
+          // force-trigger _read
+          // regardless of `running` status
+          this._read()
+        },
+        (this.opt.maxWait * 1000) / 2,
+      )
     }
 
     this.originalLimit = q.limitVal
@@ -75,6 +104,7 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
           delay: 5000,
           delayMultiplier: 2,
           logger: this.logger,
+          timeout: 120_000, // 2 minutes
         },
       )
     } catch (err) {
@@ -114,6 +144,7 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
       )
       this.push(null)
       this.done = true
+      clearInterval(this.maxWaitInterval)
     } else if (this.opt.singleBatchBuffer) {
       // here we don't start next query until we're asked (via next _read call)
       // do, let's do nothing
@@ -128,14 +159,17 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
     }
   }
 
-  count = 0 // use for debugging
+  /**
+   * Counts how many times _read was called.
+   * For debugging.
+   */
+  count = 0
 
   override _read(): void {
+    this.lastReadTimestamp = Date.now()
+
     // console.log(`_read called ${++this.count}, wasRunning: ${this.running}`) // debugging
     this.count++
-    if (this.running) {
-      this.logger.log(`_read ${this.count}, wasRunning: true`)
-    }
 
     if (this.done) {
       this.logger.warn(`!!! _read was called, but done==true`)
@@ -144,6 +178,8 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
 
     if (!this.running) {
       void this.runNextQuery()
+    } else {
+      this.logger.log(`_read ${this.count}, wasRunning: true`)
     }
   }
 }

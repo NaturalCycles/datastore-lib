@@ -1,6 +1,6 @@
 import type { DatastoreOptions, Key, Transaction } from '@google-cloud/datastore'
 import { CommonDBOptions, CommonDBSaveOptions } from '@naturalcycles/db-lib'
-import { CommonLogger, ObjectWithId } from '@naturalcycles/js-lib'
+import { CommonLogger, NumberOfSeconds, ObjectWithId } from '@naturalcycles/js-lib'
 
 export interface DatastorePayload<T = any> {
   key: Key
@@ -103,6 +103,15 @@ export interface DatastoreDBStreamOptions extends DatastoreDBOptions {
    * @default false
    */
   debug?: boolean
+
+  /**
+   * Default is undefined.
+   * If set - sets a "safety timer", which will force call _read after the specified number of seconds.
+   * This is to prevent possible "dead-lock"/race-condition that would make the stream "hang".
+   *
+   * @experimental
+   */
+  maxWait?: NumberOfSeconds
 }
 
 export interface DatastoreDBOptions extends CommonDBOptions {
