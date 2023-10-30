@@ -35,34 +35,39 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
       ...opt,
     }
 
-    if (this.opt.maxWait) {
+    this.originalLimit = q.limitVal
+    this.table = q.kinds[0]!
+
+    logger.log(`!! using experimentalCursorStream !! ${this.table}, batchSize: ${opt.batchSize}`)
+
+    const { maxWait } = this.opt
+    if (maxWait) {
+      this.logger.warn(`!! ${this.table} maxWait ${maxWait}`)
+
       this.maxWaitInterval = setInterval(
         () => {
-          if (Date.now() - this.lastReadTimestamp < this.opt.maxWait! * 1000) {
+          const millisSinceLastRead = Date.now() - this.lastReadTimestamp
+
+          if (millisSinceLastRead < maxWait * 1000) {
+            this.logger.warn(
+              `!! ${this.table} millisSinceLastRead(${millisSinceLastRead}) < maxWait*1000`,
+            )
             return
           }
 
           const { running, rowsRetrieved } = this
-          this.logger.warn(
-            `maxWait of ${this.opt.maxWait} seconds reached, force-triggering _read`,
-            {
-              running,
-              rowsRetrieved,
-            },
-          )
+          this.logger.warn(`maxWait of ${maxWait} seconds reached, force-triggering _read`, {
+            running,
+            rowsRetrieved,
+          })
 
           // force-trigger _read
           // regardless of `running` status
           this._read()
         },
-        (this.opt.maxWait * 1000) / 2,
+        (maxWait * 1000) / 2,
       )
     }
-
-    this.originalLimit = q.limitVal
-    this.table = q.kinds[0]!
-
-    logger.log(`!! using experimentalCursorStream !! ${this.table}, batchSize: ${opt.batchSize}`)
   }
 
   private async runNextQuery(): Promise<void> {
@@ -117,6 +122,7 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
         err,
       )
       this.emit('error', err)
+      clearInterval(this.maxWaitInterval)
       return
     }
 
