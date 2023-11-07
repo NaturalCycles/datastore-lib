@@ -128,11 +128,18 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
 
     this.rowsRetrieved += rows.length
     this.logger.log(
-      `got ${rows.length} rows, ${this.rowsRetrieved} rowsRetrieved, totalWait: ${_ms(
+      `${this.table} got ${rows.length} rows, ${this.rowsRetrieved} rowsRetrieved, totalWait: ${_ms(
         this.totalWait,
       )}`,
       info.moreResults,
     )
+
+    if (!rows.length) {
+      this.logger.warn(
+        `${this.table} got 0 rows, totalWait: ${_ms(this.totalWait)}`,
+        info.moreResults,
+      )
+    }
 
     this.endCursor = info.endCursor
     this.running = false // ready to take more _reads
@@ -160,7 +167,9 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
       if (rssMB <= this.opt.rssLimitMB) {
         void this.runNextQuery()
       } else {
-        this.logger.log(`rssLimitMB reached ${rssMB} > ${this.opt.rssLimitMB}, pausing stream`)
+        this.logger.warn(
+          `${this.table} rssLimitMB reached ${rssMB} > ${this.opt.rssLimitMB}, pausing stream`,
+        )
       }
     }
   }
