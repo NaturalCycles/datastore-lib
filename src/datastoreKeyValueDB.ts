@@ -53,7 +53,7 @@ export class DatastoreKeyValueDB implements CommonKeyValueDB {
       .streamQuery<KVObject>(q)
       .on('error', err => stream.emit('error', err))
       .pipe(
-        transformMapSimple<ObjectWithId<string>, string>(objectWithId => objectWithId.id, {
+        transformMapSimple<ObjectWithId, string>(objectWithId => objectWithId.id, {
           errorMode: ErrorMode.SUPPRESS, // cause .pipe() cannot propagate errors
         }),
       )
