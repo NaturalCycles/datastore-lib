@@ -1,4 +1,4 @@
-import type { DatastoreOptions, Key, Transaction } from '@google-cloud/datastore'
+import type { DatastoreOptions, Key } from '@google-cloud/datastore'
 import { CommonDBOptions, CommonDBSaveOptions } from '@naturalcycles/db-lib'
 import { CommonLogger, NumberOfSeconds, ObjectWithId } from '@naturalcycles/js-lib'
 
@@ -114,13 +114,10 @@ export interface DatastoreDBStreamOptions extends DatastoreDBOptions {
   maxWait?: NumberOfSeconds
 }
 
-export interface DatastoreDBOptions extends CommonDBOptions {
-  tx?: Transaction
-}
+export interface DatastoreDBOptions extends CommonDBOptions {}
+
 export interface DatastoreDBSaveOptions<ROW extends Partial<ObjectWithId> = any>
-  extends CommonDBSaveOptions<ROW> {
-  tx?: Transaction
-}
+  extends CommonDBSaveOptions<ROW> {}
 
 export interface DatastoreStats {
   composite_index_count: number

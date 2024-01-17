@@ -1,13 +1,14 @@
 import { Transform } from 'node:stream'
-import { PropertyFilter } from '@google-cloud/datastore'
+import { PropertyFilter, Transaction } from '@google-cloud/datastore'
 import type { Datastore, Key, Query } from '@google-cloud/datastore'
 import {
   BaseCommonDB,
   CommonDB,
+  commonDBFullSupport,
   CommonDBSaveMethod,
+  CommonDBSupport,
   DBQuery,
   DBTransaction,
-  mergeDBOperations,
   RunQueryResult,
 } from '@naturalcycles/db-lib'
 import {
@@ -72,6 +73,11 @@ const methodMap: Record<CommonDBSaveMethod, string> = {
  * https://cloud.google.com/datastore/docs/datastore-api-tutorial
  */
 export class DatastoreDB extends BaseCommonDB implements CommonDB {
+  override support: CommonDBSupport = {
+    ...commonDBFullSupport,
+    updateByQuery: false,
+  }
+
   constructor(cfg: DatastoreDBCfg = {}) {
     super()
     this.cfg = {
@@ -125,7 +131,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
   override async getByIds<ROW extends ObjectWithId>(
     table: string,
-    ids: ROW['id'][],
+    ids: string[],
     _opt?: DatastoreDBOptions,
   ): Promise<ROW[]> {
     if (!ids.length) return []
@@ -178,10 +184,10 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     )
   }
 
-  getQueryKind(q: Query): string {
-    if (!q?.kinds?.length) return '' // should never be the case, but
-    return q.kinds[0]!
-  }
+  // getQueryKind(q: Query): string {
+  //   if (!q?.kinds?.length) return '' // should never be the case, but
+  //   return q.kinds[0]!
+  // }
 
   override async runQuery<ROW extends ObjectWithId>(
     dbQuery: DBQuery<ROW>,
@@ -284,7 +290,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
     const save = pRetryFn(
       async (batch: DatastorePayload<ROW>[]) => {
-        await (opt.tx || this.ds())[method](batch)
+        await ((opt.tx as DatastoreDBTransaction)?.tx || this.ds())[method](batch)
       },
       this.getPRetryOptions(`DatastoreLib.saveBatch(${table})`),
     )
@@ -331,49 +337,23 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
    * Limitation: Datastore's delete returns void, so we always return all ids here as "deleted"
    * regardless if they were actually deleted or not.
    */
-  async deleteByIds<ROW extends ObjectWithId>(
+  override async deleteByIds(
     table: string,
-    ids: ROW['id'][],
+    ids: string[],
     opt: DatastoreDBOptions = {},
   ): Promise<number> {
     const keys = ids.map(id => this.key(table, id))
-    // eslint-disable-next-line @typescript-eslint/return-await
-    await pMap(_chunk(keys, MAX_ITEMS), async batch => await (opt.tx || this.ds()).delete(batch))
+
+    await pMap(
+      _chunk(keys, MAX_ITEMS),
+      // eslint-disable-next-line @typescript-eslint/return-await
+      async batch => await ((opt.tx as DatastoreDBTransaction)?.tx || this.ds()).delete(batch),
+    )
     return ids.length
   }
 
-  /**
-   * https://cloud.google.com/datastore/docs/concepts/transactions#datastore-datastore-transactional-update-nodejs
-   */
-  override async commitTransaction(
-    _tx: DBTransaction,
-    opt?: DatastoreDBSaveOptions,
-  ): Promise<void> {
-    // Using Retry, because Datastore can throw errors like "too much contention" here
-    await pRetry(async () => {
-      const tx = this.ds().transaction()
-
-      try {
-        await tx.run()
-
-        const ops = mergeDBOperations(_tx.ops)
-
-        for await (const op of ops) {
-          if (op.type === 'saveBatch') {
-            await this.saveBatch(op.table, op.rows, { ...op.opt, ...opt, tx })
-          } else if (op.type === 'deleteByIds') {
-            await this.deleteByIds(op.table, op.ids, { ...op.opt, ...opt, tx })
-          } else {
-            throw new Error(`DBOperation not supported: ${(op as any).type}`)
-          }
-        }
-
-        await tx.commit()
-      } catch (err) {
-        await tx.rollback()
-        throw err // rethrow
-      }
-    }, this.getPRetryOptions(`DatastoreLib.commitTransaction`))
+  override async createTransaction(): Promise<DatastoreDBTransaction> {
+    return await DatastoreDBTransaction.create(this)
   }
 
   async getAllStats(): Promise<DatastoreStats[]> {
@@ -545,5 +525,28 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
         fingerprint: [DATASTORE_TIMEOUT],
       },
     }
+  }
+}
+
+/**
+ * https://cloud.google.com/datastore/docs/concepts/transactions#datastore-datastore-transactional-update-nodejs
+ */
+export class DatastoreDBTransaction implements DBTransaction {
+  private constructor(
+    public db: DatastoreDB,
+    public tx: Transaction,
+  ) {}
+
+  static async create(db: DatastoreDB): Promise<DatastoreDBTransaction> {
+    const tx = db.ds().transaction()
+    await tx.run()
+    return new DatastoreDBTransaction(db, tx)
+  }
+
+  async commit(): Promise<void> {
+    await this.tx.commit()
+  }
+  async rollback(): Promise<void> {
+    await this.tx.rollback()
   }
 }

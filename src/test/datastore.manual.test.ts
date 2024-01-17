@@ -1,6 +1,4 @@
 import {
-  CommonDBImplementationFeatures,
-  CommonDBImplementationQuirks,
   createTestItemsDBM,
   runCommonDaoTest,
   runCommonDBTest,
@@ -26,20 +24,9 @@ export const datastoreDB = new DatastoreDB({
   },
 })
 
-// Seems like consistency quirks are no longer needed?
-// UPD 2021-08-05: nope, still needed
-const features: CommonDBImplementationFeatures = {
-  // strongConsistency: false,
-  updateByQuery: false,
-}
-const quirks: CommonDBImplementationQuirks = {
-  // 2021-10-07: fails when set to 100, bumped up to 300
-  // eventualConsistencyDelay: 300,
-}
+describe('runCommonDBTest', () => runCommonDBTest(datastoreDB))
 
-describe('runCommonDBTest', () => runCommonDBTest(datastoreDB, features, quirks))
-
-describe('runCommonDaoTest', () => runCommonDaoTest(datastoreDB, features, quirks))
+describe('runCommonDaoTest', () => runCommonDaoTest(datastoreDB))
 
 test('getStats, getStatsCount non-existing table', async () => {
   expect(await datastoreDB.getStats('NonEx')).toBeUndefined()
