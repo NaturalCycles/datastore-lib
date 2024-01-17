@@ -5,10 +5,13 @@ import {
   BaseCommonDB,
   CommonDB,
   commonDBFullSupport,
+  CommonDBOptions,
   CommonDBSaveMethod,
+  CommonDBSaveOptions,
   CommonDBSupport,
   DBQuery,
   DBTransaction,
+  DBTransactionFn,
   RunQueryResult,
 } from '@naturalcycles/db-lib'
 import {
@@ -132,7 +135,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   override async getByIds<ROW extends ObjectWithId>(
     table: string,
     ids: string[],
-    _opt?: DatastoreDBOptions,
+    opt: DatastoreDBOptions = {},
   ): Promise<ROW[]> {
     if (!ids.length) return []
     const keys = ids.map(id => this.key(table, id))
@@ -141,10 +144,13 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     if (this.cfg.timeout) {
       // First try
       try {
-        const r = await pTimeout(() => this.ds().get(keys), {
-          timeout: this.cfg.timeout,
-          name: `datastore.getByIds(${table})`,
-        })
+        const r = await pTimeout(
+          () => ((opt.tx as DatastoreDBTransaction)?.tx || this.ds()).get(keys),
+          {
+            timeout: this.cfg.timeout,
+            name: `datastore.getByIds(${table})`,
+          },
+        )
         rows = r[0]
       } catch {
         this.cfg.logger.log('datastore recreated on error')
@@ -155,15 +161,18 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
         this.cachedDatastore = new DS(this.cfg)
 
         // Second try (will throw)
-        const r = await pRetry(() => this.ds().get(keys), {
-          ...this.getPRetryOptions(`datastore.getByIds(${table}) second try`),
-          maxAttempts: 3,
-          timeout: this.cfg.timeout,
-          errorData: {
-            // This error will be grouped ACROSS all endpoints and usages
-            fingerprint: [DATASTORE_TIMEOUT],
+        const r = await pRetry(
+          () => ((opt.tx as DatastoreDBTransaction)?.tx || this.ds()).get(keys),
+          {
+            ...this.getPRetryOptions(`datastore.getByIds(${table}) second try`),
+            maxAttempts: 3,
+            timeout: this.cfg.timeout,
+            errorData: {
+              // This error will be grouped ACROSS all endpoints and usages
+              fingerprint: [DATASTORE_TIMEOUT],
+            },
           },
-        })
+        )
         rows = r[0]
       }
     } else {
@@ -352,8 +361,16 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return ids.length
   }
 
-  override async createTransaction(): Promise<DatastoreDBTransaction> {
-    return await DatastoreDBTransaction.create(this)
+  override async runInTransaction(fn: DBTransactionFn): Promise<void> {
+    const tx = await DatastoreDBTransaction.create(this)
+
+    try {
+      await fn(tx)
+      await tx.tx.commit()
+    } catch (err) {
+      await tx.tx.rollback()
+      throw err
+    }
   }
 
   async getAllStats(): Promise<DatastoreStats[]> {
@@ -543,10 +560,31 @@ export class DatastoreDBTransaction implements DBTransaction {
     return new DatastoreDBTransaction(db, tx)
   }
 
-  async commit(): Promise<void> {
-    await this.tx.commit()
-  }
   async rollback(): Promise<void> {
     await this.tx.rollback()
+  }
+
+  async getByIds<ROW extends ObjectWithId>(
+    table: string,
+    ids: string[],
+    opt?: CommonDBOptions | undefined,
+  ): Promise<ROW[]> {
+    return await this.db.getByIds(table, ids, { ...opt, tx: this })
+  }
+
+  async saveBatch<ROW extends Partial<ObjectWithId>>(
+    table: string,
+    rows: ROW[],
+    opt?: CommonDBSaveOptions<ROW> | undefined,
+  ): Promise<void> {
+    await this.db.saveBatch(table, rows, { ...opt, tx: this })
+  }
+
+  async deleteByIds(
+    table: string,
+    ids: string[],
+    opt?: CommonDBOptions | undefined,
+  ): Promise<number> {
+    return await this.db.deleteByIds(table, ids, { ...opt, tx: this })
   }
 }
