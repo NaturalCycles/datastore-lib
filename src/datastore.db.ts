@@ -13,6 +13,7 @@ import {
   DBTransaction,
   DBTransactionFn,
   RunQueryResult,
+  CommonDBTransactionOptions,
 } from '@naturalcycles/db-lib'
 import {
   ObjectWithId,
@@ -361,14 +362,22 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return ids.length
   }
 
-  override async runInTransaction(fn: DBTransactionFn): Promise<void> {
-    const tx = await DatastoreDBTransaction.create(this)
+  override async runInTransaction(
+    fn: DBTransactionFn,
+    opt: CommonDBTransactionOptions = {},
+  ): Promise<void> {
+    const { readOnly } = opt
+    const datastoreTx = this.ds().transaction({
+      readOnly,
+    })
 
     try {
+      await datastoreTx.run()
+      const tx = new DatastoreDBTransaction(this, datastoreTx)
       await fn(tx)
-      await tx.tx.commit()
+      await datastoreTx.commit()
     } catch (err) {
-      await tx.tx.rollback()
+      await datastoreTx.rollback()
       throw err
     }
   }
@@ -549,16 +558,10 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
  * https://cloud.google.com/datastore/docs/concepts/transactions#datastore-datastore-transactional-update-nodejs
  */
 export class DatastoreDBTransaction implements DBTransaction {
-  private constructor(
+  constructor(
     public db: DatastoreDB,
     public tx: Transaction,
   ) {}
-
-  static async create(db: DatastoreDB): Promise<DatastoreDBTransaction> {
-    const tx = db.ds().transaction()
-    await tx.run()
-    return new DatastoreDBTransaction(db, tx)
-  }
 
   async rollback(): Promise<void> {
     await this.tx.rollback()
