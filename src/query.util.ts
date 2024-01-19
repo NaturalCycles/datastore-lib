@@ -1,6 +1,6 @@
 import { PropertyFilter, Query } from '@google-cloud/datastore'
 import { DBQuery, DBQueryFilterOperator } from '@naturalcycles/db-lib'
-import { ObjectWithId, StringMap } from '@naturalcycles/js-lib'
+import { PartialObjectWithId, StringMap } from '@naturalcycles/js-lib'
 
 const FNAME_MAP: StringMap = {
   id: '__key__',
@@ -12,7 +12,7 @@ const OP_MAP: Partial<Record<DBQueryFilterOperator, string>> = {
   'not-in': 'NOT_IN',
 }
 
-export function dbQueryToDatastoreQuery<ROW extends ObjectWithId>(
+export function dbQueryToDatastoreQuery<ROW extends PartialObjectWithId>(
   dbQuery: Readonly<DBQuery<ROW>>,
   emptyQuery: Query,
 ): Query {

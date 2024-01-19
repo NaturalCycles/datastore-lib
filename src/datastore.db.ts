@@ -16,7 +16,6 @@ import {
   CommonDBTransactionOptions,
 } from '@naturalcycles/db-lib'
 import {
-  ObjectWithId,
   JsonSchemaAny,
   JsonSchemaBoolean,
   JsonSchemaNull,
@@ -34,6 +33,9 @@ import {
   pRetryFn,
   pRetry,
   PRetryOptions,
+  PartialObjectWithId,
+  Saved,
+  ObjectWithId,
 } from '@naturalcycles/js-lib'
 import { ReadableTyped, boldWhite } from '@naturalcycles/nodejs-lib'
 import { DatastoreStreamReadable } from './DatastoreStreamReadable'
@@ -133,11 +135,11 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     await this.getAllStats()
   }
 
-  override async getByIds<ROW extends ObjectWithId>(
+  override async getByIds<ROW extends PartialObjectWithId>(
     table: string,
     ids: string[],
     opt: DatastoreDBOptions = {},
-  ): Promise<ROW[]> {
+  ): Promise<Saved<ROW>[]> {
     if (!ids.length) return []
     const keys = ids.map(id => this.key(table, id))
     let rows: any[]
@@ -187,7 +189,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
     return (
       rows
-        .map(r => this.mapId<ROW>(r))
+        .map(r => this.mapId<Saved<ROW>>(r))
         // Seems like datastore .get() method doesn't return items properly sorted by input ids, so we gonna sort them here
         // same ids are not expected here
         .sort((a, b) => (a.id > b.id ? 1 : -1))
@@ -199,10 +201,10 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   //   return q.kinds[0]!
   // }
 
-  override async runQuery<ROW extends ObjectWithId>(
+  override async runQuery<ROW extends PartialObjectWithId>(
     dbQuery: DBQuery<ROW>,
     _opt?: DatastoreDBOptions,
-  ): Promise<RunQueryResult<ROW>> {
+  ): Promise<RunQueryResult<Saved<ROW>>> {
     const idFilter = dbQuery._filters.find(f => f.name === 'id')
     if (idFilter) {
       const ids: string[] = idFilter.op === '==' ? [idFilter.val] : idFilter.val
@@ -223,7 +225,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return qr
   }
 
-  override async runQueryCount<ROW extends ObjectWithId>(
+  override async runQueryCount<ROW extends PartialObjectWithId>(
     dbQuery: DBQuery<ROW>,
     _opt?: DatastoreDBOptions,
   ): Promise<number> {
@@ -232,10 +234,12 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return entities.length
   }
 
-  async runDatastoreQuery<ROW extends ObjectWithId>(q: Query): Promise<RunQueryResult<ROW>> {
+  async runDatastoreQuery<ROW extends PartialObjectWithId>(
+    q: Query,
+  ): Promise<RunQueryResult<Saved<ROW>>> {
     const [entities, queryResult] = await this.ds().runQuery(q)
 
-    const rows = entities.map(e => this.mapId<ROW>(e))
+    const rows = entities.map(e => this.mapId<Saved<ROW>>(e))
 
     return {
       ...queryResult,
@@ -243,7 +247,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     }
   }
 
-  private runQueryStream<ROW extends ObjectWithId>(
+  private runQueryStream<ROW extends PartialObjectWithId>(
     q: Query,
     _opt?: DatastoreDBStreamOptions,
   ): ReadableTyped<ROW> {
@@ -274,7 +278,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return stream
   }
 
-  override streamQuery<ROW extends ObjectWithId>(
+  override streamQuery<ROW extends PartialObjectWithId>(
     dbQuery: DBQuery<ROW>,
     opt?: DatastoreDBStreamOptions,
   ): ReadableTyped<ROW> {
@@ -287,7 +291,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   /**
    * Returns saved entities with generated id/updated/created (non-mutating!)
    */
-  override async saveBatch<ROW extends Partial<ObjectWithId>>(
+  override async saveBatch<ROW extends PartialObjectWithId>(
     table: string,
     rows: ROW[],
     opt: DatastoreDBSaveOptions<ROW> = {},
@@ -324,7 +328,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     }
   }
 
-  override async deleteByQuery<ROW extends ObjectWithId>(
+  override async deleteByQuery<ROW extends PartialObjectWithId>(
     q: DBQuery<ROW>,
     opt?: DatastoreDBOptions,
   ): Promise<number> {
@@ -458,7 +462,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return id?.toString()
   }
 
-  override async createTable<ROW extends ObjectWithId>(
+  override async createTable<ROW extends PartialObjectWithId>(
     _table: string,
     _schema: JsonSchemaObject<ROW>,
   ): Promise<void> {}
@@ -469,7 +473,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return statsArray.map(stats => stats.kind_name).filter(table => table && !table.startsWith('_'))
   }
 
-  override async getTableSchema<ROW extends ObjectWithId>(
+  override async getTableSchema<ROW extends PartialObjectWithId>(
     table: string,
   ): Promise<JsonSchemaRootObject<ROW>> {
     const stats = await this.getTableProperties(table)
@@ -572,7 +576,7 @@ export class DatastoreDBTransaction implements DBTransaction {
     }
   }
 
-  async getByIds<ROW extends ObjectWithId>(
+  async getByIds<ROW extends PartialObjectWithId>(
     table: string,
     ids: string[],
     opt?: CommonDBOptions | undefined,
@@ -580,7 +584,7 @@ export class DatastoreDBTransaction implements DBTransaction {
     return await this.db.getByIds(table, ids, { ...opt, tx: this })
   }
 
-  async saveBatch<ROW extends Partial<ObjectWithId>>(
+  async saveBatch<ROW extends PartialObjectWithId>(
     table: string,
     rows: ROW[],
     opt?: CommonDBSaveOptions<ROW> | undefined,

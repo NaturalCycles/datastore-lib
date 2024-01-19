@@ -836,9 +836,9 @@
     typescript "^5.0.2"
 
 "@naturalcycles/db-lib@^9.0.0":
-  version "9.2.0"
-  resolved "https://registry.yarnpkg.com/@naturalcycles/db-lib/-/db-lib-9.2.0.tgz#48bbaec6ca19004569b017d68f9ce5b7bb0bd3c4"
-  integrity sha512-/XGmq9qN+LVX+a0BIeAb+BeqzdisZj0x5SYWrbIfhcqb7h671vv7yeexMDw9V5jehMXIcrUpXRFiUszjJ0Uqng==
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/@naturalcycles/db-lib/-/db-lib-9.3.0.tgz#d6727ff62b4150f26e83e3b68e5ca975229f154d"
+  integrity sha512-wcPFWmQ+jXtdXrSqPuXHnkzw4UjwvJUhtIIWFxLdsaoEFnA8peSsdpH+E5QIU7EDjXfQmYQ6nhcacmWQ6NvM+Q==
   dependencies:
     "@naturalcycles/js-lib" "^14.116.0"
     "@naturalcycles/nodejs-lib" "^13.1.1"
@@ -879,9 +879,9 @@
     yargs "^17.0.0"
 
 "@naturalcycles/js-lib@^14.0.0", "@naturalcycles/js-lib@^14.116.0":
-  version "14.201.1"
-  resolved "https://registry.yarnpkg.com/@naturalcycles/js-lib/-/js-lib-14.201.1.tgz#67d7b74be557385736b489c4ab6f318cf8d093cf"
-  integrity sha512-NAxPDWxNiFs8Eidj4vt0jcRyvLJ2MuHmPuryIETvKRLfdQ3j14XfZbvCtNMfmX1Yfl0an0xE5fKN2yzKKJk0LQ==
+  version "14.204.1"
+  resolved "https://registry.yarnpkg.com/@naturalcycles/js-lib/-/js-lib-14.204.1.tgz#d81838e4a8cd889b734637c2b26a750d5758ef10"
+  integrity sha512-+2E30+MKFdlxnkbsBHBcbi8aTTPl3AZRe+NUzgimJoJw+7wJS0k6v2DVbrmQ1MCcEyQ4gV5jhOQT8iHEtDDSDw==
   dependencies:
     tslib "^2.0.0"
     zod "^3.20.2"
@@ -2173,9 +2173,9 @@ ecdsa-sig-formatter@1.0.11, ecdsa-sig-formatter@^1.0.11:
     safe-buffer "^5.0.1"
 
 electron-to-chromium@^1.4.601:
-  version "1.4.637"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.637.tgz#ed8775cf5e0c380c3e8452e9818a0e4b7a671ac4"
-  integrity sha512-G7j3UCOukFtxVO1vWrPQUoDk3kL70mtvjc/DC/k2o7lE0wAdq+Vwp1ipagOow+BH0uVztFysLWbkM/RTIrbK3w==
+  version "1.4.639"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.639.tgz#c6f9cc685f9efb2980d2cfc95a27f8142c9adf28"
+  integrity sha512-CkKf3ZUVZchr+zDpAlNLEEy2NJJ9T64ULWaDgy3THXXlPVPkLu3VOs9Bac44nebVtdwl2geSj6AxTtGDOxoXhg==
 
 emittery@^0.13.1:
   version "0.13.1"
