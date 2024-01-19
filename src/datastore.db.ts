@@ -564,7 +564,12 @@ export class DatastoreDBTransaction implements DBTransaction {
   ) {}
 
   async rollback(): Promise<void> {
-    await this.tx.rollback()
+    try {
+      await this.tx.rollback()
+    } catch (err) {
+      // log the error, but don't re-throw, as this should be a graceful rollback
+      this.db.cfg.logger.error(err)
+    }
   }
 
   async getByIds<ROW extends ObjectWithId>(
