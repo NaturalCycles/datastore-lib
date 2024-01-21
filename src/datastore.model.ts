@@ -116,7 +116,7 @@ export interface DatastoreDBStreamOptions extends DatastoreDBOptions {
 
 export interface DatastoreDBOptions extends CommonDBOptions {}
 
-export interface DatastoreDBSaveOptions<ROW extends Partial<ObjectWithId> = any>
+export interface DatastoreDBSaveOptions<ROW extends ObjectWithId>
   extends CommonDBSaveOptions<ROW> {}
 
 export interface DatastoreStats {
