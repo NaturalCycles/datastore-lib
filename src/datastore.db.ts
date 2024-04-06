@@ -1,4 +1,3 @@
-import { Transform } from 'node:stream'
 import { PropertyFilter, Transaction } from '@google-cloud/datastore'
 import type { Datastore, Key, Query } from '@google-cloud/datastore'
 import {
@@ -228,8 +227,9 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     _opt?: DatastoreDBOptions,
   ): Promise<number> {
     const q = dbQueryToDatastoreQuery(dbQuery.select([]), this.ds().createQuery(dbQuery.table))
-    const [entities] = await this.ds().runQuery(q)
-    return entities.length
+    const aq = this.ds().createAggregationQuery(q).count('count')
+    const [entities] = await this.ds().runAggregationQuery(aq)
+    return entities[0]?.count
   }
 
   async runDatastoreQuery<ROW extends ObjectWithId>(q: Query): Promise<RunQueryResult<ROW>> {
@@ -254,22 +254,15 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
     const stream: ReadableTyped<ROW> = (
       opt.experimentalCursorStream
-        ? new DatastoreStreamReadable(
+        ? new DatastoreStreamReadable<ROW>(
             q,
             opt,
             commonLoggerMinLevel(this.cfg.logger, opt.debug ? 'log' : 'warn'),
           )
         : this.ds().runQueryStream(q)
     )
-      .on('error', err => stream.emit('error', err))
-      .pipe(
-        new Transform({
-          objectMode: true,
-          transform: (chunk, _enc, cb) => {
-            cb(null, this.mapId(chunk))
-          },
-        }),
-      )
+      // .on('error', err => stream.emit('error', err))
+      .map(chunk => this.mapId(chunk))
 
     return stream
   }
