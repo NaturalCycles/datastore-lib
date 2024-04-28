@@ -252,19 +252,15 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       ..._opt,
     }
 
-    const stream: ReadableTyped<ROW> = (
+    return (
       opt.experimentalCursorStream
         ? new DatastoreStreamReadable<ROW>(
             q,
             opt,
             commonLoggerMinLevel(this.cfg.logger, opt.debug ? 'log' : 'warn'),
           )
-        : this.ds().runQueryStream(q)
-    )
-      // .on('error', err => stream.emit('error', err))
-      .map(chunk => this.mapId(chunk))
-
-    return stream
+        : (this.ds().runQueryStream(q) as ReadableTyped<ROW>)
+    ).map(chunk => this.mapId(chunk))
   }
 
   override streamQuery<ROW extends ObjectWithId>(
