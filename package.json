@@ -6,7 +6,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@google-cloud/datastore": "^8.0.0",
+    "@google-cloud/datastore": "^9.0.0",
     "@naturalcycles/db-lib": "^9.0.0",
     "@naturalcycles/js-lib": "^14.116.0",
     "@naturalcycles/nodejs-lib": "^13.1.0"
