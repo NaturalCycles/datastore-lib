@@ -50,6 +50,8 @@ import { dbQueryToDatastoreQuery } from './query.util'
 
 // Datastore (also Firestore and other Google APIs) supports max 500 of items when saving/deleting, etc.
 const MAX_ITEMS = 500
+// It's an empyrical value, but anything less than infinity is better than infinity
+const DATASTORE_RECOMMENDED_CONCURRENCY = 16
 
 const RETRY_ON = [
   'GOAWAY',
@@ -300,7 +302,9 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
         // Not using pMap in hope to preserve stack trace
         await save(chunks[0]!)
       } else {
-        await pMap(chunks, async batch => await save(batch))
+        await pMap(chunks, async batch => await save(batch), {
+          concurrency: DATASTORE_RECOMMENDED_CONCURRENCY,
+        })
       }
     } catch (err) {
       // console.log(`datastore.save ${kind}`, { obj, entity })
@@ -347,6 +351,9 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       _chunk(keys, MAX_ITEMS),
       // eslint-disable-next-line @typescript-eslint/return-await
       async batch => await ((opt.tx as DatastoreDBTransaction)?.tx || this.ds()).delete(batch),
+      {
+        concurrency: DATASTORE_RECOMMENDED_CONCURRENCY,
+      },
     )
     return ids.length
   }
