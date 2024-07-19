@@ -1,5 +1,5 @@
-import { PropertyFilter, Transaction } from '@google-cloud/datastore'
 import type { Datastore, Key, Query } from '@google-cloud/datastore'
+import { PropertyFilter, Transaction } from '@google-cloud/datastore'
 import {
   BaseCommonDB,
   CommonDB,
@@ -8,34 +8,33 @@ import {
   CommonDBSaveMethod,
   CommonDBSaveOptions,
   CommonDBSupport,
+  CommonDBTransactionOptions,
   DBQuery,
   DBTransaction,
   DBTransactionFn,
   RunQueryResult,
-  CommonDBTransactionOptions,
 } from '@naturalcycles/db-lib'
 import {
+  _assert,
+  _chunk,
+  _omit,
+  CommonLogger,
+  commonLoggerMinLevel,
   JsonSchemaAny,
   JsonSchemaBoolean,
   JsonSchemaNull,
   JsonSchemaNumber,
   JsonSchemaObject,
-  JsonSchemaString,
-  pMap,
-  _assert,
-  _chunk,
-  _omit,
   JsonSchemaRootObject,
-  CommonLogger,
-  commonLoggerMinLevel,
-  pTimeout,
-  pRetryFn,
-  pRetry,
-  PRetryOptions,
+  JsonSchemaString,
   ObjectWithId,
+  pMap,
+  pRetry,
+  pRetryFn,
+  PRetryOptions,
+  pTimeout,
 } from '@naturalcycles/js-lib'
-import { ReadableTyped, boldWhite } from '@naturalcycles/nodejs-lib'
-import { DatastoreStreamReadable } from './DatastoreStreamReadable'
+import { boldWhite, ReadableTyped } from '@naturalcycles/nodejs-lib'
 import {
   DatastoreDBCfg,
   DatastoreDBOptions,
@@ -46,6 +45,7 @@ import {
   DatastoreStats,
   DatastoreType,
 } from './datastore.model'
+import { DatastoreStreamReadable } from './DatastoreStreamReadable'
 import { dbQueryToDatastoreQuery } from './query.util'
 
 // Datastore (also Firestore and other Google APIs) supports max 500 of items when saving/deleting, etc.

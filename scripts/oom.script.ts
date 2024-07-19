@@ -9,8 +9,8 @@ import { DBQuery } from '@naturalcycles/db-lib'
 import {
   _pipeline,
   requireEnvKeys,
-  transformLogProgress,
   runScript,
+  transformLogProgress,
 } from '@naturalcycles/nodejs-lib'
 import { DatastoreDB } from '../src'
 
