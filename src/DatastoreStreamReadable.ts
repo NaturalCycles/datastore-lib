@@ -192,7 +192,10 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
     }
 
     if (!this.running) {
-      void this.runNextQuery()
+      void this.runNextQuery().catch(err => {
+        console.log('error in runNextQuery', err)
+        this.emit('error', err)
+      })
     } else {
       this.logger.log(`_read ${this.count}, wasRunning: true`)
     }
