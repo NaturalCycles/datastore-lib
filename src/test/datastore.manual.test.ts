@@ -16,7 +16,7 @@ process.env['APP_ENV'] = 'master'
 
 const credentials = JSON.parse(SECRET_GCP_SERVICE_ACCOUNT)
 
-export const datastoreDB = new DatastoreDB({
+const datastoreDB = new DatastoreDB({
   credentials,
   streamOptions: {
     // experimentalCursorStream: true,

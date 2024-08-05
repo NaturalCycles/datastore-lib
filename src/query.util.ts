@@ -19,23 +19,27 @@ export function dbQueryToDatastoreQuery<ROW extends ObjectWithId>(
   let q = emptyQuery
 
   // filter
-  // eslint-disable-next-line unicorn/no-array-reduce
-  q = dbQuery._filters.reduce(
+  for (const f of dbQuery._filters) {
     // keeping "previous syntax" commented out
     // (q, f) => q.filter(f.name as string, OP_MAP[f.op] || (f.op as any), f.val),
-    (q, f) => q.filter(new PropertyFilter(f.name as string, OP_MAP[f.op] || (f.op as any), f.val)),
-    q,
-  )
+
+    // Datastore doesn't allow `undefined` as filter value.
+    // We don't want to throw on it, so instead we'll replace it with valid value of `null`.
+    // `a > null` will return anything that's indexed
+    // `a < null` should return nothing
+    // `a == null` will return just that - rows with null values
+    let { op, val } = f
+    if (val === undefined) val = null
+    q = q.filter(new PropertyFilter(f.name as string, OP_MAP[op] || (op as any), val))
+  }
 
   // limit
   q = q.limit(dbQuery._limitValue || 0)
 
   // order
-  // eslint-disable-next-line unicorn/no-array-reduce
-  q = dbQuery._orders.reduce(
-    (q, ord) => q.order(ord.name as string, { descending: ord.descending }),
-    q,
-  )
+  for (const ord of dbQuery._orders) {
+    q = q.order(ord.name as string, { descending: ord.descending })
+  }
 
   // select
   if (dbQuery._selectedFieldNames) {
