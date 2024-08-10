@@ -27,9 +27,8 @@ runScript(async () => {
           if (v === 'c') {
             // cb(new Error('oopsie from writable'))
             throw new Error('oopsie from writable')
-          } else {
-            cb()
           }
+          cb()
         },
       }),
     )

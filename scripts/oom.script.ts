@@ -83,7 +83,7 @@ runScript(async () => {
     // This is a "no-op" consumer that just discards the data
     new Writable({
       objectMode: true,
-      write(c, _encoding, cb) {
+      write(_c, _encoding, cb) {
         // console.log(c.id, c.data.length)
         cb()
       },

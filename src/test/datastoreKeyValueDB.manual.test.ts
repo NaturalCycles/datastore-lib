@@ -12,7 +12,7 @@ process.env['APP_ENV'] = 'master'
 
 const credentials = JSON.parse(SECRET_GCP_SERVICE_ACCOUNT)
 
-export const db = new DatastoreKeyValueDB({
+const db = new DatastoreKeyValueDB({
   credentials,
 })
 
