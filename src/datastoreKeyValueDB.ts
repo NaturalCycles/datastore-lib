@@ -1,4 +1,5 @@
 import { CommonKeyValueDB, DBQuery, KeyValueDBTuple } from '@naturalcycles/db-lib'
+import { AppError } from '@naturalcycles/js-lib'
 import { ReadableTyped } from '@naturalcycles/nodejs-lib'
 import { DatastoreDB } from './datastore.db'
 import { DatastoreDBCfg } from './datastore.model'
@@ -82,5 +83,9 @@ export class DatastoreKeyValueDB implements CommonKeyValueDB {
   async count(table: string): Promise<number> {
     const q = DBQuery.create<KVObject>(table)
     return await this.db.runQueryCount(q)
+  }
+
+  async increment(_table: string, _id: string, _by?: number): Promise<number> {
+    throw new AppError('DatastoreKeyValueDB.increment() is not implemented')
   }
 }

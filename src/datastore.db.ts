@@ -571,7 +571,7 @@ export class DatastoreDBTransaction implements DBTransaction {
   async getByIds<ROW extends ObjectWithId>(
     table: string,
     ids: string[],
-    opt?: CommonDBOptions | undefined,
+    opt?: CommonDBOptions,
   ): Promise<ROW[]> {
     return await this.db.getByIds(table, ids, { ...opt, tx: this })
   }
@@ -579,16 +579,12 @@ export class DatastoreDBTransaction implements DBTransaction {
   async saveBatch<ROW extends ObjectWithId>(
     table: string,
     rows: ROW[],
-    opt?: CommonDBSaveOptions<ROW> | undefined,
+    opt?: CommonDBSaveOptions<ROW>,
   ): Promise<void> {
     await this.db.saveBatch(table, rows, { ...opt, tx: this })
   }
 
-  async deleteByIds(
-    table: string,
-    ids: string[],
-    opt?: CommonDBOptions | undefined,
-  ): Promise<number> {
+  async deleteByIds(table: string, ids: string[], opt?: CommonDBOptions): Promise<number> {
     return await this.db.deleteByIds(table, ids, { ...opt, tx: this })
   }
 }
