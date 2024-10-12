@@ -1,5 +1,10 @@
-import { CommonKeyValueDB, DBQuery, KeyValueDBTuple } from '@naturalcycles/db-lib'
-import { AppError } from '@naturalcycles/js-lib'
+import {
+  CommonKeyValueDB,
+  commonKeyValueDBFullSupport,
+  DBQuery,
+  KeyValueDBTuple,
+} from '@naturalcycles/db-lib'
+import { AppError, StringMap } from '@naturalcycles/js-lib'
 import { ReadableTyped } from '@naturalcycles/nodejs-lib'
 import { DatastoreDB } from './datastore.db'
 import { DatastoreDBCfg } from './datastore.model'
@@ -19,6 +24,11 @@ export class DatastoreKeyValueDB implements CommonKeyValueDB {
   }
 
   db: DatastoreDB
+
+  support = {
+    ...commonKeyValueDBFullSupport,
+    increment: false,
+  }
 
   async ping(): Promise<void> {
     await this.db.ping()
@@ -87,5 +97,12 @@ export class DatastoreKeyValueDB implements CommonKeyValueDB {
 
   async increment(_table: string, _id: string, _by?: number): Promise<number> {
     throw new AppError('DatastoreKeyValueDB.increment() is not implemented')
+  }
+
+  async incrementBatch(
+    _table: string,
+    _incrementMap: StringMap<number>,
+  ): Promise<StringMap<number>> {
+    throw new AppError('DatastoreKeyValueDB.incrementBatch() is not implemented')
   }
 }

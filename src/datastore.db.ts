@@ -80,7 +80,8 @@ const methodMap: Record<CommonDBSaveMethod, string> = {
 export class DatastoreDB extends BaseCommonDB implements CommonDB {
   override support: CommonDBSupport = {
     ...commonDBFullSupport,
-    updateByQuery: false,
+    patchByQuery: false,
+    increment: false,
   }
 
   constructor(cfg: DatastoreDBCfg = {}) {
