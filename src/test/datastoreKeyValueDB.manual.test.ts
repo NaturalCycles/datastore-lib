@@ -1,5 +1,4 @@
-import { CommonKeyValueDao } from '@naturalcycles/db-lib'
-import { runCommonKeyValueDBTest, TEST_TABLE } from '@naturalcycles/db-lib/dist/testing'
+import { runCommonKeyValueDBTest } from '@naturalcycles/db-lib/dist/testing'
 import { runCommonKeyValueDaoTest } from '@naturalcycles/db-lib/dist/testing/keyValueDaoTest'
 import { requireEnvKeys } from '@naturalcycles/nodejs-lib'
 import { DatastoreKeyValueDB } from '../datastoreKeyValueDB'
@@ -16,11 +15,6 @@ const db = new DatastoreKeyValueDB({
   credentials,
 })
 
-const dao = new CommonKeyValueDao<Buffer>({
-  db,
-  table: TEST_TABLE,
-})
-
 describe('runCommonKeyValueDBTest', () => runCommonKeyValueDBTest(db))
 
-describe('runCommonKeyValueDaoTest', () => runCommonKeyValueDaoTest(dao))
+describe('runCommonKeyValueDaoTest', () => runCommonKeyValueDaoTest(db))
