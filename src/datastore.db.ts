@@ -350,7 +350,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
     await pMap(
       _chunk(keys, MAX_ITEMS),
-      // eslint-disable-next-line @typescript-eslint/return-await
+
       async batch => await ((opt.tx as DatastoreDBTransaction)?.tx || this.ds()).delete(batch),
       {
         concurrency: DATASTORE_RECOMMENDED_CONCURRENCY,

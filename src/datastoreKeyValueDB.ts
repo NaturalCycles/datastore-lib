@@ -1,16 +1,21 @@
-import { CommonKeyValueDB, commonKeyValueDBFullSupport, DBQuery } from '@naturalcycles/db-lib'
+import {
+  CommonKeyValueDB,
+  commonKeyValueDBFullSupport,
+  DBQuery,
+  KeyValueDBTuple,
+} from '@naturalcycles/db-lib'
 import { IncrementTuple } from '@naturalcycles/db-lib/dist/kv/commonKeyValueDB'
-import { AppError, KeyValueTuple, ObjectWithId } from '@naturalcycles/js-lib'
+import { AppError, ObjectWithId } from '@naturalcycles/js-lib'
 import { ReadableTyped } from '@naturalcycles/nodejs-lib'
 import { DatastoreDB } from './datastore.db'
 import { DatastoreDBCfg } from './datastore.model'
 
-interface KVObject<V> {
+interface KVObject {
   id: string
-  v: V
+  v: Buffer
 }
 
-const excludeFromIndexes: (keyof KVObject<any>)[] = ['v']
+const excludeFromIndexes: (keyof KVObject)[] = ['v']
 
 export interface DatastoreKeyValueDBCfg extends DatastoreDBCfg {}
 
@@ -32,16 +37,16 @@ export class DatastoreKeyValueDB implements CommonKeyValueDB {
 
   async createTable(): Promise<void> {}
 
-  async getByIds<V>(table: string, ids: string[]): Promise<KeyValueTuple<string, V>[]> {
-    return (await this.db.getByIds<KVObject<V>>(table, ids)).map(r => [r.id, r.v])
+  async getByIds(table: string, ids: string[]): Promise<KeyValueDBTuple[]> {
+    return (await this.db.getByIds<KVObject>(table, ids)).map(r => [r.id, r.v])
   }
 
   async deleteByIds(table: string, ids: string[]): Promise<void> {
     await this.db.deleteByIds(table, ids)
   }
 
-  async saveBatch<V>(table: string, entries: KeyValueTuple<string, V>[]): Promise<void> {
-    await this.db.saveBatch<KVObject<V>>(
+  async saveBatch(table: string, entries: KeyValueDBTuple[]): Promise<void> {
+    await this.db.saveBatch<KVObject>(
       table,
       entries.map(([id, v]) => ({ id, v })),
       {
@@ -63,9 +68,9 @@ export class DatastoreKeyValueDB implements CommonKeyValueDB {
     )
   }
 
-  streamValues<V>(table: string, limit?: number): ReadableTyped<V> {
+  streamValues(table: string, limit?: number): ReadableTyped<Buffer> {
     // `select v` doesn't work for some reason
-    const q = DBQuery.create<KVObject<V>>(table).limit(limit || 0)
+    const q = DBQuery.create<KVObject>(table).limit(limit || 0)
 
     return (
       this.db
@@ -75,8 +80,8 @@ export class DatastoreKeyValueDB implements CommonKeyValueDB {
     )
   }
 
-  streamEntries<V>(table: string, limit?: number): ReadableTyped<KeyValueTuple<string, V>> {
-    const q = DBQuery.create<KVObject<V>>(table).limit(limit || 0)
+  streamEntries(table: string, limit?: number): ReadableTyped<KeyValueDBTuple> {
+    const q = DBQuery.create<KVObject>(table).limit(limit || 0)
 
     return (
       this.db
