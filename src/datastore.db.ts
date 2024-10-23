@@ -374,7 +374,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       await fn(tx)
       await datastoreTx.commit()
     } catch (err) {
-      await datastoreTx.rollback()
+      await this.rollback(datastoreTx)
       throw err
     }
   }
@@ -547,6 +547,19 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       errorData: {
         fingerprint: [DATASTORE_TIMEOUT],
       },
+    }
+  }
+
+  /**
+   * Silently rollback the transaction.
+   * It may happen that transaction is already committed/rolled back, so we don't want to throw an error here.
+   */
+  private async rollback(datastoreTx: Transaction): Promise<void> {
+    try {
+      await datastoreTx.rollback()
+    } catch (err) {
+      // log the error, but don't re-throw, as this should be a graceful rollback
+      this.cfg.logger.error(err)
     }
   }
 }
