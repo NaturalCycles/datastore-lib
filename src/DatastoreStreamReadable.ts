@@ -1,26 +1,27 @@
 import { Readable } from 'node:stream'
 import { Query } from '@google-cloud/datastore'
-import type { RunQueryInfo } from '@google-cloud/datastore/build/src/query'
+import type { RunQueryInfo, RunQueryOptions } from '@google-cloud/datastore/build/src/query'
 import { _ms, CommonLogger, pRetry, UnixTimestampMillisNumber } from '@naturalcycles/js-lib'
 import type { ReadableTyped } from '@naturalcycles/nodejs-lib'
 import type { DatastoreDBStreamOptions } from './datastore.model'
 
 export class DatastoreStreamReadable<T = any> extends Readable implements ReadableTyped<T> {
-  private originalLimit: number
+  private readonly originalLimit: number
   private rowsRetrieved = 0
   private endCursor?: string
   private running = false
   private done = false
   private lastQueryDone?: number
   private totalWait = 0
-  private table: string
+  private readonly table: string
   /**
    * Used to support maxWait
    */
   private lastReadTimestamp: UnixTimestampMillisNumber = 0
-  private maxWaitInterval: NodeJS.Timeout | undefined
+  private readonly maxWaitInterval: NodeJS.Timeout | undefined
 
-  private opt: DatastoreDBStreamOptions & { batchSize: number }
+  private readonly opt: DatastoreDBStreamOptions & { batchSize: number }
+  private dsOpt: RunQueryOptions
 
   constructor(
     private q: Query,
@@ -33,6 +34,11 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
       rssLimitMB: 1000,
       batchSize: 1000,
       ...opt,
+    }
+    this.dsOpt = {}
+    if (opt.readAt) {
+      // Datastore expects UnixTimestamp in milliseconds
+      this.dsOpt.readTime = opt.readAt * 1000
     }
 
     this.originalLimit = q.limitVal
@@ -99,7 +105,7 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
     try {
       await pRetry(
         async () => {
-          const res = await q.run()
+          const res = await q.run(this.dsOpt)
           rows = res[0]
           info = res[1]
         },

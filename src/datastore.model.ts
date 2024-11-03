@@ -1,5 +1,5 @@
 import type { DatastoreOptions, Key } from '@google-cloud/datastore'
-import { CommonDBOptions, CommonDBSaveOptions } from '@naturalcycles/db-lib'
+import { CommonDBOptions, CommonDBReadOptions, CommonDBSaveOptions } from '@naturalcycles/db-lib'
 import { CommonLogger, NumberOfSeconds, ObjectWithId } from '@naturalcycles/js-lib'
 
 export interface DatastorePayload<T = any> {
@@ -56,7 +56,7 @@ export interface DatastoreCredentials {
   refresh_token?: string
 }
 
-export interface DatastoreDBStreamOptions extends DatastoreDBOptions {
+export interface DatastoreDBStreamOptions extends DatastoreDBReadOptions {
   /**
    * Set to `true` to stream via experimental "cursor-query based stream".
    *
@@ -115,6 +115,8 @@ export interface DatastoreDBStreamOptions extends DatastoreDBOptions {
 }
 
 export interface DatastoreDBOptions extends CommonDBOptions {}
+
+export interface DatastoreDBReadOptions extends CommonDBReadOptions {}
 
 export interface DatastoreDBSaveOptions<ROW extends ObjectWithId>
   extends CommonDBSaveOptions<ROW> {}
