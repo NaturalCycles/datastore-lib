@@ -1,7 +1,7 @@
 import { Readable } from 'node:stream'
 import { Query } from '@google-cloud/datastore'
 import type { RunQueryInfo, RunQueryOptions } from '@google-cloud/datastore/build/src/query'
-import { _ms, CommonLogger, pRetry, UnixTimestampMillisNumber } from '@naturalcycles/js-lib'
+import { _ms, CommonLogger, pRetry, UnixTimestampMillis } from '@naturalcycles/js-lib'
 import type { ReadableTyped } from '@naturalcycles/nodejs-lib'
 import type { DatastoreDBStreamOptions } from './datastore.model'
 
@@ -17,11 +17,11 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
   /**
    * Used to support maxWait
    */
-  private lastReadTimestamp: UnixTimestampMillisNumber = 0
+  private lastReadTimestamp = 0 as UnixTimestampMillis
   private readonly maxWaitInterval: NodeJS.Timeout | undefined
 
   private readonly opt: DatastoreDBStreamOptions & { batchSize: number }
-  private dsOpt: RunQueryOptions
+  private readonly dsOpt: RunQueryOptions
 
   constructor(
     private q: Query,
@@ -187,7 +187,7 @@ export class DatastoreStreamReadable<T = any> extends Readable implements Readab
   count = 0
 
   override _read(): void {
-    this.lastReadTimestamp = Date.now()
+    this.lastReadTimestamp = Date.now() as UnixTimestampMillis
 
     // console.log(`_read called ${++this.count}, wasRunning: ${this.running}`) // debugging
     this.count++
