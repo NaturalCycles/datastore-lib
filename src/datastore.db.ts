@@ -54,7 +54,7 @@ import { dbQueryToDatastoreQuery } from './query.util'
 // Datastore (also Firestore and other Google APIs) supports max 500 of items when saving/deleting, etc.
 const MAX_ITEMS = 500
 // It's an empyrical value, but anything less than infinity is better than infinity
-const DATASTORE_RECOMMENDED_CONCURRENCY = 16
+const DATASTORE_RECOMMENDED_CONCURRENCY = 8
 
 const RETRY_ON = [
   'GOAWAY',
