@@ -19,6 +19,7 @@ import {
 import {
   _assert,
   _chunk,
+  _errorDataAppend,
   _omit,
   CommonLogger,
   commonLoggerMinLevel,
@@ -35,6 +36,7 @@ import {
   pRetryFn,
   PRetryOptions,
   pTimeout,
+  TimeoutError,
 } from '@naturalcycles/js-lib'
 import { boldWhite, ReadableTyped } from '@naturalcycles/nodejs-lib'
 import {
@@ -160,7 +162,12 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
           },
         )
         rows = r[0]
-      } catch {
+      } catch (err) {
+        if (!(err instanceof TimeoutError)) {
+          // Not a timeout error, re-throw
+          throw err
+        }
+
         this.cfg.logger.log('datastore recreated on error')
 
         // This is to debug "GCP Datastore Timeout issue"
@@ -169,19 +176,24 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
         this.cachedDatastore = new DS(this.cfg)
 
         // Second try (will throw)
-        const r = await pRetry(
-          () => ((opt.tx as DatastoreDBTransaction)?.tx || this.ds()).get(keys, dsOpt),
-          {
-            ...this.getPRetryOptions(`datastore.getByIds(${table}) second try`),
-            maxAttempts: 3,
-            timeout: this.cfg.timeout,
-            errorData: {
-              // This error will be grouped ACROSS all endpoints and usages
-              fingerprint: [DATASTORE_TIMEOUT],
+        try {
+          const r = await pRetry(
+            () => ((opt.tx as DatastoreDBTransaction)?.tx || this.ds()).get(keys, dsOpt),
+            {
+              ...this.getPRetryOptions(`datastore.getByIds(${table}) second try`),
+              maxAttempts: 3,
+              timeout: this.cfg.timeout,
             },
-          },
-        )
-        rows = r[0]
+          )
+          rows = r[0]
+        } catch (err) {
+          if (err instanceof TimeoutError) {
+            _errorDataAppend(err, {
+              fingerprint: [DATASTORE_TIMEOUT],
+            })
+          }
+          throw err
+        }
       }
     } else {
       rows = await pRetry(
@@ -319,6 +331,12 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
         })
       }
     } catch (err) {
+      if (err instanceof TimeoutError) {
+        _errorDataAppend(err, {
+          fingerprint: [DATASTORE_TIMEOUT],
+        })
+      }
+
       // console.log(`datastore.save ${kind}`, { obj, entity })
       this.cfg.logger.error(
         `error in DatastoreLib.saveBatch for ${table} (${rows.length} rows)`,
@@ -556,9 +574,10 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       logFailures: true,
       // logAll: true,
       logger: this.cfg.logger,
-      errorData: {
-        fingerprint: [DATASTORE_TIMEOUT],
-      },
+      // not appending fingerprint here, otherwise it would just group all kinds of errors, not just Timeout errors
+      // errorData: {
+      //   fingerprint: [DATASTORE_TIMEOUT],
+      // },
     }
   }
 
