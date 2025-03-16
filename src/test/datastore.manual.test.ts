@@ -4,11 +4,13 @@ import {
   runCommonDBTest,
   TEST_TABLE,
 } from '@naturalcycles/db-lib/dist/testing'
+import { testOnline } from '@naturalcycles/dev-lib/dist/testing'
 import { pMap } from '@naturalcycles/js-lib'
 import { requireEnvKeys } from '@naturalcycles/nodejs-lib'
+import { describe, expect, test } from 'vitest'
 import { DatastoreDB } from '../datastore.db'
 
-jest.setTimeout(60000)
+testOnline()
 
 require('dotenv').config()
 const { SECRET_GCP_SERVICE_ACCOUNT } = requireEnvKeys('SECRET_GCP_SERVICE_ACCOUNT')
