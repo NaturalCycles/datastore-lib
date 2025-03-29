@@ -4,6 +4,7 @@ import { DatastoreDB } from './datastore.db'
 
 test('should throw on missing id', async () => {
   const db = new DatastoreDB()
+  // const ds = db.ds()
 
   // Should not throw here
   await db.saveBatch(TEST_TABLE, [])

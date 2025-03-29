@@ -1,6 +1,6 @@
 /*
 
-yarn tsn oom
+yarn tsx scripts/oom.script.ts
 
  */
 

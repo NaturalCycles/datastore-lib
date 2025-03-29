@@ -1,10 +1,7 @@
-import type { Datastore, Key, Query } from '@google-cloud/datastore'
-import { PropertyFilter, Transaction } from '@google-cloud/datastore'
-import { type RunQueryOptions } from '@google-cloud/datastore/build/src/query'
-import {
-  BaseCommonDB,
+import type { Datastore, Key, PropertyFilter, Query, Transaction } from '@google-cloud/datastore'
+import type { RunQueryOptions } from '@google-cloud/datastore/build/src/query'
+import type {
   CommonDB,
-  commonDBFullSupport,
   CommonDBOptions,
   CommonDBReadOptions,
   CommonDBSaveMethod,
@@ -16,13 +13,9 @@ import {
   DBTransactionFn,
   RunQueryResult,
 } from '@naturalcycles/db-lib'
-import {
-  _assert,
-  _chunk,
-  _errorDataAppend,
-  _omit,
+import { BaseCommonDB, commonDBFullSupport } from '@naturalcycles/db-lib'
+import type {
   CommonLogger,
-  commonLoggerMinLevel,
   JsonSchemaAny,
   JsonSchemaBoolean,
   JsonSchemaNull,
@@ -31,15 +24,23 @@ import {
   JsonSchemaRootObject,
   JsonSchemaString,
   ObjectWithId,
+  PRetryOptions,
+} from '@naturalcycles/js-lib'
+import {
+  _assert,
+  _chunk,
+  _errorDataAppend,
+  _omit,
+  commonLoggerMinLevel,
   pMap,
   pRetry,
   pRetryFn,
-  PRetryOptions,
   pTimeout,
   TimeoutError,
 } from '@naturalcycles/js-lib'
-import { boldWhite, ReadableTyped } from '@naturalcycles/nodejs-lib'
-import {
+import type { ReadableTyped } from '@naturalcycles/nodejs-lib'
+import { boldWhite } from '@naturalcycles/nodejs-lib'
+import type {
   DatastoreDBCfg,
   DatastoreDBOptions,
   DatastoreDBReadOptions,
@@ -48,8 +49,8 @@ import {
   DatastorePayload,
   DatastorePropertyStats,
   DatastoreStats,
-  DatastoreType,
 } from './datastore.model'
+import { DatastoreType } from './datastore.model'
 import { DatastoreStreamReadable } from './DatastoreStreamReadable'
 import { dbQueryToDatastoreQuery } from './query.util'
 
@@ -114,9 +115,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
         'DatastoreDB cannot be used in Test env, please use InMemoryDB',
       )
 
-      // Lazy-loading
-      const datastoreLib = require('@google-cloud/datastore')
-      const DS = datastoreLib.Datastore as typeof Datastore
+      const DS = this.getDatastoreLib().Datastore as typeof Datastore
       this.cfg.projectId ||= this.cfg.credentials?.project_id || process.env['GOOGLE_CLOUD_PROJECT']
 
       if (this.cfg.projectId) {
@@ -134,6 +133,15 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     }
 
     return this.cachedDatastore
+  }
+
+  private getPropertyFilter(): typeof PropertyFilter {
+    return this.getDatastoreLib().PropertyFilter
+  }
+
+  private getDatastoreLib(): any {
+    // Lazy-loading
+    return require('@google-cloud/datastore')
   }
 
   override async ping(): Promise<void> {
@@ -231,7 +239,11 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       }
     }
 
-    const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
+    const q = dbQueryToDatastoreQuery(
+      dbQuery,
+      this.ds().createQuery(dbQuery.table),
+      this.getPropertyFilter(),
+    )
     const dsOpt = this.getRunQueryOptions(opt)
     const qr = await this.runDatastoreQuery<ROW>(q, dsOpt)
 
@@ -247,7 +259,11 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     dbQuery: DBQuery<ROW>,
     opt: DatastoreDBReadOptions = {},
   ): Promise<number> {
-    const q = dbQueryToDatastoreQuery(dbQuery.select([]), this.ds().createQuery(dbQuery.table))
+    const q = dbQueryToDatastoreQuery(
+      dbQuery.select([]),
+      this.ds().createQuery(dbQuery.table),
+      this.getPropertyFilter(),
+    )
     const aq = this.ds().createAggregationQuery(q).count('count')
     const dsOpt = this.getRunQueryOptions(opt)
     const [entities] = await this.ds().runAggregationQuery(aq, dsOpt)
@@ -293,7 +309,11 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     dbQuery: DBQuery<ROW>,
     opt?: DatastoreDBStreamOptions,
   ): ReadableTyped<ROW> {
-    const q = dbQueryToDatastoreQuery(dbQuery, this.ds().createQuery(dbQuery.table))
+    const q = dbQueryToDatastoreQuery(
+      dbQuery,
+      this.ds().createQuery(dbQuery.table),
+      this.getPropertyFilter(),
+    )
     return this.runQueryStream(q, opt)
   }
 
@@ -357,7 +377,11 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       return await this.deleteByIds(q.table, ids, opt)
     }
 
-    const datastoreQuery = dbQueryToDatastoreQuery(q.select([]), this.ds().createQuery(q.table))
+    const datastoreQuery = dbQueryToDatastoreQuery(
+      q.select([]),
+      this.ds().createQuery(q.table),
+      this.getPropertyFilter(),
+    )
     const dsOpt = this.getRunQueryOptions(opt)
     const { rows } = await this.runDatastoreQuery<ROW>(datastoreQuery, dsOpt)
     return await this.deleteByIds(
@@ -419,6 +443,8 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
    * Returns undefined e.g when Table is non-existing
    */
   async getStats(table: string): Promise<DatastoreStats | undefined> {
+    const { PropertyFilter } = this.getDatastoreLib()
+
     const q = this.ds()
       .createQuery('__Stat_Kind__')
       // .filter('kind_name', table)
@@ -438,7 +464,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     const q = this.ds()
       .createQuery('__Stat_PropertyType_PropertyName_Kind__')
       // .filter('kind_name', table)
-      .filter(new PropertyFilter('kind_name', '=', table))
+      .filter(new (this.getPropertyFilter())('kind_name', '=', table))
     const [stats] = await this.ds().runQuery(q)
     return stats
   }

@@ -1,14 +1,10 @@
-import {
-  CommonKeyValueDB,
-  commonKeyValueDBFullSupport,
-  DBQuery,
-  KeyValueDBTuple,
-} from '@naturalcycles/db-lib'
-import { IncrementTuple } from '@naturalcycles/db-lib/dist/kv/commonKeyValueDB'
-import { AppError, ObjectWithId } from '@naturalcycles/js-lib'
-import { ReadableTyped } from '@naturalcycles/nodejs-lib'
+import type { CommonKeyValueDB, IncrementTuple, KeyValueDBTuple } from '@naturalcycles/db-lib'
+import { commonKeyValueDBFullSupport, DBQuery } from '@naturalcycles/db-lib'
+import type { ObjectWithId } from '@naturalcycles/js-lib'
+import { AppError } from '@naturalcycles/js-lib'
+import type { ReadableTyped } from '@naturalcycles/nodejs-lib'
 import { DatastoreDB } from './datastore.db'
-import { DatastoreDBCfg } from './datastore.model'
+import type { DatastoreDBCfg } from './datastore.model'
 
 interface KVObject {
   id: string
