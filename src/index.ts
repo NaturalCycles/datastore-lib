@@ -1,3 +1,3 @@
-export * from './datastore.db'
-export * from './datastore.model'
-export * from './datastoreKeyValueDB'
+export * from './datastore.db.js'
+export * from './datastore.model.js'
+export * from './datastoreKeyValueDB.js'

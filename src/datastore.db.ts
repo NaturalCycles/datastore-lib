@@ -1,5 +1,6 @@
+import { Transform } from 'node:stream'
 import type { Datastore, Key, PropertyFilter, Query, Transaction } from '@google-cloud/datastore'
-import type { RunQueryOptions } from '@google-cloud/datastore/build/src/query'
+import type { RunQueryOptions } from '@google-cloud/datastore/build/src/query.js'
 import type {
   CommonDB,
   CommonDBOptions,
@@ -49,10 +50,10 @@ import type {
   DatastorePayload,
   DatastorePropertyStats,
   DatastoreStats,
-} from './datastore.model'
-import { DatastoreType } from './datastore.model'
-import { DatastoreStreamReadable } from './DatastoreStreamReadable'
-import { dbQueryToDatastoreQuery } from './query.util'
+} from './datastore.model.js'
+import { DatastoreType } from './datastore.model.js'
+import { DatastoreStreamReadable } from './DatastoreStreamReadable.js'
+import { dbQueryToDatastoreQuery } from './query.util.js'
 
 // Datastore (also Firestore and other Google APIs) supports max 500 of items when saving/deleting, etc.
 const MAX_ITEMS = 500
@@ -108,14 +109,14 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   protected KEY!: symbol
 
   // @memo() // not used to be able to connect to many DBs in the same server instance
-  ds(): Datastore {
+  async ds(): Promise<Datastore> {
     if (!this.cachedDatastore) {
       _assert(
         process.env['APP_ENV'] !== 'test',
         'DatastoreDB cannot be used in Test env, please use InMemoryDB',
       )
 
-      const DS = this.getDatastoreLib().Datastore as typeof Datastore
+      const DS = (await this.getDatastoreLib()).Datastore as typeof Datastore
       this.cfg.projectId ||= this.cfg.credentials?.project_id || process.env['GOOGLE_CLOUD_PROJECT']
 
       if (this.cfg.projectId) {
@@ -135,13 +136,14 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return this.cachedDatastore
   }
 
-  private getPropertyFilter(): typeof PropertyFilter {
-    return this.getDatastoreLib().PropertyFilter
+  private async getPropertyFilter(): Promise<typeof PropertyFilter> {
+    return (await this.getDatastoreLib()).PropertyFilter
   }
 
-  private getDatastoreLib(): any {
+  private async getDatastoreLib(): Promise<any> {
     // Lazy-loading
-    return require('@google-cloud/datastore')
+    const { default: lib } = await import('@google-cloud/datastore')
+    return lib
   }
 
   override async ping(): Promise<void> {
@@ -154,7 +156,8 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     opt: DatastoreDBReadOptions = {},
   ): Promise<ROW[]> {
     if (!ids.length) return []
-    const keys = ids.map(id => this.key(table, id))
+    let ds = await this.ds()
+    const keys = ids.map(id => this.key(ds, table, id))
     let rows: any[]
 
     const dsOpt = this.getRunQueryOptions(opt)
@@ -163,7 +166,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       // First try
       try {
         const r = await pTimeout(
-          () => ((opt.tx as DatastoreDBTransaction)?.tx || this.ds()).get(keys, dsOpt),
+          () => ((opt.tx as DatastoreDBTransaction)?.tx || ds).get(keys, dsOpt),
           {
             timeout: this.cfg.timeout,
             name: `datastore.getByIds(${table})`,
@@ -179,14 +182,14 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
         this.cfg.logger.log('datastore recreated on error')
 
         // This is to debug "GCP Datastore Timeout issue"
-        const datastoreLib = require('@google-cloud/datastore')
+        const datastoreLib = await this.getDatastoreLib()
         const DS = datastoreLib.Datastore as typeof Datastore
-        this.cachedDatastore = new DS(this.cfg)
+        ds = this.cachedDatastore = new DS(this.cfg)
 
         // Second try (will throw)
         try {
           const r = await pRetry(
-            () => ((opt.tx as DatastoreDBTransaction)?.tx || this.ds()).get(keys, dsOpt),
+            () => ((opt.tx as DatastoreDBTransaction)?.tx || ds).get(keys, dsOpt),
             {
               ...this.getPRetryOptions(`datastore.getByIds(${table}) second try`),
               maxAttempts: 3,
@@ -206,7 +209,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     } else {
       rows = await pRetry(
         async () => {
-          return (await this.ds().get(keys, dsOpt))[0]
+          return (await ds.get(keys, dsOpt))[0]
         },
         this.getPRetryOptions(`datastore.getByIds(${table})`),
       )
@@ -239,10 +242,11 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       }
     }
 
+    const ds = await this.ds()
     const q = dbQueryToDatastoreQuery(
       dbQuery,
-      this.ds().createQuery(dbQuery.table),
-      this.getPropertyFilter(),
+      ds.createQuery(dbQuery.table),
+      await this.getPropertyFilter(),
     )
     const dsOpt = this.getRunQueryOptions(opt)
     const qr = await this.runDatastoreQuery<ROW>(q, dsOpt)
@@ -259,14 +263,15 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     dbQuery: DBQuery<ROW>,
     opt: DatastoreDBReadOptions = {},
   ): Promise<number> {
+    const ds = await this.ds()
     const q = dbQueryToDatastoreQuery(
       dbQuery.select([]),
-      this.ds().createQuery(dbQuery.table),
-      this.getPropertyFilter(),
+      ds.createQuery(dbQuery.table),
+      await this.getPropertyFilter(),
     )
-    const aq = this.ds().createAggregationQuery(q).count('count')
+    const aq = ds.createAggregationQuery(q).count('count')
     const dsOpt = this.getRunQueryOptions(opt)
-    const [entities] = await this.ds().runAggregationQuery(aq, dsOpt)
+    const [entities] = await ds.runAggregationQuery(aq, dsOpt)
     return entities[0]?.count
   }
 
@@ -274,7 +279,8 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     q: Query,
     dsOpt: RunQueryOptions,
   ): Promise<RunQueryResult<ROW>> {
-    const [entities, queryResult] = await this.ds().runQuery(q, dsOpt)
+    const ds = await this.ds()
+    const [entities, queryResult] = await ds.runQuery(q, dsOpt)
 
     const rows = entities.map(e => this.mapId<ROW>(e))
 
@@ -284,37 +290,42 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     }
   }
 
-  private runQueryStream<ROW extends ObjectWithId>(
-    q: Query,
+  override streamQuery<ROW extends ObjectWithId>(
+    dbQuery: DBQuery<ROW>,
     _opt?: DatastoreDBStreamOptions,
   ): ReadableTyped<ROW> {
-    const opt = {
-      ...this.cfg.streamOptions,
-      ..._opt,
-    }
-    const dsOpt = this.getRunQueryOptions(opt)
+    const transform = new Transform({
+      objectMode: true,
+      transform: (chunk, _, cb) => {
+        cb(null, this.mapId(chunk))
+      },
+    })
 
-    return (
-      opt.experimentalCursorStream
+    void this.ds().then(async ds => {
+      const q = dbQueryToDatastoreQuery(
+        dbQuery,
+        ds.createQuery(dbQuery.table),
+        await this.getPropertyFilter(),
+      )
+
+      const opt = {
+        ...this.cfg.streamOptions,
+        ..._opt,
+      }
+
+      ;(opt.experimentalCursorStream
         ? new DatastoreStreamReadable<ROW>(
             q,
             opt,
             commonLoggerMinLevel(this.cfg.logger, opt.debug ? 'log' : 'warn'),
           )
-        : (this.ds().runQueryStream(q, dsOpt) as ReadableTyped<ROW>)
-    ).map(chunk => this.mapId(chunk))
-  }
+        : (ds.runQueryStream(q, this.getRunQueryOptions(opt)) as ReadableTyped<ROW>)
+      )
+        .on('error', err => transform.emit('error', err))
+        .pipe(transform)
+    })
 
-  override streamQuery<ROW extends ObjectWithId>(
-    dbQuery: DBQuery<ROW>,
-    opt?: DatastoreDBStreamOptions,
-  ): ReadableTyped<ROW> {
-    const q = dbQueryToDatastoreQuery(
-      dbQuery,
-      this.ds().createQuery(dbQuery.table),
-      this.getPropertyFilter(),
-    )
-    return this.runQueryStream(q, opt)
+    return transform
   }
 
   // https://github.com/GoogleCloudPlatform/nodejs-getting-started/blob/master/2-structured-data/books/model-datastore.js
@@ -327,15 +338,16 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     rows: ROW[],
     opt: DatastoreDBSaveOptions<ROW> = {},
   ): Promise<void> {
+    const ds = await this.ds()
     const entities = rows.map(obj =>
-      this.toDatastoreEntity(table, obj, opt.excludeFromIndexes as string[]),
+      this.toDatastoreEntity(ds, table, obj, opt.excludeFromIndexes as string[]),
     )
 
     const method = methodMap[opt.saveMethod || 'upsert'] || 'save'
 
     const save = pRetryFn(
       async (batch: DatastorePayload<ROW>[]) => {
-        await ((opt.tx as DatastoreDBTransaction)?.tx || this.ds())[method](batch)
+        await ((opt.tx as DatastoreDBTransaction)?.tx || ds)[method](batch)
       },
       this.getPRetryOptions(`DatastoreLib.saveBatch(${table})`),
     )
@@ -377,10 +389,11 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
       return await this.deleteByIds(q.table, ids, opt)
     }
 
+    const ds = await this.ds()
     const datastoreQuery = dbQueryToDatastoreQuery(
       q.select([]),
-      this.ds().createQuery(q.table),
-      this.getPropertyFilter(),
+      ds.createQuery(q.table),
+      await this.getPropertyFilter(),
     )
     const dsOpt = this.getRunQueryOptions(opt)
     const { rows } = await this.runDatastoreQuery<ROW>(datastoreQuery, dsOpt)
@@ -400,12 +413,13 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     ids: string[],
     opt: DatastoreDBOptions = {},
   ): Promise<number> {
-    const keys = ids.map(id => this.key(table, id))
+    const ds = await this.ds()
+    const keys = ids.map(id => this.key(ds, table, id))
 
     await pMap(
       _chunk(keys, MAX_ITEMS),
 
-      async batch => await ((opt.tx as DatastoreDBTransaction)?.tx || this.ds()).delete(batch),
+      async batch => await ((opt.tx as DatastoreDBTransaction)?.tx || ds).delete(batch),
       {
         concurrency: DATASTORE_RECOMMENDED_CONCURRENCY,
       },
@@ -417,8 +431,9 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     fn: DBTransactionFn,
     opt: CommonDBTransactionOptions = {},
   ): Promise<void> {
+    const ds = await this.ds()
     const { readOnly } = opt
-    const datastoreTx = this.ds().transaction({
+    const datastoreTx = ds.transaction({
       readOnly,
     })
 
@@ -434,8 +449,9 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   }
 
   async getAllStats(): Promise<DatastoreStats[]> {
-    const q = this.ds().createQuery('__Stat_Kind__')
-    const [statsArray] = await this.ds().runQuery(q)
+    const ds = await this.ds()
+    const q = ds.createQuery('__Stat_Kind__')
+    const [statsArray] = await ds.runQuery(q)
     return statsArray || []
   }
 
@@ -443,14 +459,15 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
    * Returns undefined e.g when Table is non-existing
    */
   async getStats(table: string): Promise<DatastoreStats | undefined> {
-    const { PropertyFilter } = this.getDatastoreLib()
+    const ds = await this.ds()
+    const propertyFilter = await this.getPropertyFilter()
 
-    const q = this.ds()
+    const q = ds
       .createQuery('__Stat_Kind__')
       // .filter('kind_name', table)
-      .filter(new PropertyFilter('kind_name', '=', table))
+      .filter(new propertyFilter('kind_name', '=', table))
       .limit(1)
-    const [statsArray] = await this.ds().runQuery(q)
+    const [statsArray] = await ds.runQuery(q)
     const [stats] = statsArray
     return stats
   }
@@ -461,11 +478,12 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
   }
 
   async getTableProperties(table: string): Promise<DatastorePropertyStats[]> {
-    const q = this.ds()
+    const ds = await this.ds()
+    const q = ds
       .createQuery('__Stat_PropertyType_PropertyName_Kind__')
       // .filter('kind_name', table)
-      .filter(new (this.getPropertyFilter())('kind_name', '=', table))
-    const [stats] = await this.ds().runQuery(q)
+      .filter(new (await this.getPropertyFilter())('kind_name', '=', table))
+    const [stats] = await ds.runQuery(q)
     return stats
   }
 
@@ -481,11 +499,12 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
   // if key field exists on entity, it will be used as key (prevent to duplication of numeric keyed entities)
   private toDatastoreEntity<T extends ObjectWithId>(
+    ds: Datastore,
     kind: string,
     o: T,
     excludeFromIndexes: string[] = [],
   ): DatastorePayload<T> {
-    const key = this.getDsKey(o) || this.key(kind, o.id)
+    const key = this.getDsKey(o) || this.key(ds, kind, o.id)
     const data = Object.assign({}, o) as any
     delete data.id
     delete data[this.KEY]
@@ -497,9 +516,9 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     }
   }
 
-  key(kind: string, id: string): Key {
+  key(ds: Datastore, kind: string, id: string): Key {
     _assert(id, `Cannot save "${kind}" entity without "id"`)
-    return this.ds().key([kind, id])
+    return ds.key([kind, id])
   }
 
   private getDsKey(o: any): Key | undefined {

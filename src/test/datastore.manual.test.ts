@@ -3,16 +3,16 @@ import {
   runCommonDaoTest,
   runCommonDBTest,
   TEST_TABLE,
-} from '@naturalcycles/db-lib/dist/testing'
-import { testOnline } from '@naturalcycles/dev-lib/dist/testing'
+} from '@naturalcycles/db-lib/dist/testing/index.js'
+import { testOnline } from '@naturalcycles/dev-lib/dist/testing/index.js'
 import { pMap } from '@naturalcycles/js-lib'
 import { requireEnvKeys } from '@naturalcycles/nodejs-lib'
 import { describe, expect, test } from 'vitest'
-import { DatastoreDB } from '../datastore.db'
+import { DatastoreDB } from '../datastore.db.js'
 
 testOnline()
 
-require('dotenv').config()
+import 'dotenv/config'
 const { SECRET_GCP_SERVICE_ACCOUNT } = requireEnvKeys('SECRET_GCP_SERVICE_ACCOUNT')
 process.env['APP_ENV'] = 'master'
 

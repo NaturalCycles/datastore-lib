@@ -1,13 +1,13 @@
-import { runCommonKeyValueDBTest } from '@naturalcycles/db-lib/dist/testing'
-import { runCommonKeyValueDaoTest } from '@naturalcycles/db-lib/dist/testing/keyValueDaoTest'
-import { testOnline } from '@naturalcycles/dev-lib/dist/testing'
+import { runCommonKeyValueDBTest } from '@naturalcycles/db-lib/dist/testing/index.js'
+import { runCommonKeyValueDaoTest } from '@naturalcycles/db-lib/dist/testing/keyValueDaoTest.js'
+import { testOnline } from '@naturalcycles/dev-lib/dist/testing/index.js'
 import { requireEnvKeys } from '@naturalcycles/nodejs-lib'
 import { describe } from 'vitest'
-import { DatastoreKeyValueDB } from '../datastoreKeyValueDB'
+import { DatastoreKeyValueDB } from '../datastoreKeyValueDB.js'
 
 testOnline()
 
-require('dotenv').config()
+import 'dotenv/config'
 const { SECRET_GCP_SERVICE_ACCOUNT } = requireEnvKeys('SECRET_GCP_SERVICE_ACCOUNT')
 process.env['APP_ENV'] = 'master'
 

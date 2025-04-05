@@ -1,10 +1,10 @@
 import { Readable } from 'node:stream'
 import type { Query } from '@google-cloud/datastore'
-import type { RunQueryInfo, RunQueryOptions } from '@google-cloud/datastore/build/src/query'
+import type { RunQueryInfo, RunQueryOptions } from '@google-cloud/datastore/build/src/query.js'
 import type { CommonLogger, UnixTimestampMillis } from '@naturalcycles/js-lib'
 import { _ms, pRetry } from '@naturalcycles/js-lib'
 import type { ReadableTyped } from '@naturalcycles/nodejs-lib'
-import type { DatastoreDBStreamOptions } from './datastore.model'
+import type { DatastoreDBStreamOptions } from './datastore.model.js'
 
 export class DatastoreStreamReadable<T = any> extends Readable implements ReadableTyped<T> {
   private readonly originalLimit: number

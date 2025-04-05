@@ -12,7 +12,7 @@ import {
   runScript,
   transformLogProgress,
 } from '@naturalcycles/nodejs-lib'
-import { DatastoreDB } from '../src'
+import { DatastoreDB } from '../src/index.js'
 
 const { SECRET_GCP_SERVICE_ACCOUNT } = requireEnvKeys('SECRET_GCP_SERVICE_ACCOUNT')
 process.env['APP_ENV'] = 'master'
