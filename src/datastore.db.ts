@@ -142,7 +142,7 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
 
   private async getDatastoreLib(): Promise<any> {
     // Lazy-loading
-    const { default: lib } = await import('@google-cloud/datastore')
+    const lib = await import('@google-cloud/datastore')
     return lib
   }
 

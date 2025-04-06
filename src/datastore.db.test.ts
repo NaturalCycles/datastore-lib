@@ -17,3 +17,11 @@ test('should throw on missing id', async () => {
     `[AssertionError: Cannot save "TEST_TABLE" entity without "id"]`,
   )
 })
+
+test('can load datastore', async () => {
+  process.env['APP_ENV'] = 'abc' // to not throw on APP_ENV=test check
+
+  const db = new DatastoreDB()
+  const ds = await db.ds()
+  expect(ds.KEY.description).toBe('KEY')
+})
