@@ -427,6 +427,18 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     return ids.length
   }
 
+  override async createTransaction(
+    opt: CommonDBTransactionOptions = {},
+  ): Promise<DatastoreDBTransaction> {
+    const ds = await this.ds()
+    const { readOnly } = opt
+    const datastoreTx = ds.transaction({
+      readOnly,
+    })
+    await datastoreTx.run()
+    return new DatastoreDBTransaction(this, datastoreTx)
+  }
+
   override async runInTransaction(
     fn: DBTransactionFn,
     opt: CommonDBTransactionOptions = {},
@@ -657,6 +669,10 @@ export class DatastoreDBTransaction implements DBTransaction {
     public db: DatastoreDB,
     public tx: Transaction,
   ) {}
+
+  async commit(): Promise<void> {
+    await this.tx.commit()
+  }
 
   async rollback(): Promise<void> {
     try {
