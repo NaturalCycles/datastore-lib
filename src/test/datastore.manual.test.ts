@@ -4,7 +4,7 @@ import {
   runCommonDBTest,
   TEST_TABLE,
 } from '@naturalcycles/db-lib/dist/testing/index.js'
-import { testOnline } from '@naturalcycles/dev-lib/dist/testing/index.js'
+import { testOnline } from '@naturalcycles/dev-lib/dist/testing/testOffline.js'
 import { pMap } from '@naturalcycles/js-lib'
 import { requireEnvKeys } from '@naturalcycles/nodejs-lib'
 import { describe, expect, test } from 'vitest'

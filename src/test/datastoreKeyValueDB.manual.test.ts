@@ -1,6 +1,6 @@
 import { runCommonKeyValueDBTest } from '@naturalcycles/db-lib/dist/testing/index.js'
 import { runCommonKeyValueDaoTest } from '@naturalcycles/db-lib/dist/testing/keyValueDaoTest.js'
-import { testOnline } from '@naturalcycles/dev-lib/dist/testing/index.js'
+import { testOnline } from '@naturalcycles/dev-lib/dist/testing/testOffline.js'
 import { requireEnvKeys } from '@naturalcycles/nodejs-lib'
 import { describe } from 'vitest'
 import { DatastoreKeyValueDB } from '../datastoreKeyValueDB.js'
