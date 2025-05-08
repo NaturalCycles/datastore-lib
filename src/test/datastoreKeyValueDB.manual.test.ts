@@ -17,6 +17,10 @@ const db = new DatastoreKeyValueDB({
   credentials,
 })
 
-describe('runCommonKeyValueDBTest', () => runCommonKeyValueDBTest(db))
+describe('runCommonKeyValueDBTest', async () => {
+  await runCommonKeyValueDBTest(db)
+})
 
-describe('runCommonKeyValueDaoTest', () => runCommonKeyValueDaoTest(db))
+describe('runCommonKeyValueDaoTest', async () => {
+  await runCommonKeyValueDaoTest(db)
+})

@@ -26,9 +26,13 @@ const datastoreDB = new DatastoreDB({
   },
 })
 
-describe('runCommonDBTest', () => runCommonDBTest(datastoreDB))
+describe('runCommonDBTest', async () => {
+  await runCommonDBTest(datastoreDB)
+})
 
-describe('runCommonDaoTest', () => runCommonDaoTest(datastoreDB))
+describe('runCommonDaoTest', async () => {
+  await runCommonDaoTest(datastoreDB)
+})
 
 test('getStats, getStatsCount non-existing table', async () => {
   expect(await datastoreDB.getStats('NonEx')).toBeUndefined()
