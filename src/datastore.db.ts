@@ -65,7 +65,9 @@ const RETRY_ON = [
   'UNAVAILABLE',
   'UNKNOWN',
   'DEADLINE_EXCEEDED',
+  'ABORTED',
   'much contention',
+  'try again',
   'timeout',
 ].map(s => s.toLowerCase())
 // Examples of errors:
@@ -416,10 +418,16 @@ export class DatastoreDB extends BaseCommonDB implements CommonDB {
     const ds = await this.ds()
     const keys = ids.map(id => this.key(ds, table, id))
 
+    const retryOptions = this.getPRetryOptions(`DatastoreLib.deleteByIds(${table})`)
+
     await pMap(
       _chunk(keys, MAX_ITEMS),
-
-      async batch => await ((opt.tx as DatastoreDBTransaction)?.tx || ds).delete(batch),
+      // async batch => await doDelete(batch),
+      async batchOfKeys => {
+        await pRetry(async () => {
+          await ((opt.tx as DatastoreDBTransaction)?.tx || ds).delete(batchOfKeys)
+        }, retryOptions)
+      },
       {
         concurrency: DATASTORE_RECOMMENDED_CONCURRENCY,
       },
